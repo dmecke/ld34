@@ -1,19 +1,26 @@
 Vector = require('./../Math/Vector.js');
 Circle = require('./../Graphics/Circle.js');
+ClickTimer = require('./../Input/ClickTimer.js');
 mouse = require('./../Input/Mouse.js');
 
 function Player()
 {
     this.position = new Vector(400, 300);
-    this.size = 10;
+    this.velocity = new Vector(0, 0);
+    this.mass = 10;
     this.mouse = mouse;
+    this.clickTimer = new ClickTimer(30);
 
     this.update = function()
     {
-        //this.position = this.position.add(new Vector(1, 1));
-        //this.position = this.mouse.position;
+        if (this.mouse.buttons[0] && this.clickTimer.isReady()) {
+            var direction = this.mouse.position.subtract(this.position).multiply(-1).normalize();
+            this.velocity = this.velocity.add(direction).limit(this.maxSpeed());
+            this.clickTimer.reset();
+        }
 
-        //this.position = this.position.add(new Vector(x, y));
+        this.position = this.position.add(this.velocity);
+        this.clickTimer.update();
     };
 
     this.render = function()
@@ -23,10 +30,15 @@ function Player()
         core.fillStyle = 'blue';
         core.draw();
 
-        var shell = new Circle(this.position, this.size);
+        var shell = new Circle(this.position, this.mass);
         shell.strokeStyle = 'blue';
         shell.draw();
     };
+
+    this.maxSpeed = function()
+    {
+        return 1;
+    }
 }
 
 module.exports = Player;
