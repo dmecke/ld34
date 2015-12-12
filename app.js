@@ -437,7 +437,8 @@
 	                    this,
 	                    new Vector(Math.random() * this.dimensions.x, Math.random() * this.dimensions.y),
 	                    new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1),
-	                    Math.random() * 10
+	                    Math.random() * 10,
+	                    'green'
 	                )
 	            );
 	        }
@@ -574,7 +575,7 @@
 	        this.velocity = this.velocity.add(force);
 	        this.reduceMass(emittedMass);
 	        var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-	        this.game.cells.push(new Cell(this.game, cellPosition, force.multiply(-1), emittedMass));
+	        this.game.cells.push(new Cell(this.game, cellPosition, force.multiply(-1), emittedMass, 'blue'));
 	        this.clickTimer.reset();
 	    };
 
@@ -682,12 +683,13 @@
 	Vector = __webpack_require__(9);
 	Circle = __webpack_require__(10);
 
-	function Cell(game, position, velocity, mass)
+	function Cell(game, position, velocity, mass, color)
 	{
 	    this.game = game;
 	    this.position = position;
 	    this.velocity = velocity;
 	    this.mass = mass;
+	    this.color = color;
 
 	    this.update = function()
 	    {
@@ -709,7 +711,7 @@
 	    this.render = function()
 	    {
 	        var shell = new Circle(this.position, this.mass);
-	        shell.strokeStyle = 'blue';
+	        shell.strokeStyle = this.color;
 	        shell.draw();
 	    };
 	}

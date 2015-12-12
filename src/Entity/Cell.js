@@ -1,12 +1,13 @@
 Vector = require('./../Math/Vector.js');
 Circle = require('./../Graphics/Circle.js');
 
-function Cell(game, position, velocity, mass)
+function Cell(game, position, velocity, mass, color)
 {
     this.game = game;
     this.position = position;
     this.velocity = velocity;
     this.mass = mass;
+    this.color = color;
 
     this.update = function()
     {
@@ -28,7 +29,7 @@ function Cell(game, position, velocity, mass)
     this.render = function()
     {
         var shell = new Circle(this.position, this.mass);
-        shell.strokeStyle = 'blue';
+        shell.strokeStyle = this.color;
         shell.draw();
     };
 }

@@ -79,7 +79,7 @@ function Player(game)
         this.velocity = this.velocity.add(force);
         this.reduceMass(emittedMass);
         var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-        this.game.cells.push(new Cell(this.game, cellPosition, force.multiply(-1), emittedMass));
+        this.game.cells.push(new Cell(this.game, cellPosition, force.multiply(-1), emittedMass, 'blue'));
         this.clickTimer.reset();
     };
 

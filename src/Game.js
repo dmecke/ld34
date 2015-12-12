@@ -20,7 +20,8 @@ function Game()
                     this,
                     new Vector(Math.random() * this.dimensions.x, Math.random() * this.dimensions.y),
                     new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1),
-                    Math.random() * 10
+                    Math.random() * 10,
+                    'green'
                 )
             );
         }
