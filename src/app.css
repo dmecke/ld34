@@ -1,0 +1,26 @@
+body {
+    margin: 0;
+    background: #c6dde6;
+    font-family: 'Roboto', sans-serif;
+    color: #272727;
+}
+h1, h2 {
+    text-align: center;
+}
+canvas {
+    background: white;
+    border: 1px solid #272727;
+    display: block;
+    margin: 50px auto;
+    width: 800px;
+    height: 600px;
+}
+footer {
+    margin-top: 50px;
+    text-align: center;
+}
+.explanations {
+    margin: auto;
+    text-align: justify;
+    width: 800px;
+}
