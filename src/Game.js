@@ -21,7 +21,7 @@ function Game()
         console.log('Game::startLevel');
         this.menu.hide();
 
-        this.level = new Level(this, level.winningConditions);
+        this.level = new Level(this, level);
         this.level.start();
     };
 

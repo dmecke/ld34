@@ -12,7 +12,7 @@ function Ui(level)
         currentMass.fillStyle = 'blue';
         currentMass.draw();
 
-        var targetMass = new Text(new Vector(10, this.level.game.dimensions.y - 10), 'Target mass: ' + this.level.winningConditions.mass);
+        var targetMass = new Text(new Vector(10, this.level.game.dimensions.y - 10), 'Target mass: ' + this.level.settings.winningConditions.mass);
         targetMass.textAlign = 'left';
         targetMass.fillStyle = 'blue';
         targetMass.draw();

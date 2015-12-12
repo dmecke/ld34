@@ -25,47 +25,48 @@ function Player(level)
 
     this.render = function()
     {
-        this.draw('lightblue', this.mass);
-        this.draw('blue', this.minimumMass);
+        this.draw(this.mass);
+        this.draw(this.minimumMass);
     };
 
-    this.draw = function(fillStyle, radius)
+    this.draw = function(radius)
     {
         var dimensions = this.level.game.dimensions;
 
-        this.drawElement(this.position, fillStyle, radius);
+        this.drawElement(this.position, radius);
         if (this.position.x - radius < 0) {
-            this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y), fillStyle, radius);
+            this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y), radius);
         }
         if (this.position.y - radius < 0) {
-            this.drawElement(new Vector(this.position.x, dimensions.y + this.position.y), fillStyle, radius);
+            this.drawElement(new Vector(this.position.x, dimensions.y + this.position.y), radius);
         }
         if (this.position.x + radius > dimensions.x) {
-            this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y), fillStyle, radius);
+            this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y), radius);
         }
         if (this.position.y + radius > dimensions.y) {
-            this.drawElement(new Vector(this.position.x, this.position.y - dimensions.y), fillStyle, radius);
+            this.drawElement(new Vector(this.position.x, this.position.y - dimensions.y), radius);
         }
 
         if (this.position.x - radius < 0 && this.position.y - radius < 0) {
-            this.drawElement(new Vector(dimensions.x + this.position.x, dimensions.y + this.position.y), fillStyle, radius);
+            this.drawElement(new Vector(dimensions.x + this.position.x, dimensions.y + this.position.y), radius);
         }
         if (this.position.x - radius < 0 && this.position.y + radius > dimensions.y) {
-            this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y - dimensions.y), fillStyle, radius);
+            this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y - dimensions.y), radius);
         }
         if (this.position.x + radius > dimensions.x && this.position.y - radius < 0) {
-            this.drawElement(new Vector(this.position.x - dimensions.x, dimensions.y + this.position.y), fillStyle, radius);
+            this.drawElement(new Vector(this.position.x - dimensions.x, dimensions.y + this.position.y), radius);
         }
         if (this.position.x + radius > dimensions.x && this.position.y + radius > dimensions.y) {
-            this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y - dimensions.y), fillStyle, radius);
+            this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y - dimensions.y), radius);
         }
     };
 
-    this.drawElement = function(position, fillStyle, radius)
+    this.drawElement = function(position, radius)
     {
+        var color = 'rgb(4, 97, 182)';
         var circle = new Circle(position, radius);
-        circle.strokeStyle = 'blue';
-        circle.fillStyle = fillStyle;
+        circle.strokeStyle = color;
+        circle.fillStyle = color.replace(')', ', 0.2)').replace('rgb', 'rgba');
         circle.draw();
     };
 
@@ -113,7 +114,7 @@ function Player(level)
         this.velocity = this.velocity.add(force);
         this.reduceMass(emittedMass);
         var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-        var cell = new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, 'blue');
+        var cell = new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, 'rgb(4, 97, 182)');
         if (this.mass == this.minimumMass) {
             cell.disappearsIn = 100;
         }

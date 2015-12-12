@@ -438,7 +438,7 @@
 	        console.log('Game::startLevel');
 	        this.menu.hide();
 
-	        this.level = new Level(this, level.winningConditions);
+	        this.level = new Level(this, level);
 	        this.level.start();
 	    };
 
@@ -699,7 +699,7 @@
 
 	LevelDefinitions = [
 	    { level: 1, position: new Vector(300, 300), winningConditions: { mass: 50 }},
-	    { level: 2, position: new Vector(500, 300), winningConditions: { mass: 70 }}
+	    { level: 2, position: new Vector(500, 300), winningConditions: { mass: 60 }}
 	];
 
 	module.exports = LevelDefinitions;
@@ -747,14 +747,15 @@
 	Cell = __webpack_require__(16);
 	Ui = __webpack_require__(18);
 
-	function Level(game, winningConditions)
+	function Level(game, settings)
 	{
 	    this.game = game;
 	    this.player = new Player(this);
 	    this.cells = [];
 	    this.ui = new Ui(this);
 	    this.interval = undefined;
-	    this.winningConditions = winningConditions;
+	    this.settings = settings;
+	    this.background = new Image();
 
 	    this.start = function()
 	    {
@@ -781,6 +782,7 @@
 	    this.render = function()
 	    {
 	        context.clearRect(0, 0, this.game.dimensions.x, this.game.dimensions.y);
+	        context.drawImage(this.background, 0, 0);
 	        this.player.render();
 	        for (var i = 0; i < this.cells.length; i++) {
 	            this.cells[i].render();
@@ -798,15 +800,17 @@
 	                    new Vector(Math.random() * this.game.dimensions.x, Math.random() * this.game.dimensions.y),
 	                    new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1),
 	                    Math.random() * 10,
-	                    'green'
+	                    'rgb(99, 170, 51)'
 	                )
 	            );
 	        }
+	        var background = this.settings.level % 10;
+	        this.background.src = 'img/background/' + background + '.jpg';
 	    };
 
 	    this.checkWinningConditions = function()
 	    {
-	        if (this.player.mass >= this.winningConditions.mass) {
+	        if (this.player.mass >= this.settings.winningConditions.mass) {
 	            this.game.finishLevel();
 	            this.game.showMenu();
 	        }
@@ -852,47 +856,48 @@
 
 	    this.render = function()
 	    {
-	        this.draw('lightblue', this.mass);
-	        this.draw('blue', this.minimumMass);
+	        this.draw(this.mass);
+	        this.draw(this.minimumMass);
 	    };
 
-	    this.draw = function(fillStyle, radius)
+	    this.draw = function(radius)
 	    {
 	        var dimensions = this.level.game.dimensions;
 
-	        this.drawElement(this.position, fillStyle, radius);
+	        this.drawElement(this.position, radius);
 	        if (this.position.x - radius < 0) {
-	            this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y), fillStyle, radius);
+	            this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y), radius);
 	        }
 	        if (this.position.y - radius < 0) {
-	            this.drawElement(new Vector(this.position.x, dimensions.y + this.position.y), fillStyle, radius);
+	            this.drawElement(new Vector(this.position.x, dimensions.y + this.position.y), radius);
 	        }
 	        if (this.position.x + radius > dimensions.x) {
-	            this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y), fillStyle, radius);
+	            this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y), radius);
 	        }
 	        if (this.position.y + radius > dimensions.y) {
-	            this.drawElement(new Vector(this.position.x, this.position.y - dimensions.y), fillStyle, radius);
+	            this.drawElement(new Vector(this.position.x, this.position.y - dimensions.y), radius);
 	        }
 
 	        if (this.position.x - radius < 0 && this.position.y - radius < 0) {
-	            this.drawElement(new Vector(dimensions.x + this.position.x, dimensions.y + this.position.y), fillStyle, radius);
+	            this.drawElement(new Vector(dimensions.x + this.position.x, dimensions.y + this.position.y), radius);
 	        }
 	        if (this.position.x - radius < 0 && this.position.y + radius > dimensions.y) {
-	            this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y - dimensions.y), fillStyle, radius);
+	            this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y - dimensions.y), radius);
 	        }
 	        if (this.position.x + radius > dimensions.x && this.position.y - radius < 0) {
-	            this.drawElement(new Vector(this.position.x - dimensions.x, dimensions.y + this.position.y), fillStyle, radius);
+	            this.drawElement(new Vector(this.position.x - dimensions.x, dimensions.y + this.position.y), radius);
 	        }
 	        if (this.position.x + radius > dimensions.x && this.position.y + radius > dimensions.y) {
-	            this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y - dimensions.y), fillStyle, radius);
+	            this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y - dimensions.y), radius);
 	        }
 	    };
 
-	    this.drawElement = function(position, fillStyle, radius)
+	    this.drawElement = function(position, radius)
 	    {
+	        var color = 'rgb(4, 97, 182)';
 	        var circle = new Circle(position, radius);
-	        circle.strokeStyle = 'blue';
-	        circle.fillStyle = fillStyle;
+	        circle.strokeStyle = color;
+	        circle.fillStyle = color.replace(')', ', 0.2)').replace('rgb', 'rgba');
 	        circle.draw();
 	    };
 
@@ -940,7 +945,7 @@
 	        this.velocity = this.velocity.add(force);
 	        this.reduceMass(emittedMass);
 	        var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-	        var cell = new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, 'blue');
+	        var cell = new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, 'rgb(4, 97, 182)');
 	        if (this.mass == this.minimumMass) {
 	            cell.disappearsIn = 100;
 	        }
@@ -991,7 +996,6 @@
 
 	        if (this.disappearsIn) {
 	            this.disappearsIn--;
-	            console.log(this.disappearsIn);
 	            if (this.disappearsIn == 0) {
 	                var index = this.level.cells.indexOf(this);
 	                this.level.cells.splice(index, 1);
@@ -1035,6 +1039,7 @@
 	    {
 	        var shell = new Circle(position, this.mass);
 	        shell.strokeStyle = this.color;
+	        shell.fillStyle = this.color.replace(')', ', 0.1)').replace('rgb', 'rgba');
 	        shell.draw();
 	    };
 	}
@@ -1088,7 +1093,7 @@
 	        currentMass.fillStyle = 'blue';
 	        currentMass.draw();
 
-	        var targetMass = new Text(new Vector(10, this.level.game.dimensions.y - 10), 'Target mass: ' + this.level.winningConditions.mass);
+	        var targetMass = new Text(new Vector(10, this.level.game.dimensions.y - 10), 'Target mass: ' + this.level.settings.winningConditions.mass);
 	        targetMass.textAlign = 'left';
 	        targetMass.fillStyle = 'blue';
 	        targetMass.draw();

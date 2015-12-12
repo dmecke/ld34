@@ -28,7 +28,6 @@ function Cell(level, position, velocity, mass, color)
 
         if (this.disappearsIn) {
             this.disappearsIn--;
-            console.log(this.disappearsIn);
             if (this.disappearsIn == 0) {
                 var index = this.level.cells.indexOf(this);
                 this.level.cells.splice(index, 1);
@@ -72,6 +71,7 @@ function Cell(level, position, velocity, mass, color)
     {
         var shell = new Circle(position, this.mass);
         shell.strokeStyle = this.color;
+        shell.fillStyle = this.color.replace(')', ', 0.1)').replace('rgb', 'rgba');
         shell.draw();
     };
 }
