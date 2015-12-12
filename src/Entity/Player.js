@@ -113,7 +113,11 @@ function Player(level)
         this.velocity = this.velocity.add(force);
         this.reduceMass(emittedMass);
         var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-        this.level.cells.push(new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, 'blue'));
+        var cell = new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, 'blue');
+        if (this.mass == this.minimumMass) {
+            cell.disappearsIn = 100;
+        }
+        this.level.cells.push(cell);
         this.clickTimer.reset();
     };
 

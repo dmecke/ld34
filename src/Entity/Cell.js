@@ -8,6 +8,7 @@ function Cell(level, position, velocity, mass, color)
     this.velocity = velocity;
     this.mass = mass;
     this.color = color;
+    this.disappearsIn = undefined;
 
     this.update = function()
     {
@@ -23,6 +24,15 @@ function Cell(level, position, velocity, mass, color)
         }
         if (this.position.y < 0) {
             this.position.y = this.level.game.dimensions.y - this.position.y;
+        }
+
+        if (this.disappearsIn) {
+            this.disappearsIn--;
+            console.log(this.disappearsIn);
+            if (this.disappearsIn == 0) {
+                var index = this.level.cells.indexOf(this);
+                this.level.cells.splice(index, 1);
+            }
         }
     };
 

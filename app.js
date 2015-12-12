@@ -940,7 +940,11 @@
 	        this.velocity = this.velocity.add(force);
 	        this.reduceMass(emittedMass);
 	        var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-	        this.level.cells.push(new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, 'blue'));
+	        var cell = new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, 'blue');
+	        if (this.mass == this.minimumMass) {
+	            cell.disappearsIn = 100;
+	        }
+	        this.level.cells.push(cell);
 	        this.clickTimer.reset();
 	    };
 
@@ -967,6 +971,7 @@
 	    this.velocity = velocity;
 	    this.mass = mass;
 	    this.color = color;
+	    this.disappearsIn = undefined;
 
 	    this.update = function()
 	    {
@@ -982,6 +987,15 @@
 	        }
 	        if (this.position.y < 0) {
 	            this.position.y = this.level.game.dimensions.y - this.position.y;
+	        }
+
+	        if (this.disappearsIn) {
+	            this.disappearsIn--;
+	            console.log(this.disappearsIn);
+	            if (this.disappearsIn == 0) {
+	                var index = this.level.cells.indexOf(this);
+	                this.level.cells.splice(index, 1);
+	            }
 	        }
 	    };
 
