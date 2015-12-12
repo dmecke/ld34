@@ -498,32 +498,8 @@
 
 	    this.update = function()
 	    {
-	        if (this.mouse.buttons[0] && this.clickTimer.isReady()) {
-	            var emittedMass = Math.max(0.05, this.mass * 0.05);
-	            var direction = this.mouse.position.subtract(this.position).normalize();
-	            var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
-	            this.velocity = this.velocity.add(force);
-	            this.reduceMass(emittedMass);
-	            var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-	            console.log(this.position, cellPosition, direction);
-	            this.game.cells.push(new Cell(this.game, cellPosition, force.multiply(-1), emittedMass));
-	            this.clickTimer.reset();
-	        }
-
-	        this.position = this.position.add(this.velocity);
-	        if (this.position.x > this.game.dimensions.x) {
-	            this.position.x -= this.game.dimensions.x;
-	        }
-	        if (this.position.y > this.game.dimensions.y) {
-	            this.position.y -= this.game.dimensions.y;
-	        }
-	        if (this.position.x < 0) {
-	            this.position.x = this.game.dimensions.x - this.position.x;
-	        }
-	        if (this.position.y < 0) {
-	            this.position.y = this.game.dimensions.y - this.position.y;
-	        }
-
+	        this.processUserInput()
+	        this.updatePosition();
 	        this.clickTimer.update();
 	    };
 
@@ -538,6 +514,43 @@
 	        core.strokeStyle = 'blue';
 	        core.fillStyle = 'blue';
 	        core.draw();
+	    };
+
+	    this.updatePosition = function()
+	    {
+	        this.position = this.position.add(this.velocity);
+	        if (this.position.x > this.game.dimensions.x) {
+	            this.position.x -= this.game.dimensions.x;
+	        }
+	        if (this.position.y > this.game.dimensions.y) {
+	            this.position.y -= this.game.dimensions.y;
+	        }
+	        if (this.position.x < 0) {
+	            this.position.x = this.game.dimensions.x - this.position.x;
+	        }
+	        if (this.position.y < 0) {
+	            this.position.y = this.game.dimensions.y - this.position.y;
+	        }
+	    };
+
+	    this.processUserInput = function()
+	    {
+	        if (!this.mouse.buttons[0]) {
+	            return;
+	        }
+
+	        if (!this.clickTimer.isReady()) {
+	            return;
+	        }
+
+	        var emittedMass = Math.max(0.05, this.mass * 0.05);
+	        var direction = this.mouse.position.subtract(this.position).normalize();
+	        var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
+	        this.velocity = this.velocity.add(force);
+	        this.reduceMass(emittedMass);
+	        var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
+	        this.game.cells.push(new Cell(this.game, cellPosition, force.multiply(-1), emittedMass));
+	        this.clickTimer.reset();
 	    };
 
 	    this.reduceMass = function(amount)
