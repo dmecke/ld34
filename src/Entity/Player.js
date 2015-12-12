@@ -18,10 +18,12 @@ function Player(game)
     {
         if (this.mouse.buttons[0] && this.clickTimer.isReady()) {
             var emittedMass = Math.max(0.05, this.mass * 0.05);
-            var force = this.mouse.position.subtract(this.position).multiply(-1).normalize().multiply(emittedMass).divide(this.mass);
+            var direction = this.mouse.position.subtract(this.position).normalize();
+            var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
             this.velocity = this.velocity.add(force);
             this.reduceMass(emittedMass);
-            this.game.cells.push(new Cell(this.game, this.position, force.multiply(-1), emittedMass));
+            var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
+            this.game.cells.push(new Cell(this.game, cellPosition, force.multiply(-1), emittedMass));
             this.clickTimer.reset();
         }
 
