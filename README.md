@@ -1,4 +1,4 @@
-# My Game Name
+# F-L-O-I-D
 
 This is my game for Ludum Dare 34.
 
