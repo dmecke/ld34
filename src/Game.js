@@ -2,6 +2,7 @@ context = require('./System/Context.js');
 canvas = require('./System/Canvas.js');
 Player = require('./Entity/Player.js');
 Vector = require('./Math/Vector.js');
+Cell = require('./Entity/Cell.js');
 
 function Game()
 {
@@ -12,6 +13,18 @@ function Game()
     this.run = function()
     {
         var game = this;
+
+        for (var i = 0; i < 10; i++) {
+            this.cells.push(
+                new Cell(
+                    this,
+                    new Vector(Math.random() * this.dimensions.x, Math.random() * this.dimensions.y),
+                    new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1),
+                    Math.random() * 10
+                )
+            );
+        }
+
         setInterval(function() {
             game.update();
             game.render();
