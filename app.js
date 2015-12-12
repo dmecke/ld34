@@ -47,8 +47,8 @@
 	__webpack_require__(1);
 
 	Game = __webpack_require__(5);
-	mouse = __webpack_require__(11);
-	keyboard = __webpack_require__(12);
+	mouse = __webpack_require__(12);
+	keyboard = __webpack_require__(13);
 
 	var game = new Game();
 
@@ -473,20 +473,27 @@
 
 	Vector = __webpack_require__(9);
 	Circle = __webpack_require__(10);
-	mouse = __webpack_require__(11);
+	ClickTimer = __webpack_require__(11);
+	mouse = __webpack_require__(12);
 
 	function Player()
 	{
 	    this.position = new Vector(400, 300);
-	    this.size = 10;
+	    this.velocity = new Vector(0, 0);
+	    this.mass = 10;
 	    this.mouse = mouse;
+	    this.clickTimer = new ClickTimer(30);
 
 	    this.update = function()
 	    {
-	        //this.position = this.position.add(new Vector(1, 1));
-	        //this.position = this.mouse.position;
+	        if (this.mouse.buttons[0] && this.clickTimer.isReady()) {
+	            var direction = this.mouse.position.subtract(this.position).multiply(-1).normalize();
+	            this.velocity = this.velocity.add(direction).limit(this.maxSpeed());
+	            this.clickTimer.reset();
+	        }
 
-	        //this.position = this.position.add(new Vector(x, y));
+	        this.position = this.position.add(this.velocity);
+	        this.clickTimer.update();
 	    };
 
 	    this.render = function()
@@ -496,10 +503,15 @@
 	        core.fillStyle = 'blue';
 	        core.draw();
 
-	        var shell = new Circle(this.position, this.size);
+	        var shell = new Circle(this.position, this.mass);
 	        shell.strokeStyle = 'blue';
 	        shell.draw();
 	    };
+
+	    this.maxSpeed = function()
+	    {
+	        return 1;
+	    }
 	}
 
 	module.exports = Player;
@@ -517,6 +529,40 @@
 	    this.add = function(vector)
 	    {
 	        return new Vector(this.x + vector.x, this.y + vector.y);
+	    };
+
+	    this.subtract = function(vector)
+	    {
+	        return new Vector(this.x - vector.x, this.y - vector.y);
+	    };
+
+	    this.multiply = function(multiplier)
+	    {
+	        return new Vector(this.x * multiplier, this.y * multiplier);
+	    };
+
+	    this.divide = function(divisor)
+	    {
+	        return new Vector(this.x / divisor, this.y / divisor);
+	    };
+
+	    this.length = function()
+	    {
+	        return Math.sqrt(this.x * this.x + this.y * this.y);
+	    };
+
+	    this.normalize = function()
+	    {
+	        return this.divide(this.length());
+	    };
+
+	    this.limit = function(limit)
+	    {
+	        if (this.length() <= limit) {
+	            return new Vector(this.x, this.y);
+	        }
+
+	        return this.normalize().multiply(limit);
 	    };
 	}
 
@@ -553,6 +599,34 @@
 
 /***/ },
 /* 11 */
+/***/ function(module, exports) {
+
+	function ClickTimer(maximum)
+	{
+	    this.maximum = maximum;
+	    this.current = 0;
+
+	    this.reset = function()
+	    {
+	        this.current = this.maximum;
+	    };
+
+	    this.isReady = function()
+	    {
+	        return this.current == 0;
+	    };
+
+	    this.update = function()
+	    {
+	        this.current = Math.max(0, this.current - 1);
+	    }
+	}
+
+	module.exports = ClickTimer;
+
+
+/***/ },
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(9);
@@ -584,7 +658,7 @@
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports) {
 
 	function Keyboard()
