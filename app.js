@@ -57,6 +57,8 @@
 	document.addEventListener('mousemove', function(event) { mouse.updatePosition(event); });
 	document.addEventListener('mousedown', function(event) { mouse.buttonDown(event); });
 	document.addEventListener('mouseup', function(event) { mouse.buttonUp(event); });
+	document.addEventListener('touchstart', function(event) { mouse.updatePosition(event); mouse.buttonDown(event); });
+	document.addEventListener('touchend', function(event) { mouse.buttonUp(event); });
 	document.addEventListener('keydown', function(event) { keyboard.addKey(event.keyCode); });
 	document.addEventListener('keyup', function(event) { keyboard.removeKey(event.keyCode); });
 
@@ -497,8 +499,9 @@
 
 	    this.update = function()
 	    {
-	        console.log('Menu::update');
-	        if (this.mouse.buttons[0]) {
+	        //console.log('Menu::update');
+	        console.log(this.mouse.click);
+	        if (this.mouse.click) {
 	            var level = this.levelAtPosition(this.mouse.position);
 	            if (level) {
 	                this.game.startLevel(level);
@@ -726,22 +729,34 @@
 	function Mouse()
 	{
 	    this.position = new Vector(0, 0);
-	    this.buttons = [0, 0, 0];
+	    this.click = false;
 
 	    this.updatePosition = function(event)
 	    {
 	        var canvasRect = canvas.getBoundingClientRect();
-	        this.position = new Vector(event.clientX - canvasRect.left, event.clientY - canvasRect.top);
+	        var x, y;
+	        if (event.clientX) {
+	            x = event.clientX;
+	        }
+	        if (event.clientY) {
+	            y = event.clientY;
+	        }
+	        if (event.changedTouches) {
+	            x = event.changedTouches[0].pageX;
+	            y = event.changedTouches[0].pageY;
+	        }
+
+	        this.position = new Vector(x - canvasRect.left, y - canvasRect.top);
 	    };
 
 	    this.buttonDown = function(event)
 	    {
-	        this.buttons[event.button] = 1;
+	        this.click = true;
 	    };
 
 	    this.buttonUp = function(event)
 	    {
-	        this.buttons[event.button] = 0;
+	        this.click = false;
 	    };
 	}
 
@@ -958,7 +973,7 @@
 
 	    this.processUserInput = function()
 	    {
-	        if (!this.mouse.buttons[0]) {
+	        if (!this.mouse.click) {
 	            return;
 	        }
 

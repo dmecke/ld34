@@ -35,7 +35,7 @@ function Menu(game)
     this.update = function()
     {
         console.log('Menu::update');
-        if (this.mouse.buttons[0]) {
+        if (this.mouse.click) {
             var level = this.levelAtPosition(this.mouse.position);
             if (level) {
                 this.game.startLevel(level);

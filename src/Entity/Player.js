@@ -101,7 +101,7 @@ function Player(level)
 
     this.processUserInput = function()
     {
-        if (!this.mouse.buttons[0]) {
+        if (!this.mouse.click) {
             return;
         }
 
