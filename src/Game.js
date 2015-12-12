@@ -16,7 +16,11 @@ function Game()
         console.log('Game::run');
         for (var key in levelDefinitions) {
             if (levelDefinitions.hasOwnProperty(key)) {
-                this.levels.push(new Level(this, levelDefinitions[key]));
+                var level = new Level(this, levelDefinitions[key]);
+                if (window.localStorage.getItem('level_' +  level.levelSettings.level)) {
+                    level.isFinished = true;
+                }
+                this.levels.push(level);
             }
         }
         this.showMenu();
@@ -34,6 +38,7 @@ function Game()
     this.finishLevel = function()
     {
         this.currentLevel.isFinished = true;
+        window.localStorage.setItem('level_' +  this.currentLevel.levelSettings.level, true);
         this.currentLevel.cleanup();
         this.currentLevel = undefined;
     };
