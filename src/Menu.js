@@ -67,7 +67,7 @@ function Menu(game)
         var label = new Text(level.position.add(new Vector(0, 20)), level.level);
         label.font = '52px "Gloria Hallelujah"';
         label.fillStyle = 'white';
-        label.strokeStyle = '#374959';
+        label.strokeStyle = settings.grey;
         label.lineWidth = 5;
         label.draw();
     };

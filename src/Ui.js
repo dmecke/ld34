@@ -1,10 +1,21 @@
 Vector = require('./Math/Vector.js');
 Text = require('./Graphics/Text.js');
+Rectangle = require('./Graphics/Rectangle.js');
+ClickTimer = require('./Input/ClickTimer.js');
 settings = require('./Settings.js');
+mouse = require('./Input/Mouse.js');
 
 function Ui(level)
 {
     this.level = level;
+    this.clickTimer = new ClickTimer(30);
+    this.clickTimer.reset();
+
+    this.update = function()
+    {
+        console.log('Ui::update');
+        this.clickTimer.update();
+    };
 
     this.render = function()
     {
@@ -17,6 +28,40 @@ function Ui(level)
         targetMass.textAlign = 'left';
         targetMass.fillStyle = settings.blue;
         targetMass.draw();
+
+        this.showObjectives();
+    };
+
+    this.showObjectives = function()
+    {
+        if (!this.level.showObjectives) {
+            return;
+        }
+
+        var window = new Rectangle(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2), 400, 300);
+        window.strokeStyle = settings.white;
+        window.lineWidth = 2;
+        window.fillStyle = settings.white.replace(')', ', 0.6)').replace('rgb', 'rgba');
+        window.draw();
+
+        var objectives = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 - 50), 'Grow until you have a mass of ' + this.level.levelSettings.winningConditions.mass + '!');
+        objectives.font = '24px "Gloria Hallelujah"';
+        objectives.fillStyle = 'white';
+        objectives.strokeStyle = settings.grey;
+        objectives.lineWidth = 5;
+        objectives.maxWidth = 350;
+        objectives.draw();
+
+        var clickToStart = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 + 50), 'Click to start!');
+        clickToStart.font = '14px "Gloria Hallelujah"';
+        clickToStart.fillStyle = 'white';
+        clickToStart.strokeStyle = settings.grey;
+        clickToStart.lineWidth = 3;
+        clickToStart.draw();
+
+        if (mouse.click && this.clickTimer.isReady()) {
+            this.level.showObjectives = false;
+        }
     };
 }
 

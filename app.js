@@ -48,7 +48,7 @@
 
 	Game = __webpack_require__(5);
 	mouse = __webpack_require__(13);
-	keyboard = __webpack_require__(20);
+	keyboard = __webpack_require__(21);
 
 	var game = new Game();
 
@@ -98,7 +98,7 @@
 
 
 	// module
-	exports.push([module.id, "body {\n    margin: 0;\n    background: #c6dde6;\n    font-family: 'Roboto', sans-serif;\n    color: #272727;\n}\nh1, h2 {\n    text-align: center;\n}\ncanvas {\n    background: white;\n    border: 1px solid #272727;\n    display: block;\n    margin: 50px auto;\n    width: 800px;\n    height: 600px;\n}\nfooter {\n    margin-top: 50px;\n    text-align: center;\n}\n.explanations {\n    margin: auto;\n    text-align: justify;\n    width: 800px;\n}\n", ""]);
+	exports.push([module.id, "body {\n    margin: 0;\n    background: #c6dde6;\n    font-family: 'Gloria Hallelujah', sans-serif;\n    color: #272727;\n}\nh1, h2 {\n    text-align: center;\n}\ncanvas {\n    background: white;\n    border: 1px solid #272727;\n    display: block;\n    margin: 50px auto;\n    width: 800px;\n    height: 600px;\n}\nfooter {\n    margin-top: 50px;\n    text-align: center;\n}\n.explanations {\n    margin: auto;\n    text-align: justify;\n    width: 800px;\n}\n", ""]);
 
 	// exports
 
@@ -499,8 +499,7 @@
 
 	    this.update = function()
 	    {
-	        //console.log('Menu::update');
-	        console.log(this.mouse.click);
+	        console.log('Menu::update');
 	        if (this.mouse.click) {
 	            var level = this.levelAtPosition(this.mouse.position);
 	            if (level) {
@@ -533,7 +532,7 @@
 	        var label = new Text(level.position.add(new Vector(0, 20)), level.level);
 	        label.font = '52px "Gloria Hallelujah"';
 	        label.fillStyle = 'white';
-	        label.strokeStyle = '#374959';
+	        label.strokeStyle = settings.grey;
 	        label.lineWidth = 5;
 	        label.draw();
 	    };
@@ -591,6 +590,8 @@
 	    this.strokeStyle = 'transparent';
 	    this.lineWidth = 1;
 	    this.textAlign = 'center';
+	    this.maxWidth = undefined;
+	    this.lineHeight = 38;
 
 	    this.draw = function()
 	    {
@@ -599,8 +600,26 @@
 	        Context.strokeStyle = this.strokeStyle;
 	        Context.lineWidth = this.lineWidth;
 	        Context.textAlign = this.textAlign;
-	        Context.strokeText(this.content, this.position.x, this.position.y);
-	        Context.fillText(this.content, this.position.x, this.position.y);
+
+	        var words = String(this.content).split(' ');
+	        var line = '';
+	        var y = this.position.y;
+	        for (var word = 0; word < words.length; word++) {
+	            var testLine = line + words[word] + ' ';
+	            var metrics = context.measureText(testLine);
+	            var testWidth = metrics.width;
+
+	            if (this.maxWidth && testWidth > this.maxWidth) {
+	                Context.strokeText(line, this.position.x, y);
+	                Context.fillText(line, this.position.x, y);
+	                line = words[word] + ' ';
+	                y += this.lineHeight;
+	            } else {
+	                line = testLine;
+	            }
+	        }
+	        Context.strokeText(line.trim(), this.position.x, y);
+	        Context.fillText(line.trim(), this.position.x, y);
 	    }
 	}
 
@@ -769,6 +788,8 @@
 
 	
 	Settings = {
+	    white: 'rgb(255, 255, 255)',
+	    grey: 'rgb(55, 73, 89)',
 	    blue: 'rgb(4, 97, 182)',
 	    green: 'rgb(99, 170, 51)'
 	};
@@ -796,6 +817,8 @@
 	    this.interval = undefined;
 	    this.levelSettings = levelSettings;
 	    this.background = new Image();
+	    this.showObjectives = true;
+	    this.showScore = false;
 
 	    this.start = function()
 	    {
@@ -811,6 +834,12 @@
 
 	    this.update = function()
 	    {
+	        this.ui.update();
+
+	        if (this.paused()) {
+	            return;
+	        }
+
 	        console.log('Level::update');
 	        this.player.update();
 	        for (var i = 0; i < this.cells.length; i++) {
@@ -833,7 +862,6 @@
 	    this.setup = function()
 	    {
 	        console.log('Level::setup');
-	        console.log(settings.green);
 	        for (var i = 0; i < 20; i++) {
 	            this.cells.push(
 	                new Cell(
@@ -860,6 +888,11 @@
 	    this.cleanup = function()
 	    {
 	        clearInterval(this.interval);
+	    };
+
+	    this.paused = function()
+	    {
+	        return this.showObjectives || this.showScore;
 	    };
 	}
 
@@ -1124,11 +1157,22 @@
 
 	Vector = __webpack_require__(11);
 	Text = __webpack_require__(9);
+	Rectangle = __webpack_require__(20);
+	ClickTimer = __webpack_require__(18);
 	settings = __webpack_require__(14);
+	mouse = __webpack_require__(13);
 
 	function Ui(level)
 	{
 	    this.level = level;
+	    this.clickTimer = new ClickTimer(30);
+	    this.clickTimer.reset();
+
+	    this.update = function()
+	    {
+	        console.log('Ui::update');
+	        this.clickTimer.update();
+	    };
 
 	    this.render = function()
 	    {
@@ -1141,6 +1185,40 @@
 	        targetMass.textAlign = 'left';
 	        targetMass.fillStyle = settings.blue;
 	        targetMass.draw();
+
+	        this.showObjectives();
+	    };
+
+	    this.showObjectives = function()
+	    {
+	        if (!this.level.showObjectives) {
+	            return;
+	        }
+
+	        var window = new Rectangle(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2), 400, 300);
+	        window.strokeStyle = settings.white;
+	        window.lineWidth = 2;
+	        window.fillStyle = settings.white.replace(')', ', 0.6)').replace('rgb', 'rgba');
+	        window.draw();
+
+	        var objectives = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 - 50), 'Grow until you have a mass of ' + this.level.levelSettings.winningConditions.mass + '!');
+	        objectives.font = '24px "Gloria Hallelujah"';
+	        objectives.fillStyle = 'white';
+	        objectives.strokeStyle = settings.grey;
+	        objectives.lineWidth = 5;
+	        objectives.maxWidth = 350;
+	        objectives.draw();
+
+	        var clickToStart = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 + 50), 'Click to start!');
+	        clickToStart.font = '14px "Gloria Hallelujah"';
+	        clickToStart.fillStyle = 'white';
+	        clickToStart.strokeStyle = settings.grey;
+	        clickToStart.lineWidth = 3;
+	        clickToStart.draw();
+
+	        if (mouse.click && this.clickTimer.isReady()) {
+	            this.level.showObjectives = false;
+	        }
 	    };
 	}
 
@@ -1149,6 +1227,37 @@
 
 /***/ },
 /* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	Context = __webpack_require__(7);
+
+	function Rectangle(position, width, height)
+	{
+	    this.position = position;
+	    this.width = width;
+	    this.height = height;
+	    this.lineWidth = 1;
+	    this.fillStyle = 'transparent';
+	    this.strokeStyle = 'transparent';
+
+	    this.draw = function()
+	    {
+	        Context.fillStyle = this.fillStyle;
+	        Context.strokeStyle = this.strokeStyle;
+	        Context.lineWidth = this.lineWidth;
+	        Context.beginPath();
+	        Context.rect(this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
+	        Context.stroke();
+	        Context.fill();
+	        Context.closePath();
+	    }
+	}
+
+	module.exports = Rectangle;
+
+
+/***/ },
+/* 21 */
 /***/ function(module, exports) {
 
 	function Keyboard()

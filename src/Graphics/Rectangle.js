@@ -5,6 +5,7 @@ function Rectangle(position, width, height)
     this.position = position;
     this.width = width;
     this.height = height;
+    this.lineWidth = 1;
     this.fillStyle = 'transparent';
     this.strokeStyle = 'transparent';
 
@@ -12,6 +13,7 @@ function Rectangle(position, width, height)
     {
         Context.fillStyle = this.fillStyle;
         Context.strokeStyle = this.strokeStyle;
+        Context.lineWidth = this.lineWidth;
         Context.beginPath();
         Context.rect(this.position.x - this.width / 2, this.position.y - this.height / 2, this.width, this.height);
         Context.stroke();

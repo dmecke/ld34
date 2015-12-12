@@ -14,6 +14,8 @@ function Level(game, levelSettings)
     this.interval = undefined;
     this.levelSettings = levelSettings;
     this.background = new Image();
+    this.showObjectives = true;
+    this.showScore = false;
 
     this.start = function()
     {
@@ -29,6 +31,12 @@ function Level(game, levelSettings)
 
     this.update = function()
     {
+        this.ui.update();
+
+        if (this.paused()) {
+            return;
+        }
+
         console.log('Level::update');
         this.player.update();
         for (var i = 0; i < this.cells.length; i++) {
@@ -51,7 +59,6 @@ function Level(game, levelSettings)
     this.setup = function()
     {
         console.log('Level::setup');
-        console.log(settings.green);
         for (var i = 0; i < 20; i++) {
             this.cells.push(
                 new Cell(
@@ -78,6 +85,11 @@ function Level(game, levelSettings)
     this.cleanup = function()
     {
         clearInterval(this.interval);
+    };
+
+    this.paused = function()
+    {
+        return this.showObjectives || this.showScore;
     };
 }
 
