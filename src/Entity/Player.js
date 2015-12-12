@@ -21,11 +21,24 @@ function Player(game)
             var force = this.mouse.position.subtract(this.position).multiply(-1).normalize().multiply(emittedMass).divide(this.mass);
             this.velocity = this.velocity.add(force);
             this.reduceMass(emittedMass);
-            this.game.cells.push(new Cell(this.position, force.multiply(-1), emittedMass));
+            this.game.cells.push(new Cell(this.game, this.position, force.multiply(-1), emittedMass));
             this.clickTimer.reset();
         }
 
         this.position = this.position.add(this.velocity);
+        if (this.position.x > this.game.dimensions.x) {
+            this.position.x -= this.game.dimensions.x;
+        }
+        if (this.position.y > this.game.dimensions.y) {
+            this.position.y -= this.game.dimensions.y;
+        }
+        if (this.position.x < 0) {
+            this.position.x = this.game.dimensions.x - this.position.x;
+        }
+        if (this.position.y < 0) {
+            this.position.y = this.game.dimensions.y - this.position.y;
+        }
+
         this.clickTimer.update();
     };
 

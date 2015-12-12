@@ -47,8 +47,8 @@
 	__webpack_require__(1);
 
 	Game = __webpack_require__(5);
-	mouse = __webpack_require__(12);
-	keyboard = __webpack_require__(13);
+	mouse = __webpack_require__(13);
+	keyboard = __webpack_require__(14);
 
 	var game = new Game();
 
@@ -418,10 +418,13 @@
 	context = __webpack_require__(6);
 	canvas = __webpack_require__(7);
 	Player = __webpack_require__(8);
+	Vector = __webpack_require__(9);
 
 	function Game()
 	{
-	    this.player = new Player();
+	    this.player = new Player(this);
+	    this.dimensions = new Vector(canvas.width, canvas.height);
+	    this.cells = [];
 
 	    this.run = function()
 	    {
@@ -435,12 +438,18 @@
 	    this.update = function()
 	    {
 	        this.player.update();
+	        for (var i = 0; i < this.cells.length; i++) {
+	            this.cells[i].update();
+	        }
 	    };
 
 	    this.render = function()
 	    {
 	        context.clearRect(0, 0, canvas.width, canvas.height);
 	        this.player.render();
+	        for (var i = 0; i < this.cells.length; i++) {
+	            this.cells[i].render();
+	        }
 	    };
 	}
 
@@ -473,32 +482,51 @@
 
 	Vector = __webpack_require__(9);
 	Circle = __webpack_require__(10);
-	ClickTimer = __webpack_require__(11);
-	mouse = __webpack_require__(12);
+	Cell = __webpack_require__(11);
+	ClickTimer = __webpack_require__(12);
+	mouse = __webpack_require__(13);
 
-	function Player()
+	function Player(game)
 	{
+	    this.game = game;
 	    this.position = new Vector(400, 300);
 	    this.velocity = new Vector(0, 0);
-	    this.mass = 10;
+	    this.minimumMass = 10;
+	    this.mass = 100;//this.minimumMass;
 	    this.mouse = mouse;
 	    this.clickTimer = new ClickTimer(30);
 
 	    this.update = function()
 	    {
 	        if (this.mouse.buttons[0] && this.clickTimer.isReady()) {
-	            var direction = this.mouse.position.subtract(this.position).multiply(-1).normalize();
-	            this.velocity = this.velocity.add(direction).limit(this.maxSpeed());
+	            var emittedMass = Math.max(0.05, this.mass * 0.05);
+	            var force = this.mouse.position.subtract(this.position).multiply(-1).normalize().multiply(emittedMass).divide(this.mass);
+	            this.velocity = this.velocity.add(force);
+	            this.reduceMass(emittedMass);
+	            this.game.cells.push(new Cell(this.game, this.position, force.multiply(-1), emittedMass));
 	            this.clickTimer.reset();
 	        }
 
 	        this.position = this.position.add(this.velocity);
+	        if (this.position.x > this.game.dimensions.x) {
+	            this.position.x -= this.game.dimensions.x;
+	        }
+	        if (this.position.y > this.game.dimensions.y) {
+	            this.position.y -= this.game.dimensions.y;
+	        }
+	        if (this.position.x < 0) {
+	            this.position.x = this.game.dimensions.x - this.position.x;
+	        }
+	        if (this.position.y < 0) {
+	            this.position.y = this.game.dimensions.y - this.position.y;
+	        }
+
 	        this.clickTimer.update();
 	    };
 
 	    this.render = function()
 	    {
-	        var core = new Circle(this.position, 10);
+	        var core = new Circle(this.position, this.minimumMass);
 	        core.strokeStyle = 'blue';
 	        core.fillStyle = 'blue';
 	        core.draw();
@@ -508,10 +536,10 @@
 	        shell.draw();
 	    };
 
-	    this.maxSpeed = function()
+	    this.reduceMass = function(amount)
 	    {
-	        return 1;
-	    }
+	        this.mass = Math.max(this.minimumMass, this.mass - amount);
+	    };
 	}
 
 	module.exports = Player;
@@ -599,6 +627,48 @@
 
 /***/ },
 /* 11 */
+/***/ function(module, exports, __webpack_require__) {
+
+	Vector = __webpack_require__(9);
+	Circle = __webpack_require__(10);
+
+	function Cell(game, position, velocity, mass)
+	{
+	    this.game = game;
+	    this.position = position;
+	    this.velocity = velocity;
+	    this.mass = mass;
+
+	    this.update = function()
+	    {
+	        this.position = this.position.add(this.velocity);
+	        if (this.position.x > this.game.dimensions.x) {
+	            this.position.x -= this.game.dimensions.x;
+	        }
+	        if (this.position.y > this.game.dimensions.y) {
+	            this.position.y -= this.game.dimensions.y;
+	        }
+	        if (this.position.x < 0) {
+	            this.position.x = this.game.dimensions.x - this.position.x;
+	        }
+	        if (this.position.y < 0) {
+	            this.position.y = this.game.dimensions.y - this.position.y;
+	        }
+	    };
+
+	    this.render = function()
+	    {
+	        var shell = new Circle(this.position, this.mass);
+	        shell.strokeStyle = 'blue';
+	        shell.draw();
+	    };
+	}
+
+	module.exports = Cell;
+
+
+/***/ },
+/* 12 */
 /***/ function(module, exports) {
 
 	function ClickTimer(maximum)
@@ -626,7 +696,7 @@
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(9);
@@ -658,7 +728,7 @@
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports) {
 
 	function Keyboard()

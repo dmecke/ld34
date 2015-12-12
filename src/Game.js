@@ -1,10 +1,12 @@
 context = require('./System/Context.js');
 canvas = require('./System/Canvas.js');
 Player = require('./Entity/Player.js');
+Vector = require('./Math/Vector.js');
 
 function Game()
 {
     this.player = new Player(this);
+    this.dimensions = new Vector(canvas.width, canvas.height);
     this.cells = [];
 
     this.run = function()
