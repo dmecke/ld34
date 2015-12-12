@@ -16,6 +16,7 @@ function Level(game, levelSettings)
     this.background = new Image();
     this.showObjectives = true;
     this.showScore = false;
+    this.isFinished = false;
 
     this.start = function()
     {
@@ -89,6 +90,22 @@ function Level(game, levelSettings)
     this.paused = function()
     {
         return this.showObjectives || this.showScore;
+    };
+
+    this.isLocked = function()
+    {
+        return this.levelSettings.level > 1 && this.previousLevel().isFinished == false;
+    };
+
+    this.previousLevel = function()
+    {
+        for (var i = 0; i < this.game.levels.length; i++) {
+            if (this.game.levels[i].levelSettings.level == this.levelSettings.level - 1) {
+                return this.game.levels[i];
+            }
+        }
+
+        return null;
     };
 }
 

@@ -426,12 +426,18 @@
 	function Game()
 	{
 	    this.menu = new Menu(this);
-	    this.level = undefined;
+	    this.levels = [];
+	    this.currentLevel = undefined;
 	    this.dimensions = new Vector(canvas.width, canvas.height);
 
 	    this.run = function()
 	    {
 	        console.log('Game::run');
+	        for (var key in levelDefinitions) {
+	            if (levelDefinitions.hasOwnProperty(key)) {
+	                this.levels.push(new Level(this, levelDefinitions[key]));
+	            }
+	        }
 	        this.showMenu();
 	    };
 
@@ -440,14 +446,15 @@
 	        console.log('Game::startLevel');
 	        this.menu.hide();
 
-	        this.level = new Level(this, level);
-	        this.level.start();
+	        this.currentLevel = level;
+	        this.currentLevel.start();
 	    };
 
 	    this.finishLevel = function()
 	    {
-	        this.level.cleanup();
-	        this.level = undefined;
+	        this.currentLevel.isFinished = true;
+	        this.currentLevel.cleanup();
+	        this.currentLevel = undefined;
 	    };
 
 	    this.showMenu = function()
@@ -477,12 +484,14 @@
 	    this.mouse = mouse;
 	    this.interval = undefined;
 	    this.background = new Image();
+	    this.lock = new Image();
 
 	    this.show = function()
 	    {
 	        console.log('Menu::show');
 
 	        this.background.src = 'img/startscreen.jpg';
+	        this.lock.src = 'img/lock.png';
 
 	        var menu = this;
 	        this.interval = setInterval(function() {
@@ -502,7 +511,7 @@
 	        console.log('Menu::update');
 	        if (this.mouse.click) {
 	            var level = this.levelAtPosition(this.mouse.position);
-	            if (level) {
+	            if (level && !level.isLocked()) {
 	                this.game.startLevel(level);
 	            }
 	        }
@@ -514,37 +523,36 @@
 
 	        context.drawImage(this.background, 0, 0);
 
-	        for (var key in levelDefinitions) {
-	            if (levelDefinitions.hasOwnProperty(key)) {
-	                this.drawLevel(levelDefinitions[key]);
-	            }
+	        for (var i = 0; i < this.game.levels.length; i++) {
+	            this.drawLevel(this.game.levels[i]);
 	        }
 	    };
 
 	    this.drawLevel = function(level)
 	    {
-	        var circle = new Circle(level.position, 50);
-	        circle.strokeStyle = 'white';
+	        var circle = new Circle(level.levelSettings.position, 50);
+	        circle.strokeStyle = settings.white;
 	        circle.lineWidth = 2;
 	        circle.fillStyle = settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba');
 	        circle.draw();
 
-	        var label = new Text(level.position.add(new Vector(0, 20)), level.level);
-	        label.font = '52px "Gloria Hallelujah"';
-	        label.fillStyle = 'white';
-	        label.strokeStyle = settings.grey;
-	        label.lineWidth = 5;
-	        label.draw();
+	        if (level.isLocked()) {
+	            context.drawImage(this.lock, level.levelSettings.position.x - 29, level.levelSettings.position.y - 44);
+	        } else {
+	            var label = new Text(level.levelSettings.position.add(new Vector(0, 20)), level.levelSettings.level);
+	            label.font = '52px "Gloria Hallelujah"';
+	            label.fillStyle = settings.white;
+	            label.strokeStyle = settings.grey;
+	            label.lineWidth = 8;
+	            label.draw();
+	        }
 	    };
 
 	    this.levelAtPosition = function(position)
 	    {
-	        for (var key in levelDefinitions) {
-	            if (levelDefinitions.hasOwnProperty(key)) {
-	                var level = levelDefinitions[key];
-	                if (level.position.distanceTo(position) <= 50) {
-	                    return level;
-	                }
+	        for (var i = 0; i < this.game.levels.length; i++) {
+	            if (this.game.levels[i].levelSettings.position.distanceTo(position) <= 50) {
+	                return this.game.levels[i];
 	            }
 	        }
 
@@ -786,7 +794,6 @@
 /* 14 */
 /***/ function(module, exports) {
 
-	
 	Settings = {
 	    white: 'rgb(255, 255, 255)',
 	    grey: 'rgb(55, 73, 89)',
@@ -819,6 +826,7 @@
 	    this.background = new Image();
 	    this.showObjectives = true;
 	    this.showScore = false;
+	    this.isFinished = false;
 
 	    this.start = function()
 	    {
@@ -892,6 +900,22 @@
 	    this.paused = function()
 	    {
 	        return this.showObjectives || this.showScore;
+	    };
+
+	    this.isLocked = function()
+	    {
+	        return this.levelSettings.level > 1 && this.previousLevel().isFinished == false;
+	    };
+
+	    this.previousLevel = function()
+	    {
+	        for (var i = 0; i < this.game.levels.length; i++) {
+	            if (this.game.levels[i].levelSettings.level == this.levelSettings.level - 1) {
+	                return this.game.levels[i];
+	            }
+	        }
+
+	        return null;
 	    };
 	}
 

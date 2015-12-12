@@ -1,4 +1,3 @@
-
 Settings = {
     white: 'rgb(255, 255, 255)',
     grey: 'rgb(55, 73, 89)',

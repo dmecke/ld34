@@ -7,12 +7,18 @@ canvas = require('./System/Canvas.js');
 function Game()
 {
     this.menu = new Menu(this);
-    this.level = undefined;
+    this.levels = [];
+    this.currentLevel = undefined;
     this.dimensions = new Vector(canvas.width, canvas.height);
 
     this.run = function()
     {
         console.log('Game::run');
+        for (var key in levelDefinitions) {
+            if (levelDefinitions.hasOwnProperty(key)) {
+                this.levels.push(new Level(this, levelDefinitions[key]));
+            }
+        }
         this.showMenu();
     };
 
@@ -21,14 +27,15 @@ function Game()
         console.log('Game::startLevel');
         this.menu.hide();
 
-        this.level = new Level(this, level);
-        this.level.start();
+        this.currentLevel = level;
+        this.currentLevel.start();
     };
 
     this.finishLevel = function()
     {
-        this.level.cleanup();
-        this.level = undefined;
+        this.currentLevel.isFinished = true;
+        this.currentLevel.cleanup();
+        this.currentLevel = undefined;
     };
 
     this.showMenu = function()

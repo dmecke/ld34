@@ -12,12 +12,14 @@ function Menu(game)
     this.mouse = mouse;
     this.interval = undefined;
     this.background = new Image();
+    this.lock = new Image();
 
     this.show = function()
     {
         console.log('Menu::show');
 
         this.background.src = 'img/startscreen.jpg';
+        this.lock.src = 'img/lock.png';
 
         var menu = this;
         this.interval = setInterval(function() {
@@ -37,7 +39,7 @@ function Menu(game)
         console.log('Menu::update');
         if (this.mouse.click) {
             var level = this.levelAtPosition(this.mouse.position);
-            if (level) {
+            if (level && !level.isLocked()) {
                 this.game.startLevel(level);
             }
         }
@@ -49,37 +51,36 @@ function Menu(game)
 
         context.drawImage(this.background, 0, 0);
 
-        for (var key in levelDefinitions) {
-            if (levelDefinitions.hasOwnProperty(key)) {
-                this.drawLevel(levelDefinitions[key]);
-            }
+        for (var i = 0; i < this.game.levels.length; i++) {
+            this.drawLevel(this.game.levels[i]);
         }
     };
 
     this.drawLevel = function(level)
     {
-        var circle = new Circle(level.position, 50);
-        circle.strokeStyle = 'white';
+        var circle = new Circle(level.levelSettings.position, 50);
+        circle.strokeStyle = settings.white;
         circle.lineWidth = 2;
         circle.fillStyle = settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba');
         circle.draw();
 
-        var label = new Text(level.position.add(new Vector(0, 20)), level.level);
-        label.font = '52px "Gloria Hallelujah"';
-        label.fillStyle = 'white';
-        label.strokeStyle = settings.grey;
-        label.lineWidth = 5;
-        label.draw();
+        if (level.isLocked()) {
+            context.drawImage(this.lock, level.levelSettings.position.x - 29, level.levelSettings.position.y - 44);
+        } else {
+            var label = new Text(level.levelSettings.position.add(new Vector(0, 20)), level.levelSettings.level);
+            label.font = '52px "Gloria Hallelujah"';
+            label.fillStyle = settings.white;
+            label.strokeStyle = settings.grey;
+            label.lineWidth = 8;
+            label.draw();
+        }
     };
 
     this.levelAtPosition = function(position)
     {
-        for (var key in levelDefinitions) {
-            if (levelDefinitions.hasOwnProperty(key)) {
-                var level = levelDefinitions[key];
-                if (level.position.distanceTo(position) <= 50) {
-                    return level;
-                }
+        for (var i = 0; i < this.game.levels.length; i++) {
+            if (this.game.levels[i].levelSettings.position.distanceTo(position) <= 50) {
+                return this.game.levels[i];
             }
         }
 
