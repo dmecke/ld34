@@ -25,15 +25,48 @@ function Player(level)
 
     this.render = function()
     {
-        var shell = new Circle(this.position, this.mass);
-        shell.strokeStyle = 'blue';
-        shell.fillStyle = 'lightblue';
-        shell.draw();
+        this.draw('lightblue', this.mass);
+        this.draw('blue', this.minimumMass);
+    };
 
-        var core = new Circle(this.position, this.minimumMass);
-        core.strokeStyle = 'blue';
-        core.fillStyle = 'blue';
-        core.draw();
+    this.draw = function(fillStyle, radius)
+    {
+        var dimensions = this.level.game.dimensions;
+
+        this.drawElement(this.position, fillStyle, radius);
+        if (this.position.x - radius < 0) {
+            this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y), fillStyle, radius);
+        }
+        if (this.position.y - radius < 0) {
+            this.drawElement(new Vector(this.position.x, dimensions.y + this.position.y), fillStyle, radius);
+        }
+        if (this.position.x + radius > dimensions.x) {
+            this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y), fillStyle, radius);
+        }
+        if (this.position.y + radius > dimensions.y) {
+            this.drawElement(new Vector(this.position.x, this.position.y - dimensions.y), fillStyle, radius);
+        }
+
+        if (this.position.x - radius < 0 && this.position.y - radius < 0) {
+            this.drawElement(new Vector(dimensions.x + this.position.x, dimensions.y + this.position.y), fillStyle, radius);
+        }
+        if (this.position.x - radius < 0 && this.position.y + radius > dimensions.y) {
+            this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y - dimensions.y), fillStyle, radius);
+        }
+        if (this.position.x + radius > dimensions.x && this.position.y - radius < 0) {
+            this.drawElement(new Vector(this.position.x - dimensions.x, dimensions.y + this.position.y), fillStyle, radius);
+        }
+        if (this.position.x + radius > dimensions.x && this.position.y + radius > dimensions.y) {
+            this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y - dimensions.y), fillStyle, radius);
+        }
+    };
+
+    this.drawElement = function(position, fillStyle, radius)
+    {
+        var circle = new Circle(position, radius);
+        circle.strokeStyle = 'blue';
+        circle.fillStyle = fillStyle;
+        circle.draw();
     };
 
     this.checkCollision = function()
