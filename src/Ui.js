@@ -1,20 +1,16 @@
 Vector = require('./Math/Vector.js');
 Text = require('./Graphics/Text.js');
 Rectangle = require('./Graphics/Rectangle.js');
-ClickTimer = require('./Input/ClickTimer.js');
 settings = require('./Settings.js');
 mouse = require('./Input/Mouse.js');
 
 function Ui(level)
 {
     this.level = level;
-    this.clickTimer = new ClickTimer(30);
-    this.clickTimer.reset();
 
     this.update = function()
     {
         console.log('Ui::update');
-        this.clickTimer.update();
     };
 
     this.render = function()
@@ -51,7 +47,7 @@ function Ui(level)
 
         this.drawContinueText('Click to start!');
 
-        if (mouse.click && this.clickTimer.isReady()) {
+        if (mouse.clicked()) {
             this.level.showObjectives = false;
         }
     };
@@ -74,7 +70,7 @@ function Ui(level)
 
         this.drawContinueText('Click to return to main menu!');
 
-        if (mouse.click && this.clickTimer.isReady()) {
+        if (mouse.clicked()) {
             this.level.game.finishLevel();
             this.level.game.showMenu();
         }

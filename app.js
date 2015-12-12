@@ -418,7 +418,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	Menu = __webpack_require__(6);
-	Level = __webpack_require__(15);
+	Level = __webpack_require__(16);
 	Vector = __webpack_require__(11);
 	levelDefinitions = __webpack_require__(12);
 	canvas = __webpack_require__(8);
@@ -476,7 +476,7 @@
 	Vector = __webpack_require__(11);
 	levelDefinitions = __webpack_require__(12);
 	mouse = __webpack_require__(13);
-	settings = __webpack_require__(14);
+	settings = __webpack_require__(15);
 
 	function Menu(game)
 	{
@@ -509,7 +509,7 @@
 	    this.update = function()
 	    {
 	        console.log('Menu::update');
-	        if (this.mouse.click) {
+	        if (this.mouse.clicked()) {
 	            var level = this.levelAtPosition(this.mouse.position);
 	            if (level && !level.isLocked()) {
 	                this.game.startLevel(level);
@@ -750,6 +750,7 @@
 /* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
+	Timer = __webpack_require__(14);
 	Vector = __webpack_require__(11);
 	canvas = __webpack_require__(8);
 
@@ -757,6 +758,7 @@
 	{
 	    this.position = new Vector(0, 0);
 	    this.click = false;
+	    this.timer = new Timer(30);
 
 	    this.updatePosition = function(event)
 	    {
@@ -785,13 +787,56 @@
 	    {
 	        this.click = false;
 	    };
+
+	    this.clicked = function()
+	    {
+	        var clicked = this.click && this.timer.isReady();
+	        if (clicked) {
+	            this.timer.reset();
+	        }
+
+	        return clicked;
+	    };
 	}
 
-	module.exports = new Mouse();
+	var mouse = new Mouse();
+	setInterval(function() {
+	    mouse.timer.update();
+	}, 1 / 30);
+
+	module.exports = mouse;
 
 
 /***/ },
 /* 14 */
+/***/ function(module, exports) {
+
+	function Timer(maximum)
+	{
+	    this.maximum = maximum;
+	    this.current = maximum;
+
+	    this.reset = function()
+	    {
+	        this.current = this.maximum;
+	    };
+
+	    this.isReady = function()
+	    {
+	        return this.current == 0;
+	    };
+
+	    this.update = function()
+	    {
+	        this.current = Math.max(0, this.current - 1);
+	    };
+	}
+
+	module.exports = Timer;
+
+
+/***/ },
+/* 15 */
 /***/ function(module, exports) {
 
 	Settings = {
@@ -805,15 +850,15 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	context = __webpack_require__(7);
-	Player = __webpack_require__(16);
+	Player = __webpack_require__(17);
 	Vector = __webpack_require__(11);
-	Cell = __webpack_require__(17);
+	Cell = __webpack_require__(18);
 	Ui = __webpack_require__(19);
-	settings = __webpack_require__(14);
+	settings = __webpack_require__(15);
 
 	function Level(game, levelSettings)
 	{
@@ -923,15 +968,14 @@
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
 	Circle = __webpack_require__(10);
-	Cell = __webpack_require__(17);
-	ClickTimer = __webpack_require__(18);
+	Cell = __webpack_require__(18);
 	mouse = __webpack_require__(13);
-	settings = __webpack_require__(14);
+	settings = __webpack_require__(15);
 
 	function Player(level)
 	{
@@ -941,15 +985,12 @@
 	    this.minimumMass = 10;
 	    this.mass = this.minimumMass;
 	    this.mouse = mouse;
-	    this.clickTimer = new ClickTimer(30);
-	    this.clickTimer.reset();
 
 	    this.update = function()
 	    {
 	        this.checkCollision();
 	        this.processUserInput();
 	        this.updatePosition();
-	        this.clickTimer.update();
 	    };
 
 	    this.render = function()
@@ -1029,11 +1070,7 @@
 
 	    this.processUserInput = function()
 	    {
-	        if (!this.mouse.click) {
-	            return;
-	        }
-
-	        if (!this.clickTimer.isReady()) {
+	        if (!this.mouse.clicked()) {
 	            return;
 	        }
 
@@ -1048,7 +1085,6 @@
 	            cell.disappearsIn = 100;
 	        }
 	        this.level.cells.push(cell);
-	        this.clickTimer.reset();
 	    };
 
 	    this.reduceMass = function(amount)
@@ -1061,7 +1097,7 @@
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
@@ -1147,54 +1183,22 @@
 
 
 /***/ },
-/* 18 */
-/***/ function(module, exports) {
-
-	function ClickTimer(maximum)
-	{
-	    this.maximum = maximum;
-	    this.current = 0;
-
-	    this.reset = function()
-	    {
-	        this.current = this.maximum;
-	    };
-
-	    this.isReady = function()
-	    {
-	        return this.current == 0;
-	    };
-
-	    this.update = function()
-	    {
-	        this.current = Math.max(0, this.current - 1);
-	    }
-	}
-
-	module.exports = ClickTimer;
-
-
-/***/ },
 /* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
 	Text = __webpack_require__(9);
 	Rectangle = __webpack_require__(20);
-	ClickTimer = __webpack_require__(18);
-	settings = __webpack_require__(14);
+	settings = __webpack_require__(15);
 	mouse = __webpack_require__(13);
 
 	function Ui(level)
 	{
 	    this.level = level;
-	    this.clickTimer = new ClickTimer(30);
-	    this.clickTimer.reset();
 
 	    this.update = function()
 	    {
 	        console.log('Ui::update');
-	        this.clickTimer.update();
 	    };
 
 	    this.render = function()
@@ -1231,7 +1235,7 @@
 
 	        this.drawContinueText('Click to start!');
 
-	        if (mouse.click && this.clickTimer.isReady()) {
+	        if (mouse.clicked()) {
 	            this.level.showObjectives = false;
 	        }
 	    };
@@ -1254,7 +1258,7 @@
 
 	        this.drawContinueText('Click to return to main menu!');
 
-	        if (mouse.click && this.clickTimer.isReady()) {
+	        if (mouse.clicked()) {
 	            this.level.game.finishLevel();
 	            this.level.game.showMenu();
 	        }

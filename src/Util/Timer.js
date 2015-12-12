@@ -1,7 +1,7 @@
-function ClickTimer(maximum)
+function Timer(maximum)
 {
     this.maximum = maximum;
-    this.current = 0;
+    this.current = maximum;
 
     this.reset = function()
     {
@@ -16,7 +16,7 @@ function ClickTimer(maximum)
     this.update = function()
     {
         this.current = Math.max(0, this.current - 1);
-    }
+    };
 }
 
-module.exports = ClickTimer;
+module.exports = Timer;

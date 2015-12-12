@@ -1,7 +1,6 @@
 Vector = require('./../Math/Vector.js');
 Circle = require('./../Graphics/Circle.js');
 Cell = require('./Cell.js');
-ClickTimer = require('./../Input/ClickTimer.js');
 mouse = require('./../Input/Mouse.js');
 settings = require('./../Settings.js');
 
@@ -13,15 +12,12 @@ function Player(level)
     this.minimumMass = 10;
     this.mass = this.minimumMass;
     this.mouse = mouse;
-    this.clickTimer = new ClickTimer(30);
-    this.clickTimer.reset();
 
     this.update = function()
     {
         this.checkCollision();
         this.processUserInput();
         this.updatePosition();
-        this.clickTimer.update();
     };
 
     this.render = function()
@@ -101,11 +97,7 @@ function Player(level)
 
     this.processUserInput = function()
     {
-        if (!this.mouse.click) {
-            return;
-        }
-
-        if (!this.clickTimer.isReady()) {
+        if (!this.mouse.clicked()) {
             return;
         }
 
@@ -120,7 +112,6 @@ function Player(level)
             cell.disappearsIn = 100;
         }
         this.level.cells.push(cell);
-        this.clickTimer.reset();
     };
 
     this.reduceMass = function(amount)

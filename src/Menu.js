@@ -37,7 +37,7 @@ function Menu(game)
     this.update = function()
     {
         console.log('Menu::update');
-        if (this.mouse.click) {
+        if (this.mouse.clicked()) {
             var level = this.levelAtPosition(this.mouse.position);
             if (level && !level.isLocked()) {
                 this.game.startLevel(level);

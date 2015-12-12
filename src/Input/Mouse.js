@@ -1,3 +1,4 @@
+Timer = require('./../Util/Timer.js');
 Vector = require('./../Math/Vector.js');
 canvas = require('./../System/Canvas.js');
 
@@ -5,6 +6,7 @@ function Mouse()
 {
     this.position = new Vector(0, 0);
     this.click = false;
+    this.timer = new Timer(30);
 
     this.updatePosition = function(event)
     {
@@ -33,6 +35,21 @@ function Mouse()
     {
         this.click = false;
     };
+
+    this.clicked = function()
+    {
+        var clicked = this.click && this.timer.isReady();
+        if (clicked) {
+            this.timer.reset();
+        }
+
+        return clicked;
+    };
 }
 
-module.exports = new Mouse();
+var mouse = new Mouse();
+setInterval(function() {
+    mouse.timer.update();
+}, 1 / 30);
+
+module.exports = mouse;
