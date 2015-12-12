@@ -28,6 +28,14 @@ function Vector(x, y)
         return Math.sqrt(this.x * this.x + this.y * this.y);
     };
 
+    this.distanceTo = function(vector)
+    {
+        var diffX = this.x - vector.x;
+        var diffY = this.y - vector.y;
+
+        return Math.sqrt(diffX * diffX + diffY * diffY);
+    };
+
     this.normalize = function()
     {
         return this.divide(this.length());

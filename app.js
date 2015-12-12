@@ -498,7 +498,8 @@
 
 	    this.update = function()
 	    {
-	        this.processUserInput()
+	        this.checkCollision();
+	        this.processUserInput();
 	        this.updatePosition();
 	        this.clickTimer.update();
 	    };
@@ -514,6 +515,17 @@
 	        core.strokeStyle = 'blue';
 	        core.fillStyle = 'blue';
 	        core.draw();
+	    };
+
+	    this.checkCollision = function()
+	    {
+	        for (var i = 0; i < this.game.cells.length; i++) {
+	            var cell = this.game.cells[i];
+	            if (cell.position.distanceTo(this.position) < this.mass + cell.mass) {
+	                this.mass += cell.mass;
+	                this.game.cells.splice(i, 1);
+	            }
+	        }
 	    };
 
 	    this.updatePosition = function()
@@ -594,6 +606,14 @@
 	    this.length = function()
 	    {
 	        return Math.sqrt(this.x * this.x + this.y * this.y);
+	    };
+
+	    this.distanceTo = function(vector)
+	    {
+	        var diffX = this.x - vector.x;
+	        var diffY = this.y - vector.y;
+
+	        return Math.sqrt(diffX * diffX + diffY * diffY);
 	    };
 
 	    this.normalize = function()

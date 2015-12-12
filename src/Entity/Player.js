@@ -16,6 +16,7 @@ function Player(game)
 
     this.update = function()
     {
+        this.checkCollision();
         this.processUserInput();
         this.updatePosition();
         this.clickTimer.update();
@@ -32,6 +33,17 @@ function Player(game)
         core.strokeStyle = 'blue';
         core.fillStyle = 'blue';
         core.draw();
+    };
+
+    this.checkCollision = function()
+    {
+        for (var i = 0; i < this.game.cells.length; i++) {
+            var cell = this.game.cells[i];
+            if (cell.position.distanceTo(this.position) < this.mass + cell.mass) {
+                this.mass += cell.mass;
+                this.game.cells.splice(i, 1);
+            }
+        }
     };
 
     this.updatePosition = function()
