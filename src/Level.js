@@ -77,8 +77,7 @@ function Level(game, levelSettings)
     this.checkWinningConditions = function()
     {
         if (this.player.mass >= this.levelSettings.winningConditions.mass) {
-            this.game.finishLevel();
-            this.game.showMenu();
+            this.showScore = true;
         }
     };
 
