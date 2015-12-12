@@ -7,15 +7,18 @@ function Player()
 {
     this.position = new Vector(400, 300);
     this.velocity = new Vector(0, 0);
-    this.mass = 10;
+    this.minimumMass = 10;
+    this.mass = this.minimumMass;
     this.mouse = mouse;
     this.clickTimer = new ClickTimer(30);
 
     this.update = function()
     {
         if (this.mouse.buttons[0] && this.clickTimer.isReady()) {
-            var direction = this.mouse.position.subtract(this.position).multiply(-1).normalize();
-            this.velocity = this.velocity.add(direction).limit(this.maxSpeed());
+            var emittedMass = Math.max(0.01, this.mass * 0.01);
+            var force = this.mouse.position.subtract(this.position).multiply(-1).normalize().multiply(emittedMass);
+            this.velocity = this.velocity.add(force);
+            this.reduceMass(emittedMass);
             this.clickTimer.reset();
         }
 
@@ -25,7 +28,7 @@ function Player()
 
     this.render = function()
     {
-        var core = new Circle(this.position, 10);
+        var core = new Circle(this.position, this.minimumMass);
         core.strokeStyle = 'blue';
         core.fillStyle = 'blue';
         core.draw();
@@ -35,10 +38,10 @@ function Player()
         shell.draw();
     };
 
-    this.maxSpeed = function()
+    this.reduceMass = function(amount)
     {
-        return 1;
-    }
+        this.mass = Math.max(this.minimumMass, this.mass - amount);
+    };
 }
 
 module.exports = Player;
