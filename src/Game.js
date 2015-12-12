@@ -4,7 +4,8 @@ Player = require('./Entity/Player.js');
 
 function Game()
 {
-    this.player = new Player();
+    this.player = new Player(this);
+    this.cells = [];
 
     this.run = function()
     {
@@ -18,12 +19,18 @@ function Game()
     this.update = function()
     {
         this.player.update();
+        for (var i = 0; i < this.cells.length; i++) {
+            this.cells[i].update();
+        }
     };
 
     this.render = function()
     {
         context.clearRect(0, 0, canvas.width, canvas.height);
         this.player.render();
+        for (var i = 0; i < this.cells.length; i++) {
+            this.cells[i].render();
+        }
     };
 }
 
