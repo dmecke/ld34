@@ -44,14 +44,15 @@ function Player(game)
 
     this.render = function()
     {
+        var shell = new Circle(this.position, this.mass);
+        shell.strokeStyle = 'blue';
+        shell.fillStyle = 'lightblue';
+        shell.draw();
+
         var core = new Circle(this.position, this.minimumMass);
         core.strokeStyle = 'blue';
         core.fillStyle = 'blue';
         core.draw();
-
-        var shell = new Circle(this.position, this.mass);
-        shell.strokeStyle = 'blue';
-        shell.draw();
     };
 
     this.reduceMass = function(amount)
