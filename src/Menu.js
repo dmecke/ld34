@@ -2,6 +2,7 @@ context = require('./System/Context.js');
 Text = require('./Graphics/Text.js');
 Circle = require('./Graphics/Circle.js');
 Vector = require('./Math/Vector.js');
+levelDefinitions = require('./LevelDefinitions.js');
 mouse = require('./Input/Mouse.js');
 
 function Menu(game)
@@ -33,7 +34,7 @@ function Menu(game)
         if (this.mouse.buttons[0]) {
             var level = this.levelAtPosition(this.mouse.position);
             if (level) {
-                this.game.startLevel();
+                this.game.startLevel(level);
             }
         }
     };
@@ -52,19 +53,21 @@ function Menu(game)
         selectLevel.fillStyle = 'blue';
         selectLevel.draw();
 
-        this.drawLevel(1);
+        for (var key in levelDefinitions) {
+            if (levelDefinitions.hasOwnProperty(key)) {
+                this.drawLevel(levelDefinitions[key]);
+            }
+        }
     };
 
     this.drawLevel = function(level)
     {
-        var yPosition = level * 100 + 200;
-
-        var circle = new Circle(new Vector(this.game.dimensions.x / 2, yPosition), 50);
+        var circle = new Circle(level.position, 50);
         circle.fillStyle = 'lightblue';
         circle.strokeStyle = 'blue';
         circle.draw();
 
-        var label = new Text(new Vector(this.game.dimensions.x / 2, yPosition + 20), level);
+        var label = new Text(level.position.add(new Vector(0, 20)), level.level);
         label.font = '52px Roboto';
         label.fillStyle = 'blue';
         label.draw();
@@ -72,10 +75,12 @@ function Menu(game)
 
     this.levelAtPosition = function(position)
     {
-        for (var level = 1; level <= 1; level++) {
-            var levelPosition = new Vector(this.game.dimensions.x / 2, level * 100 + 200);
-            if (levelPosition.distanceTo(position) <= 50) {
-                return level;
+        for (var key in levelDefinitions) {
+            if (levelDefinitions.hasOwnProperty(key)) {
+                var level = levelDefinitions[key];
+                if (level.position.distanceTo(position) <= 50) {
+                    return level;
+                }
             }
         }
 

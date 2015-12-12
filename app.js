@@ -47,8 +47,8 @@
 	__webpack_require__(1);
 
 	Game = __webpack_require__(5);
-	mouse = __webpack_require__(12);
-	keyboard = __webpack_require__(18);
+	mouse = __webpack_require__(13);
+	keyboard = __webpack_require__(19);
 
 	var game = new Game();
 
@@ -416,8 +416,9 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	Menu = __webpack_require__(6);
-	Level = __webpack_require__(13);
+	Level = __webpack_require__(14);
 	Vector = __webpack_require__(11);
+	levelDefinitions = __webpack_require__(12);
 	canvas = __webpack_require__(8);
 
 	function Game()
@@ -432,12 +433,12 @@
 	        this.showMenu();
 	    };
 
-	    this.startLevel = function()
+	    this.startLevel = function(level)
 	    {
 	        console.log('Game::startLevel');
 	        this.menu.hide();
 
-	        this.level = new Level(this);
+	        this.level = new Level(this, level.winningConditions);
 	        this.level.start();
 	    };
 
@@ -464,7 +465,8 @@
 	Text = __webpack_require__(9);
 	Circle = __webpack_require__(10);
 	Vector = __webpack_require__(11);
-	mouse = __webpack_require__(12);
+	levelDefinitions = __webpack_require__(12);
+	mouse = __webpack_require__(13);
 
 	function Menu(game)
 	{
@@ -495,7 +497,7 @@
 	        if (this.mouse.buttons[0]) {
 	            var level = this.levelAtPosition(this.mouse.position);
 	            if (level) {
-	                this.game.startLevel();
+	                this.game.startLevel(level);
 	            }
 	        }
 	    };
@@ -514,19 +516,21 @@
 	        selectLevel.fillStyle = 'blue';
 	        selectLevel.draw();
 
-	        this.drawLevel(1);
+	        for (var key in levelDefinitions) {
+	            if (levelDefinitions.hasOwnProperty(key)) {
+	                this.drawLevel(levelDefinitions[key]);
+	            }
+	        }
 	    };
 
 	    this.drawLevel = function(level)
 	    {
-	        var yPosition = level * 100 + 200;
-
-	        var circle = new Circle(new Vector(this.game.dimensions.x / 2, yPosition), 50);
+	        var circle = new Circle(level.position, 50);
 	        circle.fillStyle = 'lightblue';
 	        circle.strokeStyle = 'blue';
 	        circle.draw();
 
-	        var label = new Text(new Vector(this.game.dimensions.x / 2, yPosition + 20), level);
+	        var label = new Text(level.position.add(new Vector(0, 20)), level.level);
 	        label.font = '52px Roboto';
 	        label.fillStyle = 'blue';
 	        label.draw();
@@ -534,10 +538,12 @@
 
 	    this.levelAtPosition = function(position)
 	    {
-	        for (var level = 1; level <= 1; level++) {
-	            var levelPosition = new Vector(this.game.dimensions.x / 2, level * 100 + 200);
-	            if (levelPosition.distanceTo(position) <= 50) {
-	                return level;
+	        for (var key in levelDefinitions) {
+	            if (levelDefinitions.hasOwnProperty(key)) {
+	                var level = levelDefinitions[key];
+	                if (level.position.distanceTo(position) <= 50) {
+	                    return level;
+	                }
 	            }
 	        }
 
@@ -690,6 +696,20 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
+
+	LevelDefinitions = [
+	    { level: 1, position: new Vector(300, 300), winningConditions: { mass: 50 }},
+	    { level: 2, position: new Vector(500, 300), winningConditions: { mass: 70 }}
+	];
+
+	module.exports = LevelDefinitions;
+
+
+/***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	Vector = __webpack_require__(11);
 	canvas = __webpack_require__(8);
 
 	function Mouse()
@@ -718,25 +738,23 @@
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
 	context = __webpack_require__(7);
-	Player = __webpack_require__(14);
+	Player = __webpack_require__(15);
 	Vector = __webpack_require__(11);
-	Cell = __webpack_require__(15);
-	Ui = __webpack_require__(17);
+	Cell = __webpack_require__(16);
+	Ui = __webpack_require__(18);
 
-	function Level(game)
+	function Level(game, winningConditions)
 	{
 	    this.game = game;
 	    this.player = new Player(this);
 	    this.cells = [];
 	    this.ui = new Ui(this);
 	    this.interval = undefined;
-	    this.winningConditions = {
-	        mass: 50
-	    };
+	    this.winningConditions = winningConditions;
 
 	    this.start = function()
 	    {
@@ -804,14 +822,14 @@
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
 	Circle = __webpack_require__(10);
-	Cell = __webpack_require__(15);
-	ClickTimer = __webpack_require__(16);
-	mouse = __webpack_require__(12);
+	Cell = __webpack_require__(16);
+	ClickTimer = __webpack_require__(17);
+	mouse = __webpack_require__(13);
 
 	function Player(level)
 	{
@@ -936,7 +954,7 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
@@ -1011,7 +1029,7 @@
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports) {
 
 	function ClickTimer(maximum)
@@ -1039,7 +1057,7 @@
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
@@ -1067,7 +1085,7 @@
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports) {
 
 	function Keyboard()

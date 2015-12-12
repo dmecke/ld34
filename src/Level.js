@@ -4,16 +4,14 @@ Vector = require('./Math/Vector.js');
 Cell = require('./Entity/Cell.js');
 Ui = require('./Ui.js');
 
-function Level(game)
+function Level(game, winningConditions)
 {
     this.game = game;
     this.player = new Player(this);
     this.cells = [];
     this.ui = new Ui(this);
     this.interval = undefined;
-    this.winningConditions = {
-        mass: 50
-    };
+    this.winningConditions = winningConditions;
 
     this.start = function()
     {

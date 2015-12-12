@@ -1,6 +1,7 @@
 Menu = require('./Menu.js');
 Level = require('./Level.js');
 Vector = require('./Math/Vector.js');
+levelDefinitions = require('./LevelDefinitions.js');
 canvas = require('./System/Canvas.js');
 
 function Game()
@@ -15,12 +16,12 @@ function Game()
         this.showMenu();
     };
 
-    this.startLevel = function()
+    this.startLevel = function(level)
     {
         console.log('Game::startLevel');
         this.menu.hide();
 
-        this.level = new Level(this);
+        this.level = new Level(this, level.winningConditions);
         this.level.start();
     };
 
