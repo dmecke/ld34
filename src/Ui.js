@@ -15,6 +15,19 @@ function Ui(level)
 
     this.render = function()
     {
+        this.drawHud();
+        this.showObjectives();
+        this.showScore();
+    };
+
+    this.drawHud = function()
+    {
+        var container = new Rectangle(new Vector(100, this.level.game.dimensions.y - 25), 200, 50);
+        container.strokeStyle = settings.white;
+        container.lineWidth = 2;
+        container.fillStyle = settings.white.replace(')', ', 0.6)').replace('rgb', 'rgba');
+        container.draw();
+
         var currentMass = new Text(new Vector(10, this.level.game.dimensions.y - 30), 'Current mass: ' + Math.floor(this.level.player.mass));
         currentMass.textAlign = 'left';
         currentMass.fillStyle = settings.blue;
@@ -24,9 +37,6 @@ function Ui(level)
         targetMass.textAlign = 'left';
         targetMass.fillStyle = settings.blue;
         targetMass.draw();
-
-        this.showObjectives();
-        this.showScore();
     };
 
     this.showObjectives = function()
@@ -38,7 +48,7 @@ function Ui(level)
         this.drawWindow();
 
         var objectives = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 - 50), 'Grow until you have a mass of ' + this.level.levelSettings.winningConditions.mass + '!');
-        objectives.font = '24px "Gloria Hallelujah"';
+        objectives.font = '28px "Gloria Hallelujah"';
         objectives.fillStyle = 'white';
         objectives.strokeStyle = settings.grey;
         objectives.lineWidth = 5;
@@ -61,7 +71,7 @@ function Ui(level)
         this.drawWindow();
 
         var score = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 - 50), 'You made it!');
-        score.font = '24px "Gloria Hallelujah"';
+        score.font = '28px "Gloria Hallelujah"';
         score.fillStyle = 'white';
         score.strokeStyle = settings.grey;
         score.lineWidth = 5;
@@ -87,11 +97,11 @@ function Ui(level)
 
     this.drawContinueText = function(text)
     {
-        var clickToStart = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 + 50), text);
-        clickToStart.font = '14px "Gloria Hallelujah"';
+        var clickToStart = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 + 100), text);
+        clickToStart.font = '18px "Gloria Hallelujah"';
         clickToStart.fillStyle = 'white';
         clickToStart.strokeStyle = settings.grey;
-        clickToStart.lineWidth = 3;
+        clickToStart.lineWidth = 4;
         clickToStart.draw();
     };
 }
