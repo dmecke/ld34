@@ -48,7 +48,7 @@
 
 	Game = __webpack_require__(5);
 	mouse = __webpack_require__(13);
-	keyboard = __webpack_require__(19);
+	keyboard = __webpack_require__(20);
 
 	var game = new Game();
 
@@ -416,7 +416,7 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	Menu = __webpack_require__(6);
-	Level = __webpack_require__(14);
+	Level = __webpack_require__(15);
 	Vector = __webpack_require__(11);
 	levelDefinitions = __webpack_require__(12);
 	canvas = __webpack_require__(8);
@@ -467,18 +467,22 @@
 	Vector = __webpack_require__(11);
 	levelDefinitions = __webpack_require__(12);
 	mouse = __webpack_require__(13);
+	settings = __webpack_require__(14);
 
 	function Menu(game)
 	{
 	    this.game = game;
 	    this.mouse = mouse;
 	    this.interval = undefined;
+	    this.background = new Image();
 
 	    this.show = function()
 	    {
 	        console.log('Menu::show');
-	        var menu = this;
 
+	        this.background.src = 'img/startscreen.jpg';
+
+	        var menu = this;
 	        this.interval = setInterval(function() {
 	            menu.update();
 	            menu.render();
@@ -506,15 +510,7 @@
 	    {
 	        context.clearRect(0, 0, this.game.dimensions.x, this.game.dimensions.y);
 
-	        var headline = new Text(new Vector(this.game.dimensions.x / 2, 100), 'My Game Name');
-	        headline.font = '72px Roboto';
-	        headline.fillStyle = 'blue';
-	        headline.draw();
-
-	        var selectLevel = new Text(new Vector(this.game.dimensions.x / 2, 200), 'Select Level');
-	        selectLevel.font = '32px Roboto';
-	        selectLevel.fillStyle = 'blue';
-	        selectLevel.draw();
+	        context.drawImage(this.background, 0, 0);
 
 	        for (var key in levelDefinitions) {
 	            if (levelDefinitions.hasOwnProperty(key)) {
@@ -526,13 +522,16 @@
 	    this.drawLevel = function(level)
 	    {
 	        var circle = new Circle(level.position, 50);
-	        circle.fillStyle = 'lightblue';
-	        circle.strokeStyle = 'blue';
+	        circle.strokeStyle = 'white';
+	        circle.lineWidth = 2;
+	        circle.fillStyle = settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba');
 	        circle.draw();
 
 	        var label = new Text(level.position.add(new Vector(0, 20)), level.level);
-	        label.font = '52px Roboto';
-	        label.fillStyle = 'blue';
+	        label.font = '52px "Gloria Hallelujah"';
+	        label.fillStyle = 'white';
+	        label.strokeStyle = '#374959';
+	        label.lineWidth = 5;
 	        label.draw();
 	    };
 
@@ -587,6 +586,7 @@
 	    this.font = '12px Roboto';
 	    this.fillStyle = 'transparent';
 	    this.strokeStyle = 'transparent';
+	    this.lineWidth = 1;
 	    this.textAlign = 'center';
 
 	    this.draw = function()
@@ -594,9 +594,10 @@
 	        Context.font = this.font;
 	        Context.fillStyle = this.fillStyle;
 	        Context.strokeStyle = this.strokeStyle;
+	        Context.lineWidth = this.lineWidth;
 	        Context.textAlign = this.textAlign;
-	        Context.fillText(this.content, this.position.x, this.position.y);
 	        Context.strokeText(this.content, this.position.x, this.position.y);
+	        Context.fillText(this.content, this.position.x, this.position.y);
 	    }
 	}
 
@@ -615,11 +616,13 @@
 	    this.radius = radius;
 	    this.fillStyle = 'transparent';
 	    this.strokeStyle = 'transparent';
+	    this.lineWidth = 1;
 
 	    this.draw = function()
 	    {
 	        Context.fillStyle = this.fillStyle;
 	        Context.strokeStyle = this.strokeStyle;
+	        Context.lineWidth = this.lineWidth;
 	        Context.beginPath();
 	        Context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
 	        Context.stroke();
@@ -698,8 +701,16 @@
 	Vector = __webpack_require__(11);
 
 	LevelDefinitions = [
-	    { level: 1, position: new Vector(300, 300), winningConditions: { mass: 50 }},
-	    { level: 2, position: new Vector(500, 300), winningConditions: { mass: 60 }}
+	    { level: 1, position: new Vector(100, 340), winningConditions: { mass: 50 }},
+	    { level: 2, position: new Vector(250, 340), winningConditions: { mass: 60 }},
+	    { level: 3, position: new Vector(400, 340), winningConditions: { mass: 70 }},
+	    { level: 4, position: new Vector(550, 340), winningConditions: { mass: 80 }},
+	    { level: 5, position: new Vector(700, 340), winningConditions: { mass: 90 }},
+	    { level: 6, position: new Vector(100, 490), winningConditions: { mass: 100 }},
+	    { level: 7, position: new Vector(250, 490), winningConditions: { mass: 110 }},
+	    { level: 8, position: new Vector(400, 490), winningConditions: { mass: 120 }},
+	    { level: 9, position: new Vector(550, 490), winningConditions: { mass: 130 }},
+	    { level: 10, position: new Vector(700, 490), winningConditions: { mass: 140 }}
 	];
 
 	module.exports = LevelDefinitions;
@@ -739,22 +750,36 @@
 
 /***/ },
 /* 14 */
+/***/ function(module, exports) {
+
+	
+	Settings = {
+	    blue: 'rgb(4, 97, 182)',
+	    green: 'rgb(99, 170, 51)'
+	};
+
+	module.exports = Settings;
+
+
+/***/ },
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	context = __webpack_require__(7);
-	Player = __webpack_require__(15);
+	Player = __webpack_require__(16);
 	Vector = __webpack_require__(11);
-	Cell = __webpack_require__(16);
-	Ui = __webpack_require__(18);
+	Cell = __webpack_require__(17);
+	Ui = __webpack_require__(19);
+	settings = __webpack_require__(14);
 
-	function Level(game, settings)
+	function Level(game, levelSettings)
 	{
 	    this.game = game;
 	    this.player = new Player(this);
 	    this.cells = [];
 	    this.ui = new Ui(this);
 	    this.interval = undefined;
-	    this.settings = settings;
+	    this.levelSettings = levelSettings;
 	    this.background = new Image();
 
 	    this.start = function()
@@ -793,6 +818,7 @@
 	    this.setup = function()
 	    {
 	        console.log('Level::setup');
+	        console.log(settings.green);
 	        for (var i = 0; i < 20; i++) {
 	            this.cells.push(
 	                new Cell(
@@ -800,17 +826,17 @@
 	                    new Vector(Math.random() * this.game.dimensions.x, Math.random() * this.game.dimensions.y),
 	                    new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1),
 	                    Math.random() * 10,
-	                    'rgb(99, 170, 51)'
+	                    settings.green
 	                )
 	            );
 	        }
-	        var background = this.settings.level % 10;
+	        var background = this.levelSettings.level % 10;
 	        this.background.src = 'img/background/' + background + '.jpg';
 	    };
 
 	    this.checkWinningConditions = function()
 	    {
-	        if (this.player.mass >= this.settings.winningConditions.mass) {
+	        if (this.player.mass >= this.levelSettings.winningConditions.mass) {
 	            this.game.finishLevel();
 	            this.game.showMenu();
 	        }
@@ -826,14 +852,15 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
 	Circle = __webpack_require__(10);
-	Cell = __webpack_require__(16);
-	ClickTimer = __webpack_require__(17);
+	Cell = __webpack_require__(17);
+	ClickTimer = __webpack_require__(18);
 	mouse = __webpack_require__(13);
+	settings = __webpack_require__(14);
 
 	function Player(level)
 	{
@@ -894,10 +921,10 @@
 
 	    this.drawElement = function(position, radius)
 	    {
-	        var color = 'rgb(4, 97, 182)';
 	        var circle = new Circle(position, radius);
-	        circle.strokeStyle = color;
-	        circle.fillStyle = color.replace(')', ', 0.2)').replace('rgb', 'rgba');
+	        circle.strokeStyle = settings.blue;
+	        circle.fillStyle = settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba');
+	        circle.lineWidth = 2;
 	        circle.draw();
 	    };
 
@@ -945,7 +972,7 @@
 	        this.velocity = this.velocity.add(force);
 	        this.reduceMass(emittedMass);
 	        var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-	        var cell = new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, 'rgb(4, 97, 182)');
+	        var cell = new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, settings.blue);
 	        if (this.mass == this.minimumMass) {
 	            cell.disappearsIn = 100;
 	        }
@@ -963,7 +990,7 @@
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
@@ -1037,10 +1064,11 @@
 
 	    this.drawElement = function(position)
 	    {
-	        var shell = new Circle(position, this.mass);
-	        shell.strokeStyle = this.color;
-	        shell.fillStyle = this.color.replace(')', ', 0.1)').replace('rgb', 'rgba');
-	        shell.draw();
+	        var circle = new Circle(position, this.mass);
+	        circle.strokeStyle = this.color;
+	        circle.fillStyle = this.color.replace(')', ', 0.1)').replace('rgb', 'rgba');
+	        circle.lineWidth = 2;
+	        circle.draw();
 	    };
 	}
 
@@ -1048,7 +1076,7 @@
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports) {
 
 	function ClickTimer(maximum)
@@ -1076,11 +1104,12 @@
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
 	Text = __webpack_require__(9);
+	settings = __webpack_require__(14);
 
 	function Ui(level)
 	{
@@ -1090,12 +1119,12 @@
 	    {
 	        var currentMass = new Text(new Vector(10, this.level.game.dimensions.y - 30), 'Current mass: ' + Math.floor(this.level.player.mass));
 	        currentMass.textAlign = 'left';
-	        currentMass.fillStyle = 'blue';
+	        currentMass.fillStyle = settings.blue;
 	        currentMass.draw();
 
-	        var targetMass = new Text(new Vector(10, this.level.game.dimensions.y - 10), 'Target mass: ' + this.level.settings.winningConditions.mass);
+	        var targetMass = new Text(new Vector(10, this.level.game.dimensions.y - 10), 'Target mass: ' + this.level.levelSettings.winningConditions.mass);
 	        targetMass.textAlign = 'left';
-	        targetMass.fillStyle = 'blue';
+	        targetMass.fillStyle = settings.blue;
 	        targetMass.draw();
 	    };
 	}
@@ -1104,7 +1133,7 @@
 
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports) {
 
 	function Keyboard()

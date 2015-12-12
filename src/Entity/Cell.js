@@ -69,10 +69,11 @@ function Cell(level, position, velocity, mass, color)
 
     this.drawElement = function(position)
     {
-        var shell = new Circle(position, this.mass);
-        shell.strokeStyle = this.color;
-        shell.fillStyle = this.color.replace(')', ', 0.1)').replace('rgb', 'rgba');
-        shell.draw();
+        var circle = new Circle(position, this.mass);
+        circle.strokeStyle = this.color;
+        circle.fillStyle = this.color.replace(')', ', 0.1)').replace('rgb', 'rgba');
+        circle.lineWidth = 2;
+        circle.draw();
     };
 }
 

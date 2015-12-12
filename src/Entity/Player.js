@@ -3,6 +3,7 @@ Circle = require('./../Graphics/Circle.js');
 Cell = require('./Cell.js');
 ClickTimer = require('./../Input/ClickTimer.js');
 mouse = require('./../Input/Mouse.js');
+settings = require('./../Settings.js');
 
 function Player(level)
 {
@@ -63,10 +64,10 @@ function Player(level)
 
     this.drawElement = function(position, radius)
     {
-        var color = 'rgb(4, 97, 182)';
         var circle = new Circle(position, radius);
-        circle.strokeStyle = color;
-        circle.fillStyle = color.replace(')', ', 0.2)').replace('rgb', 'rgba');
+        circle.strokeStyle = settings.blue;
+        circle.fillStyle = settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba');
+        circle.lineWidth = 2;
         circle.draw();
     };
 
@@ -114,7 +115,7 @@ function Player(level)
         this.velocity = this.velocity.add(force);
         this.reduceMass(emittedMass);
         var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-        var cell = new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, 'rgb(4, 97, 182)');
+        var cell = new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, settings.blue);
         if (this.mass == this.minimumMass) {
             cell.disappearsIn = 100;
         }

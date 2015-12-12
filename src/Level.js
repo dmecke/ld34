@@ -3,15 +3,16 @@ Player = require('./Entity/Player.js');
 Vector = require('./Math/Vector.js');
 Cell = require('./Entity/Cell.js');
 Ui = require('./Ui.js');
+settings = require('./Settings.js');
 
-function Level(game, settings)
+function Level(game, levelSettings)
 {
     this.game = game;
     this.player = new Player(this);
     this.cells = [];
     this.ui = new Ui(this);
     this.interval = undefined;
-    this.settings = settings;
+    this.levelSettings = levelSettings;
     this.background = new Image();
 
     this.start = function()
@@ -50,6 +51,7 @@ function Level(game, settings)
     this.setup = function()
     {
         console.log('Level::setup');
+        console.log(settings.green);
         for (var i = 0; i < 20; i++) {
             this.cells.push(
                 new Cell(
@@ -57,17 +59,17 @@ function Level(game, settings)
                     new Vector(Math.random() * this.game.dimensions.x, Math.random() * this.game.dimensions.y),
                     new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1),
                     Math.random() * 10,
-                    'rgb(99, 170, 51)'
+                    settings.green
                 )
             );
         }
-        var background = this.settings.level % 10;
+        var background = this.levelSettings.level % 10;
         this.background.src = 'img/background/' + background + '.jpg';
     };
 
     this.checkWinningConditions = function()
     {
-        if (this.player.mass >= this.settings.winningConditions.mass) {
+        if (this.player.mass >= this.levelSettings.winningConditions.mass) {
             this.game.finishLevel();
             this.game.showMenu();
         }

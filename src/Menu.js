@@ -4,18 +4,22 @@ Circle = require('./Graphics/Circle.js');
 Vector = require('./Math/Vector.js');
 levelDefinitions = require('./LevelDefinitions.js');
 mouse = require('./Input/Mouse.js');
+settings = require('./Settings.js');
 
 function Menu(game)
 {
     this.game = game;
     this.mouse = mouse;
     this.interval = undefined;
+    this.background = new Image();
 
     this.show = function()
     {
         console.log('Menu::show');
-        var menu = this;
 
+        this.background.src = 'img/startscreen.jpg';
+
+        var menu = this;
         this.interval = setInterval(function() {
             menu.update();
             menu.render();
@@ -43,15 +47,7 @@ function Menu(game)
     {
         context.clearRect(0, 0, this.game.dimensions.x, this.game.dimensions.y);
 
-        var headline = new Text(new Vector(this.game.dimensions.x / 2, 100), 'My Game Name');
-        headline.font = '72px Roboto';
-        headline.fillStyle = 'blue';
-        headline.draw();
-
-        var selectLevel = new Text(new Vector(this.game.dimensions.x / 2, 200), 'Select Level');
-        selectLevel.font = '32px Roboto';
-        selectLevel.fillStyle = 'blue';
-        selectLevel.draw();
+        context.drawImage(this.background, 0, 0);
 
         for (var key in levelDefinitions) {
             if (levelDefinitions.hasOwnProperty(key)) {
@@ -63,13 +59,16 @@ function Menu(game)
     this.drawLevel = function(level)
     {
         var circle = new Circle(level.position, 50);
-        circle.fillStyle = 'lightblue';
-        circle.strokeStyle = 'blue';
+        circle.strokeStyle = 'white';
+        circle.lineWidth = 2;
+        circle.fillStyle = settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba');
         circle.draw();
 
         var label = new Text(level.position.add(new Vector(0, 20)), level.level);
-        label.font = '52px Roboto';
-        label.fillStyle = 'blue';
+        label.font = '52px "Gloria Hallelujah"';
+        label.fillStyle = 'white';
+        label.strokeStyle = '#374959';
+        label.lineWidth = 5;
         label.draw();
     };
 
