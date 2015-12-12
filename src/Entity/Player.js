@@ -4,9 +4,9 @@ Cell = require('./Cell.js');
 ClickTimer = require('./../Input/ClickTimer.js');
 mouse = require('./../Input/Mouse.js');
 
-function Player(game)
+function Player(level)
 {
-    this.game = game;
+    this.level = level;
     this.position = new Vector(400, 300);
     this.velocity = new Vector(0, 0);
     this.minimumMass = 10;
@@ -37,11 +37,11 @@ function Player(game)
 
     this.checkCollision = function()
     {
-        for (var i = 0; i < this.game.cells.length; i++) {
-            var cell = this.game.cells[i];
+        for (var i = 0; i < this.level.cells.length; i++) {
+            var cell = this.level.cells[i];
             if (cell.position.distanceTo(this.position) < this.mass + cell.mass) {
                 this.mass += cell.mass;
-                this.game.cells.splice(i, 1);
+                this.level.cells.splice(i, 1);
             }
         }
     };
@@ -49,17 +49,17 @@ function Player(game)
     this.updatePosition = function()
     {
         this.position = this.position.add(this.velocity);
-        if (this.position.x > this.game.dimensions.x) {
-            this.position.x -= this.game.dimensions.x;
+        if (this.position.x > this.level.game.dimensions.x) {
+            this.position.x -= this.level.game.dimensions.x;
         }
-        if (this.position.y > this.game.dimensions.y) {
-            this.position.y -= this.game.dimensions.y;
+        if (this.position.y > this.level.game.dimensions.y) {
+            this.position.y -= this.level.game.dimensions.y;
         }
         if (this.position.x < 0) {
-            this.position.x = this.game.dimensions.x - this.position.x;
+            this.position.x = this.level.game.dimensions.x - this.position.x;
         }
         if (this.position.y < 0) {
-            this.position.y = this.game.dimensions.y - this.position.y;
+            this.position.y = this.level.game.dimensions.y - this.position.y;
         }
     };
 
@@ -79,7 +79,7 @@ function Player(game)
         this.velocity = this.velocity.add(force);
         this.reduceMass(emittedMass);
         var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-        this.game.cells.push(new Cell(this.game, cellPosition, force.multiply(-1), emittedMass, 'blue'));
+        this.level.cells.push(new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, 'blue'));
         this.clickTimer.reset();
     };
 

@@ -47,8 +47,8 @@
 	__webpack_require__(1);
 
 	Game = __webpack_require__(5);
-	mouse = __webpack_require__(13);
-	keyboard = __webpack_require__(14);
+	mouse = __webpack_require__(12);
+	keyboard = __webpack_require__(17);
 
 	var game = new Game();
 
@@ -415,55 +415,41 @@
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
-	context = __webpack_require__(6);
-	canvas = __webpack_require__(7);
-	Player = __webpack_require__(8);
-	Vector = __webpack_require__(9);
-	Cell = __webpack_require__(11);
+	Menu = __webpack_require__(6);
+	Level = __webpack_require__(13);
+	Vector = __webpack_require__(11);
+	canvas = __webpack_require__(8);
 
 	function Game()
 	{
-	    this.player = new Player(this);
+	    this.menu = new Menu(this);
+	    this.level = undefined;
 	    this.dimensions = new Vector(canvas.width, canvas.height);
-	    this.cells = [];
 
 	    this.run = function()
 	    {
-	        var game = this;
-
-	        for (var i = 0; i < 10; i++) {
-	            this.cells.push(
-	                new Cell(
-	                    this,
-	                    new Vector(Math.random() * this.dimensions.x, Math.random() * this.dimensions.y),
-	                    new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1),
-	                    Math.random() * 10,
-	                    'green'
-	                )
-	            );
-	        }
-
-	        setInterval(function() {
-	            game.update();
-	            game.render();
-	        }, 1 / 30);
+	        console.log('Game::run');
+	        this.showMenu();
 	    };
 
-	    this.update = function()
+	    this.startLevel = function()
 	    {
-	        this.player.update();
-	        for (var i = 0; i < this.cells.length; i++) {
-	            this.cells[i].update();
-	        }
+	        console.log('Game::startLevel');
+	        this.menu.hide();
+
+	        this.level = new Level(this);
+	        this.level.start();
 	    };
 
-	    this.render = function()
+	    this.finishLevel = function()
 	    {
-	        context.clearRect(0, 0, canvas.width, canvas.height);
-	        this.player.render();
-	        for (var i = 0; i < this.cells.length; i++) {
-	            this.cells[i].render();
-	        }
+	        this.level.cleanup();
+	        this.level = undefined;
+	    };
+
+	    this.showMenu = function()
+	    {
+	        this.menu.show();
 	    };
 	}
 
@@ -474,13 +460,105 @@
 /* 6 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Canvas = __webpack_require__(7).getContext('2d');
+	context = __webpack_require__(7);
+	Text = __webpack_require__(9);
+	Circle = __webpack_require__(10);
+	Vector = __webpack_require__(11);
+	mouse = __webpack_require__(12);
+
+	function Menu(game)
+	{
+	    this.game = game;
+	    this.mouse = mouse;
+	    this.interval = undefined;
+
+	    this.show = function()
+	    {
+	        console.log('Menu::show');
+	        var menu = this;
+
+	        this.interval = setInterval(function() {
+	            menu.update();
+	            menu.render();
+	        }, 1 / 30);
+	    };
+
+	    this.hide = function()
+	    {
+	        console.log('Menu::hide');
+	        clearInterval(this.interval);
+	    };
+
+	    this.update = function()
+	    {
+	        console.log('Menu::update');
+	        if (this.mouse.buttons[0]) {
+	            var level = this.levelAtPosition(this.mouse.position);
+	            if (level) {
+	                this.game.startLevel();
+	            }
+	        }
+	    };
+
+	    this.render = function()
+	    {
+	        context.clearRect(0, 0, this.game.dimensions.x, this.game.dimensions.y);
+
+	        var headline = new Text(new Vector(this.game.dimensions.x / 2, 100), 'My Game Name');
+	        headline.font = '72px Roboto';
+	        headline.fillStyle = 'blue';
+	        headline.draw();
+
+	        var selectLevel = new Text(new Vector(this.game.dimensions.x / 2, 200), 'Select Level');
+	        selectLevel.font = '32px Roboto';
+	        selectLevel.fillStyle = 'blue';
+	        selectLevel.draw();
+
+	        this.drawLevel(1);
+	    };
+
+	    this.drawLevel = function(level)
+	    {
+	        var yPosition = level * 100 + 200;
+
+	        var circle = new Circle(new Vector(this.game.dimensions.x / 2, yPosition), 50);
+	        circle.fillStyle = 'lightblue';
+	        circle.strokeStyle = 'blue';
+	        circle.draw();
+
+	        var label = new Text(new Vector(this.game.dimensions.x / 2, yPosition + 20), level);
+	        label.font = '52px Roboto';
+	        label.fillStyle = 'blue';
+	        label.draw();
+	    };
+
+	    this.levelAtPosition = function(position)
+	    {
+	        for (var level = 1; level <= 1; level++) {
+	            var levelPosition = new Vector(this.game.dimensions.x / 2, level * 100 + 200);
+	            if (levelPosition.distanceTo(position) <= 50) {
+	                return level;
+	            }
+	        }
+
+	        return null;
+	    };
+	}
+
+	module.exports = Menu;
+
+
+/***/ },
+/* 7 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Canvas = __webpack_require__(8).getContext('2d');
 
 	module.exports = Canvas;
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	var Canvas = document.getElementById('canvas');
@@ -491,105 +569,64 @@
 
 
 /***/ },
-/* 8 */
+/* 9 */
 /***/ function(module, exports, __webpack_require__) {
 
-	Vector = __webpack_require__(9);
-	Circle = __webpack_require__(10);
-	Cell = __webpack_require__(11);
-	ClickTimer = __webpack_require__(12);
-	mouse = __webpack_require__(13);
+	Context = __webpack_require__(7);
 
-	function Player(game)
+	function Text(position, content)
 	{
-	    this.game = game;
-	    this.position = new Vector(400, 300);
-	    this.velocity = new Vector(0, 0);
-	    this.minimumMass = 10;
-	    this.mass = 100;//this.minimumMass;
-	    this.mouse = mouse;
-	    this.clickTimer = new ClickTimer(30);
+	    this.position = position;
+	    this.content = content;
+	    this.font = '30px Arial';
+	    this.fillStyle = 'transparent';
+	    this.strokeStyle = 'transparent';
+	    this.textAlign = 'center';
 
-	    this.update = function()
+	    this.draw = function()
 	    {
-	        this.checkCollision();
-	        this.processUserInput();
-	        this.updatePosition();
-	        this.clickTimer.update();
-	    };
-
-	    this.render = function()
-	    {
-	        var shell = new Circle(this.position, this.mass);
-	        shell.strokeStyle = 'blue';
-	        shell.fillStyle = 'lightblue';
-	        shell.draw();
-
-	        var core = new Circle(this.position, this.minimumMass);
-	        core.strokeStyle = 'blue';
-	        core.fillStyle = 'blue';
-	        core.draw();
-	    };
-
-	    this.checkCollision = function()
-	    {
-	        for (var i = 0; i < this.game.cells.length; i++) {
-	            var cell = this.game.cells[i];
-	            if (cell.position.distanceTo(this.position) < this.mass + cell.mass) {
-	                this.mass += cell.mass;
-	                this.game.cells.splice(i, 1);
-	            }
-	        }
-	    };
-
-	    this.updatePosition = function()
-	    {
-	        this.position = this.position.add(this.velocity);
-	        if (this.position.x > this.game.dimensions.x) {
-	            this.position.x -= this.game.dimensions.x;
-	        }
-	        if (this.position.y > this.game.dimensions.y) {
-	            this.position.y -= this.game.dimensions.y;
-	        }
-	        if (this.position.x < 0) {
-	            this.position.x = this.game.dimensions.x - this.position.x;
-	        }
-	        if (this.position.y < 0) {
-	            this.position.y = this.game.dimensions.y - this.position.y;
-	        }
-	    };
-
-	    this.processUserInput = function()
-	    {
-	        if (!this.mouse.buttons[0]) {
-	            return;
-	        }
-
-	        if (!this.clickTimer.isReady()) {
-	            return;
-	        }
-
-	        var emittedMass = Math.max(0.05, this.mass * 0.05);
-	        var direction = this.mouse.position.subtract(this.position).normalize();
-	        var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
-	        this.velocity = this.velocity.add(force);
-	        this.reduceMass(emittedMass);
-	        var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-	        this.game.cells.push(new Cell(this.game, cellPosition, force.multiply(-1), emittedMass, 'blue'));
-	        this.clickTimer.reset();
-	    };
-
-	    this.reduceMass = function(amount)
-	    {
-	        this.mass = Math.max(this.minimumMass, this.mass - amount);
-	    };
+	        Context.font = this.font;
+	        Context.fillStyle = this.fillStyle;
+	        Context.strokeStyle = this.strokeStyle;
+	        Context.textAlign = this.textAlign;
+	        Context.fillText(this.content, this.position.x, this.position.y);
+	        Context.strokeText(this.content, this.position.x, this.position.y);
+	    }
 	}
 
-	module.exports = Player;
+	module.exports = Text;
 
 
 /***/ },
-/* 9 */
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	Context = __webpack_require__(7);
+
+	function Circle(position, radius)
+	{
+	    this.position = position;
+	    this.radius = radius;
+	    this.fillStyle = 'transparent';
+	    this.strokeStyle = 'transparent';
+
+	    this.draw = function()
+	    {
+	        Context.fillStyle = this.fillStyle;
+	        Context.strokeStyle = this.strokeStyle;
+	        Context.beginPath();
+	        Context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
+	        Context.stroke();
+	        Context.fill();
+	        Context.closePath();
+	    }
+	}
+
+	module.exports = Circle;
+
+
+/***/ },
+/* 11 */
 /***/ function(module, exports) {
 
 	function Vector(x, y)
@@ -649,110 +686,11 @@
 
 
 /***/ },
-/* 10 */
-/***/ function(module, exports, __webpack_require__) {
-
-	Context = __webpack_require__(6);
-
-	function Circle(position, radius)
-	{
-	    this.position = position;
-	    this.radius = radius;
-	    this.fillStyle = 'transparent';
-	    this.strokeStyle = 'transparent';
-
-	    this.draw = function()
-	    {
-	        Context.fillStyle = this.fillStyle;
-	        Context.strokeStyle = this.strokeStyle;
-	        Context.beginPath();
-	        Context.arc(this.position.x, this.position.y, this.radius, 0, 2 * Math.PI);
-	        Context.stroke();
-	        Context.fill();
-	        Context.closePath();
-	    }
-	}
-
-	module.exports = Circle;
-
-
-/***/ },
-/* 11 */
-/***/ function(module, exports, __webpack_require__) {
-
-	Vector = __webpack_require__(9);
-	Circle = __webpack_require__(10);
-
-	function Cell(game, position, velocity, mass, color)
-	{
-	    this.game = game;
-	    this.position = position;
-	    this.velocity = velocity;
-	    this.mass = mass;
-	    this.color = color;
-
-	    this.update = function()
-	    {
-	        this.position = this.position.add(this.velocity);
-	        if (this.position.x > this.game.dimensions.x) {
-	            this.position.x -= this.game.dimensions.x;
-	        }
-	        if (this.position.y > this.game.dimensions.y) {
-	            this.position.y -= this.game.dimensions.y;
-	        }
-	        if (this.position.x < 0) {
-	            this.position.x = this.game.dimensions.x - this.position.x;
-	        }
-	        if (this.position.y < 0) {
-	            this.position.y = this.game.dimensions.y - this.position.y;
-	        }
-	    };
-
-	    this.render = function()
-	    {
-	        var shell = new Circle(this.position, this.mass);
-	        shell.strokeStyle = this.color;
-	        shell.draw();
-	    };
-	}
-
-	module.exports = Cell;
-
-
-/***/ },
 /* 12 */
-/***/ function(module, exports) {
-
-	function ClickTimer(maximum)
-	{
-	    this.maximum = maximum;
-	    this.current = 0;
-
-	    this.reset = function()
-	    {
-	        this.current = this.maximum;
-	    };
-
-	    this.isReady = function()
-	    {
-	        return this.current == 0;
-	    };
-
-	    this.update = function()
-	    {
-	        this.current = Math.max(0, this.current - 1);
-	    }
-	}
-
-	module.exports = ClickTimer;
-
-
-/***/ },
-/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
-	Vector = __webpack_require__(9);
-	canvas = __webpack_require__(7);
+	Vector = __webpack_require__(11);
+	canvas = __webpack_require__(8);
 
 	function Mouse()
 	{
@@ -780,7 +718,259 @@
 
 
 /***/ },
+/* 13 */
+/***/ function(module, exports, __webpack_require__) {
+
+	context = __webpack_require__(7);
+	Player = __webpack_require__(14);
+	Vector = __webpack_require__(11);
+	Cell = __webpack_require__(15);
+
+	function Level(game)
+	{
+	    this.game = game;
+	    this.player = new Player(this);
+	    this.cells = [];
+	    this.interval = undefined;
+	    this.winningConditions = {
+	        mass: 101
+	    };
+
+	    this.start = function()
+	    {
+	        console.log('Level::start');
+	        var level = this;
+	        this.setup();
+
+	        this.interval = setInterval(function() {
+	            level.update();
+	            level.render();
+	        }, 1 / 30);
+	    };
+
+	    this.update = function()
+	    {
+	        console.log('Level::update');
+	        this.player.update();
+	        for (var i = 0; i < this.cells.length; i++) {
+	            this.cells[i].update();
+	        }
+	        this.checkWinningConditions();
+	    };
+
+	    this.render = function()
+	    {
+	        context.clearRect(0, 0, this.game.dimensions.x, this.game.dimensions.y);
+	        this.player.render();
+	        for (var i = 0; i < this.cells.length; i++) {
+	            this.cells[i].render();
+	        }
+	    };
+
+	    this.setup = function()
+	    {
+	        console.log('Level::setup');
+	        for (var i = 0; i < 10; i++) {
+	            this.cells.push(
+	                new Cell(
+	                    this,
+	                    new Vector(Math.random() * this.game.dimensions.x, Math.random() * this.game.dimensions.y),
+	                    new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1),
+	                    Math.random() * 10,
+	                    'green'
+	                )
+	            );
+	        }
+	    };
+
+	    this.checkWinningConditions = function()
+	    {
+	        if (this.player.mass >= this.winningConditions.mass) {
+	            this.game.finishLevel();
+	            this.game.showMenu();
+	        }
+	    };
+
+	    this.cleanup = function()
+	    {
+	        clearInterval(this.interval);
+	    };
+	}
+
+	module.exports = Level;
+
+
+/***/ },
 /* 14 */
+/***/ function(module, exports, __webpack_require__) {
+
+	Vector = __webpack_require__(11);
+	Circle = __webpack_require__(10);
+	Cell = __webpack_require__(15);
+	ClickTimer = __webpack_require__(16);
+	mouse = __webpack_require__(12);
+
+	function Player(level)
+	{
+	    this.level = level;
+	    this.position = new Vector(400, 300);
+	    this.velocity = new Vector(0, 0);
+	    this.minimumMass = 10;
+	    this.mass = 100;//this.minimumMass;
+	    this.mouse = mouse;
+	    this.clickTimer = new ClickTimer(30);
+
+	    this.update = function()
+	    {
+	        this.checkCollision();
+	        this.processUserInput();
+	        this.updatePosition();
+	        this.clickTimer.update();
+	    };
+
+	    this.render = function()
+	    {
+	        var shell = new Circle(this.position, this.mass);
+	        shell.strokeStyle = 'blue';
+	        shell.fillStyle = 'lightblue';
+	        shell.draw();
+
+	        var core = new Circle(this.position, this.minimumMass);
+	        core.strokeStyle = 'blue';
+	        core.fillStyle = 'blue';
+	        core.draw();
+	    };
+
+	    this.checkCollision = function()
+	    {
+	        for (var i = 0; i < this.level.cells.length; i++) {
+	            var cell = this.level.cells[i];
+	            if (cell.position.distanceTo(this.position) < this.mass + cell.mass) {
+	                this.mass += cell.mass;
+	                this.level.cells.splice(i, 1);
+	            }
+	        }
+	    };
+
+	    this.updatePosition = function()
+	    {
+	        this.position = this.position.add(this.velocity);
+	        if (this.position.x > this.level.game.dimensions.x) {
+	            this.position.x -= this.level.game.dimensions.x;
+	        }
+	        if (this.position.y > this.level.game.dimensions.y) {
+	            this.position.y -= this.level.game.dimensions.y;
+	        }
+	        if (this.position.x < 0) {
+	            this.position.x = this.level.game.dimensions.x - this.position.x;
+	        }
+	        if (this.position.y < 0) {
+	            this.position.y = this.level.game.dimensions.y - this.position.y;
+	        }
+	    };
+
+	    this.processUserInput = function()
+	    {
+	        if (!this.mouse.buttons[0]) {
+	            return;
+	        }
+
+	        if (!this.clickTimer.isReady()) {
+	            return;
+	        }
+
+	        var emittedMass = Math.max(0.05, this.mass * 0.05);
+	        var direction = this.mouse.position.subtract(this.position).normalize();
+	        var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
+	        this.velocity = this.velocity.add(force);
+	        this.reduceMass(emittedMass);
+	        var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
+	        this.level.cells.push(new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, 'blue'));
+	        this.clickTimer.reset();
+	    };
+
+	    this.reduceMass = function(amount)
+	    {
+	        this.mass = Math.max(this.minimumMass, this.mass - amount);
+	    };
+	}
+
+	module.exports = Player;
+
+
+/***/ },
+/* 15 */
+/***/ function(module, exports, __webpack_require__) {
+
+	Vector = __webpack_require__(11);
+	Circle = __webpack_require__(10);
+
+	function Cell(level, position, velocity, mass, color)
+	{
+	    this.level = level;
+	    this.position = position;
+	    this.velocity = velocity;
+	    this.mass = mass;
+	    this.color = color;
+
+	    this.update = function()
+	    {
+	        this.position = this.position.add(this.velocity);
+	        if (this.position.x > this.level.game.dimensions.x) {
+	            this.position.x -= this.level.game.dimensions.x;
+	        }
+	        if (this.position.y > this.level.game.dimensions.y) {
+	            this.position.y -= this.level.game.dimensions.y;
+	        }
+	        if (this.position.x < 0) {
+	            this.position.x = this.level.game.dimensions.x - this.position.x;
+	        }
+	        if (this.position.y < 0) {
+	            this.position.y = this.level.game.dimensions.y - this.position.y;
+	        }
+	    };
+
+	    this.render = function()
+	    {
+	        var shell = new Circle(this.position, this.mass);
+	        shell.strokeStyle = this.color;
+	        shell.draw();
+	    };
+	}
+
+	module.exports = Cell;
+
+
+/***/ },
+/* 16 */
+/***/ function(module, exports) {
+
+	function ClickTimer(maximum)
+	{
+	    this.maximum = maximum;
+	    this.current = 0;
+
+	    this.reset = function()
+	    {
+	        this.current = this.maximum;
+	    };
+
+	    this.isReady = function()
+	    {
+	        return this.current == 0;
+	    };
+
+	    this.update = function()
+	    {
+	        this.current = Math.max(0, this.current - 1);
+	    }
+	}
+
+	module.exports = ClickTimer;
+
+
+/***/ },
+/* 17 */
 /***/ function(module, exports) {
 
 	function Keyboard()

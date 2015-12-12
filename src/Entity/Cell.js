@@ -1,9 +1,9 @@
 Vector = require('./../Math/Vector.js');
 Circle = require('./../Graphics/Circle.js');
 
-function Cell(game, position, velocity, mass, color)
+function Cell(level, position, velocity, mass, color)
 {
-    this.game = game;
+    this.level = level;
     this.position = position;
     this.velocity = velocity;
     this.mass = mass;
@@ -12,17 +12,17 @@ function Cell(game, position, velocity, mass, color)
     this.update = function()
     {
         this.position = this.position.add(this.velocity);
-        if (this.position.x > this.game.dimensions.x) {
-            this.position.x -= this.game.dimensions.x;
+        if (this.position.x > this.level.game.dimensions.x) {
+            this.position.x -= this.level.game.dimensions.x;
         }
-        if (this.position.y > this.game.dimensions.y) {
-            this.position.y -= this.game.dimensions.y;
+        if (this.position.y > this.level.game.dimensions.y) {
+            this.position.y -= this.level.game.dimensions.y;
         }
         if (this.position.x < 0) {
-            this.position.x = this.game.dimensions.x - this.position.x;
+            this.position.x = this.level.game.dimensions.x - this.position.x;
         }
         if (this.position.y < 0) {
-            this.position.y = this.game.dimensions.y - this.position.y;
+            this.position.y = this.level.game.dimensions.y - this.position.y;
         }
     };
 

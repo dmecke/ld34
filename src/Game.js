@@ -1,52 +1,38 @@
-context = require('./System/Context.js');
-canvas = require('./System/Canvas.js');
-Player = require('./Entity/Player.js');
+Menu = require('./Menu.js');
+Level = require('./Level.js');
 Vector = require('./Math/Vector.js');
-Cell = require('./Entity/Cell.js');
+canvas = require('./System/Canvas.js');
 
 function Game()
 {
-    this.player = new Player(this);
+    this.menu = new Menu(this);
+    this.level = undefined;
     this.dimensions = new Vector(canvas.width, canvas.height);
-    this.cells = [];
 
     this.run = function()
     {
-        var game = this;
-
-        for (var i = 0; i < 10; i++) {
-            this.cells.push(
-                new Cell(
-                    this,
-                    new Vector(Math.random() * this.dimensions.x, Math.random() * this.dimensions.y),
-                    new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1),
-                    Math.random() * 10,
-                    'green'
-                )
-            );
-        }
-
-        setInterval(function() {
-            game.update();
-            game.render();
-        }, 1 / 30);
+        console.log('Game::run');
+        this.showMenu();
     };
 
-    this.update = function()
+    this.startLevel = function()
     {
-        this.player.update();
-        for (var i = 0; i < this.cells.length; i++) {
-            this.cells[i].update();
-        }
+        console.log('Game::startLevel');
+        this.menu.hide();
+
+        this.level = new Level(this);
+        this.level.start();
     };
 
-    this.render = function()
+    this.finishLevel = function()
     {
-        context.clearRect(0, 0, canvas.width, canvas.height);
-        this.player.render();
-        for (var i = 0; i < this.cells.length; i++) {
-            this.cells[i].render();
-        }
+        this.level.cleanup();
+        this.level = undefined;
+    };
+
+    this.showMenu = function()
+    {
+        this.menu.show();
     };
 }
 
