@@ -2,15 +2,17 @@ context = require('./System/Context.js');
 Player = require('./Entity/Player.js');
 Vector = require('./Math/Vector.js');
 Cell = require('./Entity/Cell.js');
+Ui = require('./Ui.js');
 
 function Level(game)
 {
     this.game = game;
     this.player = new Player(this);
     this.cells = [];
+    this.ui = new Ui(this);
     this.interval = undefined;
     this.winningConditions = {
-        mass: 110
+        mass: 50
     };
 
     this.start = function()
@@ -42,12 +44,13 @@ function Level(game)
         for (var i = 0; i < this.cells.length; i++) {
             this.cells[i].render();
         }
+        this.ui.render();
     };
 
     this.setup = function()
     {
         console.log('Level::setup');
-        for (var i = 0; i < 10; i++) {
+        for (var i = 0; i < 20; i++) {
             this.cells.push(
                 new Cell(
                     this,

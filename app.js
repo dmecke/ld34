@@ -48,7 +48,7 @@
 
 	Game = __webpack_require__(5);
 	mouse = __webpack_require__(12);
-	keyboard = __webpack_require__(17);
+	keyboard = __webpack_require__(18);
 
 	var game = new Game();
 
@@ -578,7 +578,7 @@
 	{
 	    this.position = position;
 	    this.content = content;
-	    this.font = '30px Arial';
+	    this.font = '12px Roboto';
 	    this.fillStyle = 'transparent';
 	    this.strokeStyle = 'transparent';
 	    this.textAlign = 'center';
@@ -725,15 +725,17 @@
 	Player = __webpack_require__(14);
 	Vector = __webpack_require__(11);
 	Cell = __webpack_require__(15);
+	Ui = __webpack_require__(17);
 
 	function Level(game)
 	{
 	    this.game = game;
 	    this.player = new Player(this);
 	    this.cells = [];
+	    this.ui = new Ui(this);
 	    this.interval = undefined;
 	    this.winningConditions = {
-	        mass: 101
+	        mass: 50
 	    };
 
 	    this.start = function()
@@ -765,12 +767,13 @@
 	        for (var i = 0; i < this.cells.length; i++) {
 	            this.cells[i].render();
 	        }
+	        this.ui.render();
 	    };
 
 	    this.setup = function()
 	    {
 	        console.log('Level::setup');
-	        for (var i = 0; i < 10; i++) {
+	        for (var i = 0; i < 20; i++) {
 	            this.cells.push(
 	                new Cell(
 	                    this,
@@ -816,9 +819,10 @@
 	    this.position = new Vector(400, 300);
 	    this.velocity = new Vector(0, 0);
 	    this.minimumMass = 10;
-	    this.mass = 100;//this.minimumMass;
+	    this.mass = this.minimumMass;
 	    this.mouse = mouse;
 	    this.clickTimer = new ClickTimer(30);
+	    this.clickTimer.reset();
 
 	    this.update = function()
 	    {
@@ -971,6 +975,34 @@
 
 /***/ },
 /* 17 */
+/***/ function(module, exports, __webpack_require__) {
+
+	Vector = __webpack_require__(11);
+	Text = __webpack_require__(9);
+
+	function Ui(level)
+	{
+	    this.level = level;
+
+	    this.render = function()
+	    {
+	        var currentMass = new Text(new Vector(10, this.level.game.dimensions.y - 30), 'Current mass: ' + Math.floor(this.level.player.mass));
+	        currentMass.textAlign = 'left';
+	        currentMass.fillStyle = 'blue';
+	        currentMass.draw();
+
+	        var targetMass = new Text(new Vector(10, this.level.game.dimensions.y - 10), 'Target mass: ' + this.level.winningConditions.mass);
+	        targetMass.textAlign = 'left';
+	        targetMass.fillStyle = 'blue';
+	        targetMass.draw();
+	    };
+	}
+
+	module.exports = Ui;
+
+
+/***/ },
+/* 18 */
 /***/ function(module, exports) {
 
 	function Keyboard()

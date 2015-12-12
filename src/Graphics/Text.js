@@ -4,7 +4,7 @@ function Text(position, content)
 {
     this.position = position;
     this.content = content;
-    this.font = '30px Arial';
+    this.font = '12px Roboto';
     this.fillStyle = 'transparent';
     this.strokeStyle = 'transparent';
     this.textAlign = 'center';

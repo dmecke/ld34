@@ -10,9 +10,10 @@ function Player(level)
     this.position = new Vector(400, 300);
     this.velocity = new Vector(0, 0);
     this.minimumMass = 10;
-    this.mass = 100;//this.minimumMass;
+    this.mass = this.minimumMass;
     this.mouse = mouse;
     this.clickTimer = new ClickTimer(30);
+    this.clickTimer.reset();
 
     this.update = function()
     {
