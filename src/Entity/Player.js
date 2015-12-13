@@ -151,10 +151,10 @@ function Player(level)
         var emittedMass = Math.max(0.05, this.mass * 0.05);
         var direction = this.mouse.position.subtract(this.position).normalize();
         var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
-        this.velocity = this.velocity.add(force);
         this.reduceMass(emittedMass);
         var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-        var cell = new Cell(this.level, cellPosition, force.multiply(-1), emittedMass, settings.blue);
+        var cell = new Cell(this.level, cellPosition, this.velocity, emittedMass, settings.blue);
+        this.velocity = this.velocity.add(force);
         if (this.mass == this.minimumMass) {
             cell.disappearsIn = 100;
         }
