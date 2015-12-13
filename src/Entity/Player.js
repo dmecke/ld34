@@ -163,6 +163,10 @@ function Player(level)
             return;
         }
 
+        if (this.mass == this.minimumMass) {
+            return;
+        }
+
         var emittedMass = Math.max(0.2, this.mass * 0.2);
         var direction = this.movementDirection();
         var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);

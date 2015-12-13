@@ -19,6 +19,12 @@ function Cell(level, position, velocity, mass, type)
         if (this.type == settings.CELL_TYPE_DIRECTION && Math.random() < 0.005) {
             this.velocity = new Vector(Math.random() * 0.6 - 0.3, Math.random() * 0.6 - 0.3);
         }
+        if (this.type == settings.CELL_TYPE_ESCAPER) {
+            var toPlayer = this.position.subtract(this.level.player.position);
+            if (toPlayer.length() < 100) {
+                this.velocity = toPlayer.normalize().multiply(this.velocity.length());
+            }
+        }
         this.position = this.position.add(this.velocity);
         if (this.position.x > this.level.game.dimensions.x) {
             this.position.x -= this.level.game.dimensions.x;
@@ -114,6 +120,8 @@ function Cell(level, position, velocity, mass, type)
             return settings.red;
         } else if (this.type == settings.CELL_TYPE_DIRECTION) {
             return settings.yellow;
+        } else if (this.type == settings.CELL_TYPE_ESCAPER) {
+            return settings.purple;
         }
     };
 

@@ -26,7 +26,7 @@ LevelDefinitions = [
     {
         level: 2,
         position: new Vector(250, 340),
-        intro: 'There can be multiple cells and they are moving! Don\'t be afraid to lose mass - you cannot go below a certain level. Collect all green cells!',
+        intro: 'There can be multiple cells and they are moving! Your mass cannot go below a certain level, but you won\'t be able to move anymore. Collect all green cells!',
         winningConditions:
         {
             cells: 5
@@ -46,7 +46,7 @@ LevelDefinitions = [
         },
         setup:
         {
-            numberOfCells: 20,
+            numberOfCells: 15,
             cells: [
                 {
                     mass: 5,
@@ -77,7 +77,7 @@ LevelDefinitions = [
         intro: 'Uh oh! Yellow cells randomly change their directions. Can you still collect them all?',
         winningConditions:
         {
-            cells: 5
+            cells: 10
         },
         setup:
         {
@@ -149,10 +149,45 @@ LevelDefinitions = [
     {
         level: 6,
         position: new Vector(100, 490),
-        intro: 'Collect 100 mass!',
+        intro: 'Back to normal now. But wait! These purple ones seem to flee! Can you catch them?',
         winningConditions:
         {
-            mass: 100
+            cells: 10
+        },
+        setup:
+        {
+            cells: [
+                {
+                    type: settings.CELL_TYPE_ESCAPER
+                },
+                {
+                    type: settings.CELL_TYPE_ESCAPER
+                },
+                {
+                    type: settings.CELL_TYPE_ESCAPER
+                },
+                {
+                    type: settings.CELL_TYPE_ESCAPER
+                },
+                {
+                    type: settings.CELL_TYPE_ESCAPER
+                },
+                {
+                    type: settings.CELL_TYPE_ESCAPER
+                },
+                {
+                    type: settings.CELL_TYPE_ESCAPER
+                },
+                {
+                    type: settings.CELL_TYPE_ESCAPER
+                },
+                {
+                    type: settings.CELL_TYPE_ESCAPER
+                },
+                {
+                    type: settings.CELL_TYPE_ESCAPER
+                }
+            ]
         }
     },
     {

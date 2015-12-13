@@ -5,11 +5,13 @@ Settings = {
     green: 'rgb(99, 170, 51)',
     red: 'rgb(207, 39, 39)',
     yellow: 'rgb(234, 197, 27)',
+    purple: 'rgb(222, 00, 255)',
 
     CELL_TYPE_PLAYER: 1,
     CELL_TYPE_SIMPLE: 2,
     CELL_TYPE_ABSORB: 3,
-    CELL_TYPE_DIRECTION: 4
+    CELL_TYPE_DIRECTION: 4,
+    CELL_TYPE_ESCAPER: 5
 };
 
 module.exports = Settings;

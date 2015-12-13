@@ -974,7 +974,7 @@
 	        intro: 'Uh oh! Yellow cells randomly change their directions. Can you still collect them all?',
 	        winningConditions:
 	        {
-	            cells: 5
+	            cells: 10
 	        },
 	        setup:
 	        {
@@ -1046,10 +1046,45 @@
 	    {
 	        level: 6,
 	        position: new Vector(100, 490),
-	        intro: 'Collect 100 mass!',
+	        intro: 'Back to normal now. But wait! These purple ones seem to flee! Can you catch them?',
 	        winningConditions:
 	        {
-	            mass: 100
+	            cells: 10
+	        },
+	        setup:
+	        {
+	            cells: [
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	            ]
 	        }
 	    },
 	    {
@@ -1104,11 +1139,13 @@
 	    green: 'rgb(99, 170, 51)',
 	    red: 'rgb(207, 39, 39)',
 	    yellow: 'rgb(234, 197, 27)',
+	    purple: 'rgb(222, 00, 255)',
 
 	    CELL_TYPE_PLAYER: 1,
 	    CELL_TYPE_SIMPLE: 2,
 	    CELL_TYPE_ABSORB: 3,
-	    CELL_TYPE_DIRECTION: 4
+	    CELL_TYPE_DIRECTION: 4,
+	    CELL_TYPE_ESCAPER: 5
 	};
 
 	module.exports = Settings;
@@ -1519,6 +1556,10 @@
 	            return;
 	        }
 
+	        if (this.mass == this.minimumMass) {
+	            return;
+	        }
+
 	        var emittedMass = Math.max(0.2, this.mass * 0.2);
 	        var direction = this.movementDirection();
 	        var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
@@ -1603,6 +1644,12 @@
 	    {
 	        if (this.type == settings.CELL_TYPE_DIRECTION && Math.random() < 0.005) {
 	            this.velocity = new Vector(Math.random() * 0.6 - 0.3, Math.random() * 0.6 - 0.3);
+	        }
+	        if (this.type == settings.CELL_TYPE_ESCAPER) {
+	            var toPlayer = this.position.subtract(this.level.player.position);
+	            if (toPlayer.length() < 100) {
+	                this.velocity = toPlayer.normalize().multiply(this.velocity.length());
+	            }
 	        }
 	        this.position = this.position.add(this.velocity);
 	        if (this.position.x > this.level.game.dimensions.x) {
@@ -1699,6 +1746,8 @@
 	            return settings.red;
 	        } else if (this.type == settings.CELL_TYPE_DIRECTION) {
 	            return settings.yellow;
+	        } else if (this.type == settings.CELL_TYPE_ESCAPER) {
+	            return settings.purple;
 	        }
 	    };
 
