@@ -1016,7 +1016,7 @@
 	function Level(game, levelSettings)
 	{
 	    this.game = game;
-	    this.player = new Player(this);
+	    this.player = null;
 	    this.cells = [];
 	    this.ui = new Ui(this);
 	    this.interval = undefined;
@@ -1039,6 +1039,7 @@
 
 	    this.update = function()
 	    {
+	        console.log(this.showScore);
 	        if (this.paused()) {
 	            return;
 	        }
@@ -1077,6 +1078,8 @@
 	        var background = this.levelSettings.level % 10;
 	        this.background.src = 'img/background/' + background + '.jpg';
 	        this.game.music.playLevel(this.levelSettings.level);
+	        this.game.showObjectives = true;
+	        this.player = new Player(this);
 	    };
 
 	    this.checkWinningConditions = function()
@@ -1088,6 +1091,9 @@
 
 	    this.cleanup = function()
 	    {
+	        console.log('cleanup');
+	        this.cells = [];
+	        this.showScore = false;
 	        this.game.music.pauseLevel(this.levelSettings.level);
 	        clearInterval(this.interval);
 	    };
