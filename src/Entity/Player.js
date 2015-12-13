@@ -148,7 +148,7 @@ function Player(level)
             return;
         }
 
-        var emittedMass = Math.max(0.05, this.mass * 0.05);
+        var emittedMass = Math.max(0.2, this.mass * 0.2);
         var direction = this.mouse.position.subtract(this.position).normalize();
         var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
         this.reduceMass(emittedMass);
