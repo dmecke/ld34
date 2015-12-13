@@ -132,6 +132,9 @@ function Player(level)
 
     this.incorporateCell = function(cell, index)
     {
+        // @todo find out correct formula
+        //var velChange = this.velocity.subtract(cell.velocity).multiply(-1).normalize().multiply(1 / cell.mass);
+        //this.velocity = this.velocity.add(velChange);
         this.addMass(cell.massWhenAbsorbed());
         this.level.cells.splice(index, 1);
         this.level.game.sfx.absorb();

@@ -2,8 +2,8 @@ Container = require('./Container.js');
 
 function Sfx()
 {
-    this.audioAccelerate = new Container('sfx/accelerate.m4a');
-    this.audioAbsorb = new Container('sfx/absorb.m4a');
+    this.audioAccelerate = new Container('sfx/accelerate.mp3');
+    this.audioAbsorb = new Container('sfx/absorb.mp3');
     this.enabled = true;
 
     this.toggle = function()

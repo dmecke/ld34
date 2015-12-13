@@ -1488,6 +1488,9 @@
 
 	    this.incorporateCell = function(cell, index)
 	    {
+	        // @todo find out correct formula
+	        //var velChange = this.velocity.subtract(cell.velocity).multiply(-1).normalize().multiply(1 / cell.mass);
+	        //this.velocity = this.velocity.add(velChange);
 	        this.addMass(cell.massWhenAbsorbed());
 	        this.level.cells.splice(index, 1);
 	        this.level.game.sfx.absorb();
@@ -2001,8 +2004,8 @@
 
 	function Sfx()
 	{
-	    this.audioAccelerate = new Container('sfx/accelerate.m4a');
-	    this.audioAbsorb = new Container('sfx/absorb.m4a');
+	    this.audioAccelerate = new Container('sfx/accelerate.mp3');
+	    this.audioAbsorb = new Container('sfx/absorb.mp3');
 	    this.enabled = true;
 
 	    this.toggle = function()
