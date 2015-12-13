@@ -17,6 +17,13 @@ function Container(src)
             }
         }
     };
+
+    this.pause = function()
+    {
+        for (var i = 0; i < this.audio.length; i++) {
+            this.audio[i].pause();
+        }
+    };
 }
 
 module.exports = Container;

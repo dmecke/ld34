@@ -2,6 +2,7 @@ Menu = require('./Menu.js');
 Level = require('./Level.js');
 Vector = require('./Math/Vector.js');
 Sfx = require('./Audio/Sfx.js');
+Music = require('./Audio/Music.js');
 levelDefinitions = require('./LevelDefinitions.js');
 canvas = require('./System/Canvas.js');
 
@@ -12,6 +13,7 @@ function Game()
     this.currentLevel = undefined;
     this.dimensions = new Vector(canvas.width, canvas.height);
     this.sfx = new Sfx();
+    this.music = new Music();
 
     this.run = function()
     {

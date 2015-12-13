@@ -47,8 +47,8 @@
 	__webpack_require__(1);
 
 	Game = __webpack_require__(5);
-	mouse = __webpack_require__(13);
-	keyboard = __webpack_require__(24);
+	mouse = __webpack_require__(14);
+	keyboard = __webpack_require__(25);
 
 	var game = new Game();
 
@@ -98,7 +98,7 @@
 
 
 	// module
-	exports.push([module.id, "body {\n    margin: 0;\n    background: #c6dde6;\n    font-family: 'Gloria Hallelujah', sans-serif;\n    color: #272727;\n}\nh1, h2 {\n    text-align: center;\n}\ncanvas {\n    background: white;\n    border: 1px solid #272727;\n    display: block;\n    margin: 50px auto;\n    width: 800px;\n    height: 600px;\n}\nfooter {\n    margin-top: 50px;\n    text-align: center;\n}\n.explanations {\n    margin: auto;\n    text-align: justify;\n    width: 800px;\n}\n", ""]);
+	exports.push([module.id, "body {\n    margin: 0;\n    background: #c6dde6;\n    font-family: 'Gloria Hallelujah', sans-serif;\n    color: #272727;\n}\nh1, h2 {\n    text-align: center;\n}\ncanvas {\n    background: white;\n    border: 1px solid #272727;\n    display: block;\n    margin: 50px auto;\n    width: 800px;\n    height: 600px;\n}\nfooter {\n    margin: 50px auto 0;\n    text-align: center;\n    width: 800px;\n}\nfooter.credits {\n    font-size: 12px;\n}\n.explanations {\n    margin: auto;\n    text-align: justify;\n    width: 800px;\n}\n", ""]);
 
 	// exports
 
@@ -418,10 +418,11 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	Menu = __webpack_require__(6);
-	Level = __webpack_require__(16);
+	Level = __webpack_require__(17);
 	Vector = __webpack_require__(11);
-	Sfx = __webpack_require__(22);
-	levelDefinitions = __webpack_require__(12);
+	Sfx = __webpack_require__(23);
+	Music = __webpack_require__(12);
+	levelDefinitions = __webpack_require__(13);
 	canvas = __webpack_require__(8);
 
 	function Game()
@@ -431,6 +432,7 @@
 	    this.currentLevel = undefined;
 	    this.dimensions = new Vector(canvas.width, canvas.height);
 	    this.sfx = new Sfx();
+	    this.music = new Music();
 
 	    this.run = function()
 	    {
@@ -479,9 +481,10 @@
 	Text = __webpack_require__(9);
 	Circle = __webpack_require__(10);
 	Vector = __webpack_require__(11);
-	levelDefinitions = __webpack_require__(12);
-	mouse = __webpack_require__(13);
-	settings = __webpack_require__(15);
+	Music = __webpack_require__(12);
+	levelDefinitions = __webpack_require__(13);
+	mouse = __webpack_require__(14);
+	settings = __webpack_require__(16);
 
 	function Menu(game)
 	{
@@ -490,13 +493,17 @@
 	    this.interval = undefined;
 	    this.background = new Image();
 	    this.lock = new Image();
-	    this.sfx = new Image();
+	    this.symbolSfx = new Image();
+	    this.symbolMusic = new Image();
 
 	    this.show = function()
 	    {
 	        this.background.src = 'img/startscreen.jpg';
 	        this.lock.src = 'img/lock.png';
-	        this.sfx.src = 'img/sfx.png';
+	        this.symbolSfx.src = 'img/sfx.png';
+	        this.symbolMusic.src = 'img/music.png';
+
+	        this.game.music.playMenu();
 
 	        var menu = this;
 	        this.interval = setInterval(function() {
@@ -507,6 +514,7 @@
 
 	    this.hide = function()
 	    {
+	        this.game.music.pauseMenu();
 	        clearInterval(this.interval);
 	    };
 
@@ -516,6 +524,9 @@
 	            var level = this.levelAtPosition(this.mouse.position);
 	            if (level && !level.isLocked()) {
 	                this.game.startLevel(level);
+	            }
+	            if (this.mouseIsAtMusic()) {
+	                this.game.music.toggle();
 	            }
 	            if (this.mouseIsAtSfx()) {
 	                this.game.sfx.toggle();
@@ -529,6 +540,7 @@
 
 	        context.drawImage(this.background, 0, 0);
 
+	        this.drawMusic();
 	        this.drawSfx();
 
 	        for (var i = 0; i < this.game.levels.length; i++) {
@@ -536,7 +548,7 @@
 	        }
 	    };
 
-	    this.drawSfx = function()
+	    this.drawMusic = function()
 	    {
 	        var position = new Vector(this.game.dimensions.x - 50, 50);
 
@@ -546,7 +558,29 @@
 	        circle.fillStyle = settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba');
 	        circle.draw();
 
-	        context.drawImage(this.sfx, position.x - 19, position.y - 18);
+	        context.drawImage(this.symbolMusic, position.x - 15, position.y - 18);
+
+	        if (!this.game.music.enabled) {
+	            var x = new Text(position.add(new Vector(1, 18)), 'X');
+	            x.font = '44px "Gloria Hallelujah"';
+	            x.fillStyle = settings.red;
+	            x.strokeStyle = settings.white;
+	            x.lineWidth = 5;
+	            x.draw();
+	        }
+	    };
+
+	    this.drawSfx = function()
+	    {
+	        var position = new Vector(this.game.dimensions.x - 50, 120);
+
+	        var circle = new Circle(position, 25);
+	        circle.strokeStyle = settings.white;
+	        circle.lineWidth = 2;
+	        circle.fillStyle = settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba');
+	        circle.draw();
+
+	        context.drawImage(this.symbolSfx, position.x - 19, position.y - 18);
 
 	        if (!this.game.sfx.enabled) {
 	            var x = new Text(position.add(new Vector(1, 18)), 'X');
@@ -589,11 +623,18 @@
 	        return null;
 	    };
 
+	    this.mouseIsAtMusic = function()
+	    {
+	        var position = new Vector(this.game.dimensions.x - 50, 50);
+
+	        return position.distanceTo(this.mouse.position) <= 50;
+	    };
+
 	    this.mouseIsAtSfx = function()
 	    {
-	        var sfxPosition = new Vector(this.game.dimensions.x - 50, 50);
+	        var position = new Vector(this.game.dimensions.x - 50, 120);
 
-	        return sfxPosition.distanceTo(this.mouse.position) <= 50;
+	        return position.distanceTo(this.mouse.position) <= 50;
 	    };
 	}
 
@@ -763,6 +804,72 @@
 
 /***/ },
 /* 12 */
+/***/ function(module, exports) {
+
+	function Music()
+	{
+	    this.musicMenu = new Audio('music/menu.mp3');
+	    this.musicLevels = [
+	        new Audio('music/0.mp3'),
+	        new Audio('music/1.mp3'),
+	        new Audio('music/2.mp3'),
+	        new Audio('music/3.mp3'),
+	        new Audio('music/4.mp3'),
+	        new Audio('music/5.mp3')
+	    ];
+	    this.enabled = true;
+
+	    this.toggle = function()
+	    {
+	        this.enabled = !this.enabled;
+	        if (!this.enabled) {
+	            this.pauseMenu();
+	        }
+	        if (this.enabled) {
+	            this.playMenu();
+	        }
+	    };
+
+	    this.playMenu = function()
+	    {
+	        if (!this.enabled) {
+	            return;
+	        }
+
+	        this.musicMenu.loop = true;
+	        this.musicMenu.play();
+	    };
+
+	    this.playLevel = function(level)
+	    {
+	        if (!this.enabled) {
+	            return;
+	        }
+
+	        var index = level % 6;
+
+	        this.musicLevels[index].loop = true;
+	        this.musicLevels[index].play();
+	    };
+
+	    this.pauseMenu = function()
+	    {
+	        this.musicMenu.pause();
+	    };
+
+	    this.pauseLevel = function(level)
+	    {
+	        var index = level % 6;
+
+	        this.musicLevels[index].pause();
+	    };
+	}
+
+	module.exports = Music;
+
+
+/***/ },
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
@@ -784,10 +891,10 @@
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	Timer = __webpack_require__(14);
+	Timer = __webpack_require__(15);
 	Vector = __webpack_require__(11);
 	canvas = __webpack_require__(8);
 
@@ -845,7 +952,7 @@
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	function Timer(maximum)
@@ -873,7 +980,7 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	Settings = {
@@ -888,15 +995,16 @@
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	context = __webpack_require__(7);
-	Player = __webpack_require__(17);
+	Player = __webpack_require__(18);
 	Vector = __webpack_require__(11);
-	Cell = __webpack_require__(18);
-	Ui = __webpack_require__(20);
-	settings = __webpack_require__(15);
+	Cell = __webpack_require__(19);
+	Ui = __webpack_require__(21);
+	Music = __webpack_require__(12);
+	settings = __webpack_require__(16);
 
 	function Level(game, levelSettings)
 	{
@@ -961,6 +1069,7 @@
 	        }
 	        var background = this.levelSettings.level % 10;
 	        this.background.src = 'img/background/' + background + '.jpg';
+	        this.game.music.playLevel(this.levelSettings.level);
 	    };
 
 	    this.checkWinningConditions = function()
@@ -972,6 +1081,7 @@
 
 	    this.cleanup = function()
 	    {
+	        this.game.music.pauseLevel(this.levelSettings.level);
 	        clearInterval(this.interval);
 	    };
 
@@ -1001,15 +1111,15 @@
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
 	Circle = __webpack_require__(10);
-	Cell = __webpack_require__(18);
-	PositionCheck = __webpack_require__(19);
-	mouse = __webpack_require__(13);
-	settings = __webpack_require__(15);
+	Cell = __webpack_require__(19);
+	PositionCheck = __webpack_require__(20);
+	mouse = __webpack_require__(14);
+	settings = __webpack_require__(16);
 
 	function Player(level)
 	{
@@ -1178,12 +1288,12 @@
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
 	Circle = __webpack_require__(10);
-	PositionCheck = __webpack_require__(19);
+	PositionCheck = __webpack_require__(20);
 
 	function Cell(level, position, velocity, mass, color)
 	{
@@ -1266,7 +1376,7 @@
 
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports) {
 
 	function PositionCheck(position, radius, dimensions)
@@ -1320,14 +1430,14 @@
 
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
 	Text = __webpack_require__(9);
-	Rectangle = __webpack_require__(21);
-	settings = __webpack_require__(15);
-	mouse = __webpack_require__(13);
+	Rectangle = __webpack_require__(22);
+	settings = __webpack_require__(16);
+	mouse = __webpack_require__(14);
 
 	function Ui(level)
 	{
@@ -1432,7 +1542,7 @@
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Context = __webpack_require__(7);
@@ -1463,10 +1573,10 @@
 
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
-	Container = __webpack_require__(23);
+	Container = __webpack_require__(24);
 
 	function Sfx()
 	{
@@ -1502,7 +1612,7 @@
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports) {
 
 	function Container(src)
@@ -1524,13 +1634,20 @@
 	            }
 	        }
 	    };
+
+	    this.pause = function()
+	    {
+	        for (var i = 0; i < this.audio.length; i++) {
+	            this.audio[i].pause();
+	        }
+	    };
 	}
 
 	module.exports = Container;
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports) {
 
 	function Keyboard()

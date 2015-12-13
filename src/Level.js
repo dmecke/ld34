@@ -3,6 +3,7 @@ Player = require('./Entity/Player.js');
 Vector = require('./Math/Vector.js');
 Cell = require('./Entity/Cell.js');
 Ui = require('./Ui.js');
+Music = require('./Audio/Music.js');
 settings = require('./Settings.js');
 
 function Level(game, levelSettings)
@@ -68,6 +69,7 @@ function Level(game, levelSettings)
         }
         var background = this.levelSettings.level % 10;
         this.background.src = 'img/background/' + background + '.jpg';
+        this.game.music.playLevel(this.levelSettings.level);
     };
 
     this.checkWinningConditions = function()
@@ -79,6 +81,7 @@ function Level(game, levelSettings)
 
     this.cleanup = function()
     {
+        this.game.music.pauseLevel(this.levelSettings.level);
         clearInterval(this.interval);
     };
 
