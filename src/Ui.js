@@ -30,7 +30,7 @@ function Ui(level)
             cellsText += ' (' + winningConditions.cells + ' needed)';
         }
         var cells = new Text(new Vector(10, this.level.game.dimensions.y - 10), cellsText);
-        cells.font = '14px Roboto';
+        cells.font = '14px Oswald';
         cells.textAlign = 'left';
         cells.fillStyle = settings.blue;
         cells.draw();
@@ -40,7 +40,7 @@ function Ui(level)
             massText += ' (' + winningConditions.mass + ' needed)';
         }
         var mass = new Text(new Vector(10, this.level.game.dimensions.y - 30), massText);
-        mass.font = '14px Roboto';
+        mass.font = '14px Oswald';
         mass.textAlign = 'left';
         mass.fillStyle = settings.blue;
         mass.draw();
@@ -54,8 +54,8 @@ function Ui(level)
 
         this.drawWindow();
 
-        var objectives = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 - 50), 'Grow until you have a mass of ' + this.level.levelSettings.winningConditions.mass + '!');
-        objectives.font = '28px "Gloria Hallelujah"';
+        var objectives = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 - 100), this.level.levelSettings.intro);
+        objectives.font = '18px "Gloria Hallelujah"';
         objectives.fillStyle = 'white';
         objectives.strokeStyle = settings.grey;
         objectives.lineWidth = 5;

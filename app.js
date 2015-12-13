@@ -47,7 +47,7 @@
 	__webpack_require__(1);
 
 	Game = __webpack_require__(5);
-	mouse = __webpack_require__(14);
+	mouse = __webpack_require__(15);
 	keyboard = __webpack_require__(25);
 
 	var game = new Game();
@@ -489,8 +489,8 @@
 	Vector = __webpack_require__(11);
 	Music = __webpack_require__(12);
 	levelDefinitions = __webpack_require__(13);
-	mouse = __webpack_require__(14);
-	settings = __webpack_require__(16);
+	mouse = __webpack_require__(15);
+	settings = __webpack_require__(14);
 
 	function Menu(game)
 	{
@@ -677,7 +677,7 @@
 	{
 	    this.position = position;
 	    this.content = content;
-	    this.font = '12px Roboto';
+	    this.font = '12px Oswald';
 	    this.fillStyle = 'transparent';
 	    this.strokeStyle = 'transparent';
 	    this.lineWidth = 1;
@@ -880,18 +880,111 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
+	settings = __webpack_require__(14);
 
 	LevelDefinitions = [
-	    { level: 1, position: new Vector(100, 340), winningConditions: { cells: 1 }, setup: { cells: 1 } },
-	    { level: 2, position: new Vector(250, 340), winningConditions: { mass: 60 } },
-	    { level: 3, position: new Vector(400, 340), winningConditions: { mass: 70 } },
-	    { level: 4, position: new Vector(550, 340), winningConditions: { mass: 80 } },
-	    { level: 5, position: new Vector(700, 340), winningConditions: { mass: 90 } },
-	    { level: 6, position: new Vector(100, 490), winningConditions: { mass: 100 } },
-	    { level: 7, position: new Vector(250, 490), winningConditions: { mass: 110 } },
-	    { level: 8, position: new Vector(400, 490), winningConditions: { mass: 120 } },
-	    { level: 9, position: new Vector(550, 490), winningConditions: { mass: 130 } },
-	    { level: 10, position: new Vector(700, 490), winningConditions: { mass: 140 } }
+	    {
+	        level: 1,
+	        position: new Vector(100, 340),
+	        intro: 'You are the blue cell in the middle. Click left to it to emit some mass and you will move right. Absorb the green cell by moving over it!',
+	        winningConditions:
+	        {
+	            cells: 1
+	        },
+	        setup:
+	        {
+	            numberOfCells: 1,
+	            cells: [
+	                {
+	                    position: new Vector(500, 300),
+	                    velocity: new Vector(0, 0),
+	                    mass: 10,
+	                    type: settings.CELL_TYPE_SIMPLE
+	                }
+	            ]
+	        }
+	    },
+	    {
+	        level: 2,
+	        position: new Vector(250, 340),
+	        intro: 'Solve all conditions!',
+	        winningConditions:
+	        {
+	            mass: 60
+	        }
+	    },
+	    {
+	        level: 3,
+	        position: new Vector(400, 340),
+	        intro: 'Solve all conditions!',
+	        winningConditions:
+	        {
+	            mass: 70
+	        }
+	    },
+	    {
+	        level: 4,
+	        position: new Vector(550, 340),
+	        intro: 'Solve all conditions!',
+	        winningConditions:
+	        {
+	            mass: 80
+	        }
+	    },
+	    {
+	        level: 5,
+	        position: new Vector(700, 340),
+	        intro: 'Solve all conditions!',
+	        winningConditions:
+	        {
+	            mass: 90
+	        }
+	    },
+	    {
+	        level: 6,
+	        position: new Vector(100, 490),
+	        intro: 'Solve all conditions!',
+	        winningConditions:
+	        {
+	            mass: 100
+	        }
+	    },
+	    {
+	        level: 7,
+	        position: new Vector(250, 490),
+	        intro: 'Solve all conditions!',
+	        winningConditions:
+	        {
+	            mass: 110
+	        }
+	    },
+	    {
+	        level: 8,
+	        position: new Vector(400, 490),
+	        intro: 'Solve all conditions!',
+	        winningConditions:
+	        {
+	            mass: 120
+	        }
+	    },
+	    {
+	        level: 9,
+	        position: new Vector(550, 490),
+	        intro: 'Solve all conditions!',
+	        winningConditions:
+	        {
+	            mass: 130
+	        }
+	    },
+	    {
+	        level: 10,
+	        position: new Vector(700, 490),
+	        intro: 'Solve all conditions!',
+	        winningConditions:
+	        {
+	            mass: 140
+	        }
+	    }
 	];
 
 	module.exports = LevelDefinitions;
@@ -899,9 +992,27 @@
 
 /***/ },
 /* 14 */
+/***/ function(module, exports) {
+
+	Settings = {
+	    white: 'rgb(255, 255, 255)',
+	    grey: 'rgb(55, 73, 89)',
+	    blue: 'rgb(4, 97, 182)',
+	    green: 'rgb(99, 170, 51)',
+	    red: 'rgb(207, 39, 39)',
+
+	    CELL_TYPE_PLAYER: 1,
+	    CELL_TYPE_SIMPLE: 2
+	};
+
+	module.exports = Settings;
+
+
+/***/ },
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
-	Timer = __webpack_require__(15);
+	Timer = __webpack_require__(16);
 	Vector = __webpack_require__(11);
 	canvas = __webpack_require__(8);
 
@@ -959,7 +1070,7 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports) {
 
 	function Timer(maximum)
@@ -987,24 +1098,6 @@
 
 
 /***/ },
-/* 16 */
-/***/ function(module, exports) {
-
-	Settings = {
-	    white: 'rgb(255, 255, 255)',
-	    grey: 'rgb(55, 73, 89)',
-	    blue: 'rgb(4, 97, 182)',
-	    green: 'rgb(99, 170, 51)',
-	    red: 'rgb(207, 39, 39)',
-
-	    CELL_TYPE_PLAYER: 1,
-	    CELL_TYPE_SIMPLE: 2
-	};
-
-	module.exports = Settings;
-
-
-/***/ },
 /* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
@@ -1014,7 +1107,7 @@
 	Cell = __webpack_require__(19);
 	Ui = __webpack_require__(21);
 	Music = __webpack_require__(12);
-	settings = __webpack_require__(16);
+	settings = __webpack_require__(14);
 
 	function Level(game, levelSettings)
 	{
@@ -1070,21 +1163,34 @@
 	        var numberOfCells = 20;
 	        if (this.levelSettings.setup) {
 	            var setup = this.levelSettings.setup;
+	            if (setup.numberOfCells) {
+	                numberOfCells = setup.numberOfCells;
+	            }
 	            if (setup.cells) {
-	                numberOfCells = setup.cells;
+	                //cells.push();
 	            }
 	        }
 
 	        for (var i = 0; i < numberOfCells; i++) {
-	            this.cells.push(
-	                new Cell(
-	                    this,
-	                    new Vector(Math.random() * this.game.dimensions.x, Math.random() * this.game.dimensions.y),
-	                    new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1),
-	                    Math.random() * 10,
-	                    settings.CELL_TYPE_SIMPLE
-	                )
-	            );
+	            var position = new Vector(Math.random() * this.game.dimensions.x, Math.random() * this.game.dimensions.y);
+	            var velocity = new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1);
+	            var mass = Math.random() * 10;
+	            var type = settings.CELL_TYPE_SIMPLE;
+	            if (setup.cells[i]) {
+	                if (setup.cells[i].position) {
+	                    position = setup.cells[i].position;
+	                }
+	                if (setup.cells[i].velocity) {
+	                    velocity = setup.cells[i].velocity;
+	                }
+	                if (setup.cells[i].mass) {
+	                    mass = setup.cells[i].mass;
+	                }
+	                if (setup.cells[i].type) {
+	                    type = setup.cells[i].type;
+	                }
+	            }
+	            this.cells.push(new Cell(this, position, velocity, mass, type));
 	        }
 	        var background = this.levelSettings.level % 10;
 	        this.background.src = 'img/background/' + background + '.jpg';
@@ -1152,8 +1258,8 @@
 	Circle = __webpack_require__(10);
 	Cell = __webpack_require__(19);
 	PositionCheck = __webpack_require__(20);
-	mouse = __webpack_require__(14);
-	settings = __webpack_require__(16);
+	mouse = __webpack_require__(15);
+	settings = __webpack_require__(14);
 
 	function Player(level)
 	{
@@ -1352,7 +1458,7 @@
 	Vector = __webpack_require__(11);
 	Circle = __webpack_require__(10);
 	PositionCheck = __webpack_require__(20);
-	settings = __webpack_require__(16);
+	settings = __webpack_require__(14);
 
 	function Cell(level, position, velocity, mass, type)
 	{
@@ -1531,8 +1637,8 @@
 	Vector = __webpack_require__(11);
 	Text = __webpack_require__(9);
 	Rectangle = __webpack_require__(22);
-	settings = __webpack_require__(16);
-	mouse = __webpack_require__(14);
+	settings = __webpack_require__(14);
+	mouse = __webpack_require__(15);
 
 	function Ui(level)
 	{
@@ -1560,7 +1666,7 @@
 	            cellsText += ' (' + winningConditions.cells + ' needed)';
 	        }
 	        var cells = new Text(new Vector(10, this.level.game.dimensions.y - 10), cellsText);
-	        cells.font = '14px Roboto';
+	        cells.font = '14px Oswald';
 	        cells.textAlign = 'left';
 	        cells.fillStyle = settings.blue;
 	        cells.draw();
@@ -1570,7 +1676,7 @@
 	            massText += ' (' + winningConditions.mass + ' needed)';
 	        }
 	        var mass = new Text(new Vector(10, this.level.game.dimensions.y - 30), massText);
-	        mass.font = '14px Roboto';
+	        mass.font = '14px Oswald';
 	        mass.textAlign = 'left';
 	        mass.fillStyle = settings.blue;
 	        mass.draw();
@@ -1584,8 +1690,8 @@
 
 	        this.drawWindow();
 
-	        var objectives = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 - 50), 'Grow until you have a mass of ' + this.level.levelSettings.winningConditions.mass + '!');
-	        objectives.font = '28px "Gloria Hallelujah"';
+	        var objectives = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 - 100), this.level.levelSettings.intro);
+	        objectives.font = '18px "Gloria Hallelujah"';
 	        objectives.fillStyle = 'white';
 	        objectives.strokeStyle = settings.grey;
 	        objectives.lineWidth = 5;

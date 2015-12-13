@@ -60,21 +60,34 @@ function Level(game, levelSettings)
         var numberOfCells = 20;
         if (this.levelSettings.setup) {
             var setup = this.levelSettings.setup;
+            if (setup.numberOfCells) {
+                numberOfCells = setup.numberOfCells;
+            }
             if (setup.cells) {
-                numberOfCells = setup.cells;
+                //cells.push();
             }
         }
 
         for (var i = 0; i < numberOfCells; i++) {
-            this.cells.push(
-                new Cell(
-                    this,
-                    new Vector(Math.random() * this.game.dimensions.x, Math.random() * this.game.dimensions.y),
-                    new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1),
-                    Math.random() * 10,
-                    settings.CELL_TYPE_SIMPLE
-                )
-            );
+            var position = new Vector(Math.random() * this.game.dimensions.x, Math.random() * this.game.dimensions.y);
+            var velocity = new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1);
+            var mass = Math.random() * 10;
+            var type = settings.CELL_TYPE_SIMPLE;
+            if (setup.cells[i]) {
+                if (setup.cells[i].position) {
+                    position = setup.cells[i].position;
+                }
+                if (setup.cells[i].velocity) {
+                    velocity = setup.cells[i].velocity;
+                }
+                if (setup.cells[i].mass) {
+                    mass = setup.cells[i].mass;
+                }
+                if (setup.cells[i].type) {
+                    type = setup.cells[i].type;
+                }
+            }
+            this.cells.push(new Cell(this, position, velocity, mass, type));
         }
         var background = this.levelSettings.level % 10;
         this.background.src = 'img/background/' + background + '.jpg';
