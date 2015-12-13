@@ -24,7 +24,7 @@ function Ui(level)
                 mouse.position.y <= this.level.game.dimensions.y - 15)
             {
                 mouse.timer.reset();
-                this.level.game.finishLevel();
+                this.level.cleanup();
                 this.level.game.showMenu();
             }
         }

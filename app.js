@@ -1158,7 +1158,6 @@
 
 	    this.clicked = function()
 	    {
-	        console.log(this.timer.current);
 	        return this.click && this.timer.isReady();
 	    };
 	}
@@ -1844,7 +1843,7 @@
 	                mouse.position.y <= this.level.game.dimensions.y - 15)
 	            {
 	                mouse.timer.reset();
-	                this.level.game.finishLevel();
+	                this.level.cleanup();
 	                this.level.game.showMenu();
 	            }
 	        }
