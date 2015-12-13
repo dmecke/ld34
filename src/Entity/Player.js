@@ -131,7 +131,7 @@ function Player(level)
 
     this.incorporateCell = function(cell, index)
     {
-        this.mass += cell.mass;
+        this.addMass(cell.massWhenAbsorbed());
         this.level.cells.splice(index, 1);
         this.level.game.sfx.absorb();
     };
@@ -162,7 +162,7 @@ function Player(level)
         var emittedMass = Math.max(0.2, this.mass * 0.2);
         var direction = this.mouse.position.subtract(this.position).normalize();
         var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
-        this.reduceMass(emittedMass);
+        this.addMass(-emittedMass);
         var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
         var cell = new Cell(this.level, cellPosition, this.velocity, emittedMass, settings.CELL_TYPE_PLAYER);
         this.velocity = this.velocity.add(force);
@@ -171,11 +171,6 @@ function Player(level)
         }
         this.level.cells.push(cell);
         this.level.game.sfx.accelerate();
-    };
-
-    this.reduceMass = function(amount)
-    {
-        this.mass = Math.max(this.minimumMass, this.mass - amount);
     };
 
     this.updateTransparency = function()
@@ -189,6 +184,11 @@ function Player(level)
         if (this.transparency >= 0.8 || this.transparency <= 0.2) {
             this.transparencyFlag = !this.transparencyFlag;
         }
+    };
+
+    this.addMass = function(amount)
+    {
+        this.mass = Math.max(this.minimumMass, this.mass + amount);
     };
 }
 

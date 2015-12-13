@@ -107,12 +107,25 @@ function Cell(level, position, velocity, mass, type)
             return settings.blue;
         } else if (this.type == settings.CELL_TYPE_SIMPLE) {
             return settings.green;
+        } else if (this.type == settings.CELL_TYPE_ABSORB) {
+            return settings.red;
         }
     };
 
     this.isForeign = function()
     {
         return this.type !== settings.CELL_TYPE_PLAYER;
+    };
+
+    this.massWhenAbsorbed = function()
+    {
+        var mass = this.mass;
+
+        if (this.type == settings.CELL_TYPE_ABSORB) {
+            mass *= -1;
+        }
+
+        return mass;
     };
 }
 

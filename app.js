@@ -920,10 +920,36 @@
 	    {
 	        level: 3,
 	        position: new Vector(400, 340),
-	        intro: 'Collect 70 mass!',
+	        intro: 'Be aware of the red cells - they withdraw some mass! Grow up to 100 mass anyway!',
 	        winningConditions:
 	        {
-	            mass: 70
+	            mass: 100
+	        },
+	        setup:
+	        {
+	            numberOfCells: 20,
+	            cells: [
+	                {
+	                    mass: 5,
+	                    type: settings.CELL_TYPE_DEDUCT
+	                },
+	                {
+	                    mass: 10,
+	                    type: settings.CELL_TYPE_DEDUCT
+	                },
+	                {
+	                    mass: 20,
+	                    type: settings.CELL_TYPE_DEDUCT
+	                },
+	                {
+	                    mass: 10,
+	                    type: settings.CELL_TYPE_DEDUCT
+	                },
+	                {
+	                    mass: 15,
+	                    type: settings.CELL_TYPE_DEDUCT
+	                }
+	            ]
 	        }
 	    },
 	    {
@@ -1006,7 +1032,8 @@
 	    red: 'rgb(207, 39, 39)',
 
 	    CELL_TYPE_PLAYER: 1,
-	    CELL_TYPE_SIMPLE: 2
+	    CELL_TYPE_SIMPLE: 2,
+	    CELL_TYPE_DEDUCT: 3
 	};
 
 	module.exports = Settings;
@@ -1175,7 +1202,7 @@
 	        for (var i = 0; i < numberOfCells; i++) {
 	            var position = new Vector(Math.random() * this.game.dimensions.x, Math.random() * this.game.dimensions.y);
 	            var velocity = new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1);
-	            var mass = Math.random() * 10;
+	            var mass = Math.random() * 10 + 5;
 	            var type = settings.CELL_TYPE_SIMPLE;
 	            if (setup.cells && setup.cells[i]) {
 	                if (setup.cells[i].position) {
@@ -1388,7 +1415,7 @@
 
 	    this.incorporateCell = function(cell, index)
 	    {
-	        this.mass += cell.mass;
+	        this.addMass(cell.massWhenAbsorbed());
 	        this.level.cells.splice(index, 1);
 	        this.level.game.sfx.absorb();
 	    };
@@ -1419,7 +1446,7 @@
 	        var emittedMass = Math.max(0.2, this.mass * 0.2);
 	        var direction = this.mouse.position.subtract(this.position).normalize();
 	        var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
-	        this.reduceMass(emittedMass);
+	        this.addMass(-emittedMass);
 	        var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
 	        var cell = new Cell(this.level, cellPosition, this.velocity, emittedMass, settings.CELL_TYPE_PLAYER);
 	        this.velocity = this.velocity.add(force);
@@ -1428,11 +1455,6 @@
 	        }
 	        this.level.cells.push(cell);
 	        this.level.game.sfx.accelerate();
-	    };
-
-	    this.reduceMass = function(amount)
-	    {
-	        this.mass = Math.max(this.minimumMass, this.mass - amount);
 	    };
 
 	    this.updateTransparency = function()
@@ -1446,6 +1468,11 @@
 	        if (this.transparency >= 0.8 || this.transparency <= 0.2) {
 	            this.transparencyFlag = !this.transparencyFlag;
 	        }
+	    };
+
+	    this.addMass = function(amount)
+	    {
+	        this.mass = Math.max(this.minimumMass, this.mass + amount);
 	    };
 	}
 
@@ -1565,12 +1592,25 @@
 	            return settings.blue;
 	        } else if (this.type == settings.CELL_TYPE_SIMPLE) {
 	            return settings.green;
+	        } else if (this.type == settings.CELL_TYPE_DEDUCT) {
+	            return settings.red;
 	        }
 	    };
 
 	    this.isForeign = function()
 	    {
 	        return this.type !== settings.CELL_TYPE_PLAYER;
+	    };
+
+	    this.massWhenAbsorbed = function()
+	    {
+	        var mass = this.mass;
+
+	        if (this.type == settings.CELL_TYPE_DEDUCT) {
+	            mass *= -1;
+	        }
+
+	        return mass;
 	    };
 	}
 

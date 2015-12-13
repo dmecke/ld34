@@ -39,10 +39,36 @@ LevelDefinitions = [
     {
         level: 3,
         position: new Vector(400, 340),
-        intro: 'Collect 70 mass!',
+        intro: 'Be aware of the red cells - they withdraw some mass! Grow up to 100 mass anyway!',
         winningConditions:
         {
-            mass: 70
+            mass: 100
+        },
+        setup:
+        {
+            numberOfCells: 20,
+            cells: [
+                {
+                    mass: 5,
+                    type: settings.CELL_TYPE_ABSORB
+                },
+                {
+                    mass: 10,
+                    type: settings.CELL_TYPE_ABSORB
+                },
+                {
+                    mass: 20,
+                    type: settings.CELL_TYPE_ABSORB
+                },
+                {
+                    mass: 10,
+                    type: settings.CELL_TYPE_ABSORB
+                },
+                {
+                    mass: 15,
+                    type: settings.CELL_TYPE_ABSORB
+                }
+            ]
         }
     },
     {

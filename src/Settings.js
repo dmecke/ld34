@@ -6,7 +6,8 @@ Settings = {
     red: 'rgb(207, 39, 39)',
 
     CELL_TYPE_PLAYER: 1,
-    CELL_TYPE_SIMPLE: 2
+    CELL_TYPE_SIMPLE: 2,
+    CELL_TYPE_ABSORB: 3
 };
 
 module.exports = Settings;
