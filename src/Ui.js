@@ -8,11 +8,6 @@ function Ui(level)
 {
     this.level = level;
 
-    this.update = function()
-    {
-        console.log('Ui::update');
-    };
-
     this.render = function()
     {
         this.drawHud();

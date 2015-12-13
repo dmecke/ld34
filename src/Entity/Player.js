@@ -2,6 +2,7 @@ Vector = require('./../Math/Vector.js');
 Circle = require('./../Graphics/Circle.js');
 Cell = require('./Cell.js');
 PositionCheck = require('./../Util/PositionCheck.js');
+Sound = require('./../Sound.js');
 mouse = require('./../Input/Mouse.js');
 settings = require('./../Settings.js');
 
@@ -13,6 +14,8 @@ function Player(level)
     this.minimumMass = 10;
     this.mass = this.minimumMass + 10;
     this.mouse = mouse;
+    this.soundAccelerate = new Sound('sfx/accelerate.m4a');
+    this.soundAbsorb = new Sound('sfx/absorb.m4a');
 
     this.update = function()
     {
@@ -122,6 +125,7 @@ function Player(level)
     {
         this.mass += cell.mass;
         this.level.cells.splice(index, 1);
+        this.soundAbsorb.play();
     };
 
     this.updatePosition = function()
@@ -158,6 +162,7 @@ function Player(level)
             cell.disappearsIn = 100;
         }
         this.level.cells.push(cell);
+        this.soundAccelerate.play();
     };
 
     this.reduceMass = function(amount)

@@ -48,7 +48,7 @@
 
 	Game = __webpack_require__(5);
 	mouse = __webpack_require__(13);
-	keyboard = __webpack_require__(22);
+	keyboard = __webpack_require__(23);
 
 	var game = new Game();
 
@@ -736,7 +736,7 @@
 	Vector = __webpack_require__(11);
 
 	LevelDefinitions = [
-	    { level: 1, position: new Vector(100, 340), winningConditions: { mass: 500 }},
+	    { level: 1, position: new Vector(100, 340), winningConditions: { mass: 50 }},
 	    { level: 2, position: new Vector(250, 340), winningConditions: { mass: 60 }},
 	    { level: 3, position: new Vector(400, 340), winningConditions: { mass: 70 }},
 	    { level: 4, position: new Vector(550, 340), winningConditions: { mass: 80 }},
@@ -862,7 +862,7 @@
 	Player = __webpack_require__(17);
 	Vector = __webpack_require__(11);
 	Cell = __webpack_require__(18);
-	Ui = __webpack_require__(20);
+	Ui = __webpack_require__(21);
 	settings = __webpack_require__(15);
 
 	function Level(game, levelSettings)
@@ -880,7 +880,6 @@
 
 	    this.start = function()
 	    {
-	        console.log('Level::start');
 	        var level = this;
 	        this.setup();
 
@@ -892,13 +891,10 @@
 
 	    this.update = function()
 	    {
-	        this.ui.update();
-
 	        if (this.paused()) {
 	            return;
 	        }
 
-	        console.log('Level::update');
 	        this.player.update();
 	        for (var i = 0; i < this.cells.length; i++) {
 	            this.cells[i].update();
@@ -919,8 +915,7 @@
 
 	    this.setup = function()
 	    {
-	        console.log('Level::setup');
-	        for (var i = 0; i < 100; i++) {
+	        for (var i = 0; i < 20; i++) {
 	            this.cells.push(
 	                new Cell(
 	                    this,
@@ -980,6 +975,7 @@
 	Circle = __webpack_require__(10);
 	Cell = __webpack_require__(18);
 	PositionCheck = __webpack_require__(19);
+	Sound = __webpack_require__(20);
 	mouse = __webpack_require__(13);
 	settings = __webpack_require__(15);
 
@@ -991,13 +987,14 @@
 	    this.minimumMass = 10;
 	    this.mass = this.minimumMass + 10;
 	    this.mouse = mouse;
+	    this.soundAccelerate = new Sound('sfx/accelerate.m4a');
+	    this.soundAbsorb = new Sound('sfx/absorb.m4a');
 
 	    this.update = function()
 	    {
 	        this.checkCollision();
 	        this.processUserInput();
 	        this.updatePosition();
-	        this.position = mouse.position;
 	    };
 
 	    this.render = function()
@@ -1101,6 +1098,7 @@
 	    {
 	        this.mass += cell.mass;
 	        this.level.cells.splice(index, 1);
+	        this.soundAbsorb.play();
 	    };
 
 	    this.updatePosition = function()
@@ -1137,6 +1135,7 @@
 	            cell.disappearsIn = 100;
 	        }
 	        this.level.cells.push(cell);
+	        this.soundAccelerate.play();
 	    };
 
 	    this.reduceMass = function(amount)
@@ -1167,7 +1166,6 @@
 
 	    this.update = function()
 	    {
-	        return;
 	        this.position = this.position.add(this.velocity);
 	        if (this.position.x > this.level.game.dimensions.x) {
 	            this.position.x -= this.level.game.dimensions.x;
@@ -1293,22 +1291,45 @@
 
 /***/ },
 /* 20 */
+/***/ function(module, exports) {
+
+	function Sound(src)
+	{
+	    this.audio = [
+	        new Audio(src),
+	        new Audio(src),
+	        new Audio(src),
+	        new Audio(src),
+	        new Audio(src)
+	    ];
+
+	    this.play = function()
+	    {
+	        for (var i = 0; i < this.audio.length; i++) {
+	            if (this.audio[i].paused) {
+	                this.audio[i].play();
+	                return;
+	            }
+	        }
+	    };
+	}
+
+	module.exports = Sound;
+
+
+/***/ },
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
 	Text = __webpack_require__(9);
-	Rectangle = __webpack_require__(21);
+	Rectangle = __webpack_require__(22);
 	settings = __webpack_require__(15);
 	mouse = __webpack_require__(13);
 
 	function Ui(level)
 	{
 	    this.level = level;
-
-	    this.update = function()
-	    {
-	        console.log('Ui::update');
-	    };
 
 	    this.render = function()
 	    {
@@ -1407,7 +1428,7 @@
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Context = __webpack_require__(7);
@@ -1438,7 +1459,7 @@
 
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports) {
 
 	function Keyboard()

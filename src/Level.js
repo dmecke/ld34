@@ -20,7 +20,6 @@ function Level(game, levelSettings)
 
     this.start = function()
     {
-        console.log('Level::start');
         var level = this;
         this.setup();
 
@@ -32,13 +31,10 @@ function Level(game, levelSettings)
 
     this.update = function()
     {
-        this.ui.update();
-
         if (this.paused()) {
             return;
         }
 
-        console.log('Level::update');
         this.player.update();
         for (var i = 0; i < this.cells.length; i++) {
             this.cells[i].update();
@@ -59,7 +55,6 @@ function Level(game, levelSettings)
 
     this.setup = function()
     {
-        console.log('Level::setup');
         for (var i = 0; i < 20; i++) {
             this.cells.push(
                 new Cell(
