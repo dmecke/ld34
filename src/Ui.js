@@ -17,23 +17,33 @@ function Ui(level)
 
     this.drawHud = function()
     {
+        var winningConditions = this.level.levelSettings.winningConditions;
+
         var container = new Rectangle(new Vector(100, this.level.game.dimensions.y - 25), 200, 50);
         container.strokeStyle = settings.white;
         container.lineWidth = 2;
         container.fillStyle = settings.white.replace(')', ', 0.6)').replace('rgb', 'rgba');
         container.draw();
 
-        var currentMass = new Text(new Vector(10, this.level.game.dimensions.y - 30), 'Current mass: ' + Math.floor(this.level.player.mass));
-        currentMass.font = '14px "Gloria Hallelujah"';
-        currentMass.textAlign = 'left';
-        currentMass.fillStyle = settings.blue;
-        currentMass.draw();
+        var cellsText = 'Cells collected: ' + this.level.collectedCells;
+        if (winningConditions.cells) {
+            cellsText += ' (' + winningConditions.cells + ' needed)';
+        }
+        var cells = new Text(new Vector(10, this.level.game.dimensions.y - 10), cellsText);
+        cells.font = '14px Roboto';
+        cells.textAlign = 'left';
+        cells.fillStyle = settings.blue;
+        cells.draw();
 
-        var targetMass = new Text(new Vector(10, this.level.game.dimensions.y - 10), 'Target mass: ' + this.level.levelSettings.winningConditions.mass);
-        targetMass.font = '14px "Gloria Hallelujah"';
-        targetMass.textAlign = 'left';
-        targetMass.fillStyle = settings.blue;
-        targetMass.draw();
+        var massText = 'Mass: ' + Math.floor(this.level.player.mass);
+        if (winningConditions.mass) {
+            massText += ' (' + winningConditions.mass + ' needed)';
+        }
+        var mass = new Text(new Vector(10, this.level.game.dimensions.y - 30), massText);
+        mass.font = '14px Roboto';
+        mass.textAlign = 'left';
+        mass.fillStyle = settings.blue;
+        mass.draw();
     };
 
     this.showObjectives = function()

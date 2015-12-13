@@ -882,16 +882,16 @@
 	Vector = __webpack_require__(11);
 
 	LevelDefinitions = [
-	    { level: 1, position: new Vector(100, 340), winningConditions: { mass: 50 }},
-	    { level: 2, position: new Vector(250, 340), winningConditions: { mass: 60 }},
-	    { level: 3, position: new Vector(400, 340), winningConditions: { mass: 70 }},
-	    { level: 4, position: new Vector(550, 340), winningConditions: { mass: 80 }},
-	    { level: 5, position: new Vector(700, 340), winningConditions: { mass: 90 }},
-	    { level: 6, position: new Vector(100, 490), winningConditions: { mass: 100 }},
-	    { level: 7, position: new Vector(250, 490), winningConditions: { mass: 110 }},
-	    { level: 8, position: new Vector(400, 490), winningConditions: { mass: 120 }},
-	    { level: 9, position: new Vector(550, 490), winningConditions: { mass: 130 }},
-	    { level: 10, position: new Vector(700, 490), winningConditions: { mass: 140 }}
+	    { level: 1, position: new Vector(100, 340), winningConditions: { cells: 1 }, setup: { cells: 1 } },
+	    { level: 2, position: new Vector(250, 340), winningConditions: { mass: 60 } },
+	    { level: 3, position: new Vector(400, 340), winningConditions: { mass: 70 } },
+	    { level: 4, position: new Vector(550, 340), winningConditions: { mass: 80 } },
+	    { level: 5, position: new Vector(700, 340), winningConditions: { mass: 90 } },
+	    { level: 6, position: new Vector(100, 490), winningConditions: { mass: 100 } },
+	    { level: 7, position: new Vector(250, 490), winningConditions: { mass: 110 } },
+	    { level: 8, position: new Vector(400, 490), winningConditions: { mass: 120 } },
+	    { level: 9, position: new Vector(550, 490), winningConditions: { mass: 130 } },
+	    { level: 10, position: new Vector(700, 490), winningConditions: { mass: 140 } }
 	];
 
 	module.exports = LevelDefinitions;
@@ -995,7 +995,10 @@
 	    grey: 'rgb(55, 73, 89)',
 	    blue: 'rgb(4, 97, 182)',
 	    green: 'rgb(99, 170, 51)',
-	    red: 'rgb(207, 39, 39)'
+	    red: 'rgb(207, 39, 39)',
+
+	    CELL_TYPE_PLAYER: 1,
+	    CELL_TYPE_SIMPLE: 2
 	};
 
 	module.exports = Settings;
@@ -1025,6 +1028,7 @@
 	    this.showObjectives = true;
 	    this.showScore = false;
 	    this.isFinished = false;
+	    this.collectedCells = 0;
 
 	    this.start = function()
 	    {
@@ -1063,14 +1067,22 @@
 
 	    this.setup = function()
 	    {
-	        for (var i = 0; i < 20; i++) {
+	        var numberOfCells = 20;
+	        if (this.levelSettings.setup) {
+	            var setup = this.levelSettings.setup;
+	            if (setup.cells) {
+	                numberOfCells = setup.cells;
+	            }
+	        }
+
+	        for (var i = 0; i < numberOfCells; i++) {
 	            this.cells.push(
 	                new Cell(
 	                    this,
 	                    new Vector(Math.random() * this.game.dimensions.x, Math.random() * this.game.dimensions.y),
 	                    new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1),
 	                    Math.random() * 10,
-	                    settings.green
+	                    settings.CELL_TYPE_SIMPLE
 	                )
 	            );
 	        }
@@ -1083,13 +1095,24 @@
 
 	    this.checkWinningConditions = function()
 	    {
-	        if (this.player.mass >= this.levelSettings.winningConditions.mass) {
+	        var conditions = this.levelSettings.winningConditions;
+	        var solved = true;
+
+	        if (conditions.mass && this.player.mass < conditions.mass) {
+	            solved = false;
+	        }
+	        if (conditions.cells && this.collectedCells < conditions.cells) {
+	            solved = false;
+	        }
+
+	        if (solved) {
 	            this.showScore = true;
 	        }
 	    };
 
 	    this.cleanup = function()
 	    {
+	        this.collectedCells = 0;
 	        this.cells = [];
 	        this.showScore = false;
 	        this.game.music.pauseLevel(this.levelSettings.level);
@@ -1245,6 +1268,9 @@
 	    {
 	        if (this.collidesWithCell(position, cell)) {
 	            this.incorporateCell(cell, index);
+	            if (cell.isForeign()) {
+	                this.level.collectedCells++;
+	            }
 	        }
 	    };
 
@@ -1288,7 +1314,7 @@
 	        var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
 	        this.reduceMass(emittedMass);
 	        var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-	        var cell = new Cell(this.level, cellPosition, this.velocity, emittedMass, settings.blue);
+	        var cell = new Cell(this.level, cellPosition, this.velocity, emittedMass, settings.CELL_TYPE_PLAYER);
 	        this.velocity = this.velocity.add(force);
 	        if (this.mass == this.minimumMass) {
 	            cell.disappearsIn = 100;
@@ -1328,16 +1354,16 @@
 	PositionCheck = __webpack_require__(20);
 	settings = __webpack_require__(16);
 
-	function Cell(level, position, velocity, mass, color)
+	function Cell(level, position, velocity, mass, type)
 	{
 	    this.level = level;
 	    this.position = position;
 	    this.velocity = velocity;
 	    this.mass = mass;
-	    this.color = color;
 	    this.transparency = 0.5;
 	    this.transparencyFlag = true;
 	    this.disappearsIn = undefined;
+	    this.type = type;
 
 	    this.update = function()
 	    {
@@ -1402,8 +1428,8 @@
 	    this.drawElement = function(position)
 	    {
 	        var circle = new Circle(position, this.mass);
-	        circle.strokeStyle = this.color;
-	        circle.fillStyle = this.color.replace(')', ', 0.3)').replace('rgb', 'rgba');
+	        circle.strokeStyle = this.color();
+	        circle.fillStyle = this.color().replace(')', ', 0.3)').replace('rgb', 'rgba');
 	        circle.lineWidth = 3;
 	        circle.draw();
 
@@ -1424,6 +1450,20 @@
 	        if (this.transparency >= 0.8 || this.transparency <= 0.2) {
 	            this.transparencyFlag = !this.transparencyFlag;
 	        }
+	    };
+
+	    this.color = function()
+	    {
+	        if (this.type == settings.CELL_TYPE_PLAYER) {
+	            return settings.blue;
+	        } else if (this.type == settings.CELL_TYPE_SIMPLE) {
+	            return settings.green;
+	        }
+	    };
+
+	    this.isForeign = function()
+	    {
+	        return this.type !== settings.CELL_TYPE_PLAYER;
 	    };
 	}
 
@@ -1507,23 +1547,33 @@
 
 	    this.drawHud = function()
 	    {
+	        var winningConditions = this.level.levelSettings.winningConditions;
+
 	        var container = new Rectangle(new Vector(100, this.level.game.dimensions.y - 25), 200, 50);
 	        container.strokeStyle = settings.white;
 	        container.lineWidth = 2;
 	        container.fillStyle = settings.white.replace(')', ', 0.6)').replace('rgb', 'rgba');
 	        container.draw();
 
-	        var currentMass = new Text(new Vector(10, this.level.game.dimensions.y - 30), 'Current mass: ' + Math.floor(this.level.player.mass));
-	        currentMass.font = '14px "Gloria Hallelujah"';
-	        currentMass.textAlign = 'left';
-	        currentMass.fillStyle = settings.blue;
-	        currentMass.draw();
+	        var cellsText = 'Cells collected: ' + this.level.collectedCells;
+	        if (winningConditions.cells) {
+	            cellsText += ' (' + winningConditions.cells + ' needed)';
+	        }
+	        var cells = new Text(new Vector(10, this.level.game.dimensions.y - 10), cellsText);
+	        cells.font = '14px Roboto';
+	        cells.textAlign = 'left';
+	        cells.fillStyle = settings.blue;
+	        cells.draw();
 
-	        var targetMass = new Text(new Vector(10, this.level.game.dimensions.y - 10), 'Target mass: ' + this.level.levelSettings.winningConditions.mass);
-	        targetMass.font = '14px "Gloria Hallelujah"';
-	        targetMass.textAlign = 'left';
-	        targetMass.fillStyle = settings.blue;
-	        targetMass.draw();
+	        var massText = 'Mass: ' + Math.floor(this.level.player.mass);
+	        if (winningConditions.mass) {
+	            massText += ' (' + winningConditions.mass + ' needed)';
+	        }
+	        var mass = new Text(new Vector(10, this.level.game.dimensions.y - 30), massText);
+	        mass.font = '14px Roboto';
+	        mass.textAlign = 'left';
+	        mass.fillStyle = settings.blue;
+	        mass.draw();
 	    };
 
 	    this.showObjectives = function()

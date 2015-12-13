@@ -18,6 +18,7 @@ function Level(game, levelSettings)
     this.showObjectives = true;
     this.showScore = false;
     this.isFinished = false;
+    this.collectedCells = 0;
 
     this.start = function()
     {
@@ -56,14 +57,22 @@ function Level(game, levelSettings)
 
     this.setup = function()
     {
-        for (var i = 0; i < 20; i++) {
+        var numberOfCells = 20;
+        if (this.levelSettings.setup) {
+            var setup = this.levelSettings.setup;
+            if (setup.cells) {
+                numberOfCells = setup.cells;
+            }
+        }
+
+        for (var i = 0; i < numberOfCells; i++) {
             this.cells.push(
                 new Cell(
                     this,
                     new Vector(Math.random() * this.game.dimensions.x, Math.random() * this.game.dimensions.y),
                     new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1),
                     Math.random() * 10,
-                    settings.green
+                    settings.CELL_TYPE_SIMPLE
                 )
             );
         }
@@ -76,13 +85,24 @@ function Level(game, levelSettings)
 
     this.checkWinningConditions = function()
     {
-        if (this.player.mass >= this.levelSettings.winningConditions.mass) {
+        var conditions = this.levelSettings.winningConditions;
+        var solved = true;
+
+        if (conditions.mass && this.player.mass < conditions.mass) {
+            solved = false;
+        }
+        if (conditions.cells && this.collectedCells < conditions.cells) {
+            solved = false;
+        }
+
+        if (solved) {
             this.showScore = true;
         }
     };
 
     this.cleanup = function()
     {
+        this.collectedCells = 0;
         this.cells = [];
         this.showScore = false;
         this.game.music.pauseLevel(this.levelSettings.level);

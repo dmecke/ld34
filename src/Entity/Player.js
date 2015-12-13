@@ -118,6 +118,9 @@ function Player(level)
     {
         if (this.collidesWithCell(position, cell)) {
             this.incorporateCell(cell, index);
+            if (cell.isForeign()) {
+                this.level.collectedCells++;
+            }
         }
     };
 
@@ -161,7 +164,7 @@ function Player(level)
         var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
         this.reduceMass(emittedMass);
         var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-        var cell = new Cell(this.level, cellPosition, this.velocity, emittedMass, settings.blue);
+        var cell = new Cell(this.level, cellPosition, this.velocity, emittedMass, settings.CELL_TYPE_PLAYER);
         this.velocity = this.velocity.add(force);
         if (this.mass == this.minimumMass) {
             cell.disappearsIn = 100;
