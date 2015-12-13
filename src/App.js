@@ -13,5 +13,4 @@ document.addEventListener('mousedown', function(event) { mouse.buttonDown(event)
 document.addEventListener('mouseup', function(event) { mouse.buttonUp(event); });
 document.addEventListener('touchstart', function(event) { mouse.updatePosition(event); mouse.buttonDown(event); });
 document.addEventListener('touchend', function(event) { mouse.buttonUp(event); });
-document.addEventListener('keydown', function(event) { keyboard.addKey(event.keyCode); });
-document.addEventListener('keyup', function(event) { keyboard.removeKey(event.keyCode); });
+document.addEventListener('keydown', function(event) { keyboard.steer(event.keyCode); });

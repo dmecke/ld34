@@ -104,10 +104,46 @@ LevelDefinitions = [
     {
         level: 5,
         position: new Vector(700, 340),
-        intro: 'Collect 90 mass!',
+        intro: 'Uhm.. It seems we are in the wrong theme now.. The mouse won\'t work here, you can only use A and D to steer. Can you collect all cells even with two button controls?',
         winningConditions:
         {
-            mass: 90
+            cells: 10
+        },
+        setup:
+        {
+            numberOfCells: 10,
+            cells: [
+                {
+                    type: settings.CELL_TYPE_SIMPLE
+                },
+                {
+                    type: settings.CELL_TYPE_SIMPLE
+                },
+                {
+                    type: settings.CELL_TYPE_SIMPLE
+                },
+                {
+                    type: settings.CELL_TYPE_SIMPLE
+                },
+                {
+                    type: settings.CELL_TYPE_SIMPLE
+                },
+                {
+                    type: settings.CELL_TYPE_DIRECTION
+                },
+                {
+                    type: settings.CELL_TYPE_DIRECTION
+                },
+                {
+                    type: settings.CELL_TYPE_DIRECTION
+                },
+                {
+                    type: settings.CELL_TYPE_DIRECTION
+                },
+                {
+                    type: settings.CELL_TYPE_DIRECTION
+                }
+            ]
         }
     },
     {

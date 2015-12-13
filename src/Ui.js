@@ -104,7 +104,7 @@ function Ui(level)
 
     this.drawContinueText = function(text)
     {
-        var clickToStart = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 + 100), text);
+        var clickToStart = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 + 120), text);
         clickToStart.font = '18px "Gloria Hallelujah"';
         clickToStart.fillStyle = 'white';
         clickToStart.strokeStyle = settings.grey;

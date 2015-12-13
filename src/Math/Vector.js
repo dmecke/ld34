@@ -49,6 +49,22 @@ function Vector(x, y)
 
         return this.normalize().multiply(limit);
     };
+
+    this.rotateByDegress = function(degrees)
+    {
+        return this.rotateByRadians(degrees * Math.PI / 180);
+    };
+
+    this.rotateByRadians = function(radians)
+    {
+        var ca = Math.cos(radians);
+        var sa = Math.sin(radians);
+        var length = this.length();
+
+        var vector = new Vector(Math.round(ca * this.x - sa * this.y), Math.round(sa * this.x + ca * this.y));
+
+        return vector.normalize().multiply(length);
+    };
 }
 
 module.exports = Vector;

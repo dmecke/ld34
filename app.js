@@ -48,7 +48,7 @@
 
 	Game = __webpack_require__(5);
 	mouse = __webpack_require__(15);
-	keyboard = __webpack_require__(25);
+	keyboard = __webpack_require__(21);
 
 	var game = new Game();
 
@@ -59,8 +59,7 @@
 	document.addEventListener('mouseup', function(event) { mouse.buttonUp(event); });
 	document.addEventListener('touchstart', function(event) { mouse.updatePosition(event); mouse.buttonDown(event); });
 	document.addEventListener('touchend', function(event) { mouse.buttonUp(event); });
-	document.addEventListener('keydown', function(event) { keyboard.addKey(event.keyCode); });
-	document.addEventListener('keyup', function(event) { keyboard.removeKey(event.keyCode); });
+	document.addEventListener('keydown', function(event) { keyboard.steer(event.keyCode); });
 
 
 /***/ },
@@ -420,7 +419,7 @@
 	Menu = __webpack_require__(6);
 	Level = __webpack_require__(17);
 	Vector = __webpack_require__(11);
-	Sfx = __webpack_require__(23);
+	Sfx = __webpack_require__(24);
 	Music = __webpack_require__(12);
 	levelDefinitions = __webpack_require__(13);
 	canvas = __webpack_require__(8);
@@ -803,6 +802,22 @@
 
 	        return this.normalize().multiply(limit);
 	    };
+
+	    this.rotateByDegress = function(degrees)
+	    {
+	        return this.rotateByRadians(degrees * Math.PI / 180);
+	    };
+
+	    this.rotateByRadians = function(radians)
+	    {
+	        var ca = Math.cos(radians);
+	        var sa = Math.sin(radians);
+	        var length = this.length();
+
+	        var vector = new Vector(Math.round(ca * this.x - sa * this.y), Math.round(sa * this.x + ca * this.y));
+
+	        return vector.normalize().multiply(length);
+	    };
 	}
 
 	module.exports = Vector;
@@ -985,10 +1000,46 @@
 	    {
 	        level: 5,
 	        position: new Vector(700, 340),
-	        intro: 'Collect 90 mass!',
+	        intro: 'Uhm.. It seems we are in the wrong theme now.. The mouse won\'t work here, you can only use A and D to steer. Can you collect all cells even with two button controls?',
 	        winningConditions:
 	        {
-	            mass: 90
+	            cells: 10
+	        },
+	        setup:
+	        {
+	            numberOfCells: 10,
+	            cells: [
+	                {
+	                    type: settings.CELL_TYPE_SIMPLE
+	                },
+	                {
+	                    type: settings.CELL_TYPE_SIMPLE
+	                },
+	                {
+	                    type: settings.CELL_TYPE_SIMPLE
+	                },
+	                {
+	                    type: settings.CELL_TYPE_SIMPLE
+	                },
+	                {
+	                    type: settings.CELL_TYPE_SIMPLE
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                }
+	            ]
 	        }
 	    },
 	    {
@@ -1159,7 +1210,7 @@
 	Player = __webpack_require__(18);
 	Vector = __webpack_require__(11);
 	Cell = __webpack_require__(19);
-	Ui = __webpack_require__(21);
+	Ui = __webpack_require__(22);
 	Music = __webpack_require__(12);
 	settings = __webpack_require__(14);
 
@@ -1214,7 +1265,7 @@
 
 	    this.setup = function()
 	    {
-	        var numberOfCells = 20;
+	        var numberOfCells = 10;
 	        if (this.levelSettings.setup) {
 	            var setup = this.levelSettings.setup;
 	            if (setup.numberOfCells) {
@@ -1227,7 +1278,7 @@
 	            var velocity = new Vector(Math.random() * 0.6 - 0.3, Math.random() * 0.6 - 0.3);
 	            var mass = Math.random() * 10 + 5;
 	            var type = settings.CELL_TYPE_SIMPLE;
-	            if (setup.cells && setup.cells[i]) {
+	            if (setup && setup.cells && setup.cells[i]) {
 	                if (setup.cells[i].position) {
 	                    position = setup.cells[i].position;
 	                }
@@ -1310,6 +1361,7 @@
 	Cell = __webpack_require__(19);
 	PositionCheck = __webpack_require__(20);
 	mouse = __webpack_require__(15);
+	keyboard = __webpack_require__(21);
 	settings = __webpack_require__(14);
 
 	function Player(level)
@@ -1462,12 +1514,12 @@
 
 	    this.processUserInput = function()
 	    {
-	        if (!this.mouse.clicked()) {
+	        if (!this.accelerationActive()) {
 	            return;
 	        }
 
 	        var emittedMass = Math.max(0.2, this.mass * 0.2);
-	        var direction = this.mouse.position.subtract(this.position).normalize();
+	        var direction = this.movementDirection();
 	        var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
 	        this.addMass(-emittedMass);
 	        var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
@@ -1496,6 +1548,25 @@
 	    this.addMass = function(amount)
 	    {
 	        this.mass = Math.max(this.minimumMass, this.mass + amount);
+	    };
+
+	    this.accelerationActive = function()
+	    {
+	        if (this.level.levelSettings.level == 5) {
+	            this.velocity = keyboard.direction.normalize();
+	            return false;
+	        }
+
+	        return this.mouse.clicked();
+	    };
+
+	    this.movementDirection = function()
+	    {
+	        if (this.level.levelSettings.level == 5) {
+	            return keyboard.direction.normalize();
+	        }
+
+	        return this.mouse.position.subtract(this.position).normalize()
 	    };
 	}
 
@@ -1703,9 +1774,49 @@
 /* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
+	Timer = __webpack_require__(16);
+	Vector = __webpack_require__(11);
+
+	function Keyboard()
+	{
+	    this.KEY_A = 65;
+	    this.KEY_D = 68;
+	    this.direction = new Vector(1, 0);
+	    this.timer = new Timer(30);
+
+	    this.steer = function(keyCode)
+	    {
+	        if (!this.timer.isReady()) {
+	            return;
+	        }
+
+	        if (keyCode == this.KEY_A) {
+	            this.direction = this.direction.rotateByDegress(-45);
+	            this.timer.reset();
+	        }
+
+	        if (keyCode == this.KEY_D) {
+	            this.direction = this.direction.rotateByDegress(45);
+	            this.timer.reset();
+	        }
+	    };
+	}
+
+	var keyboard = new Keyboard();
+	setInterval(function() {
+	    keyboard.timer.update();
+	}, 1 / 30);
+
+	module.exports = keyboard;
+
+
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
 	Vector = __webpack_require__(11);
 	Text = __webpack_require__(9);
-	Rectangle = __webpack_require__(22);
+	Rectangle = __webpack_require__(23);
 	settings = __webpack_require__(14);
 	mouse = __webpack_require__(15);
 
@@ -1809,7 +1920,7 @@
 
 	    this.drawContinueText = function(text)
 	    {
-	        var clickToStart = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 + 100), text);
+	        var clickToStart = new Text(new Vector(this.level.game.dimensions.x / 2, this.level.game.dimensions.y / 2 + 120), text);
 	        clickToStart.font = '18px "Gloria Hallelujah"';
 	        clickToStart.fillStyle = 'white';
 	        clickToStart.strokeStyle = settings.grey;
@@ -1822,7 +1933,7 @@
 
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Context = __webpack_require__(7);
@@ -1853,10 +1964,10 @@
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
-	Container = __webpack_require__(24);
+	Container = __webpack_require__(25);
 
 	function Sfx()
 	{
@@ -1893,7 +2004,7 @@
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports) {
 
 	function Container(src)
@@ -1925,80 +2036,6 @@
 	}
 
 	module.exports = Container;
-
-
-/***/ },
-/* 25 */
-/***/ function(module, exports) {
-
-	function Keyboard()
-	{
-	    this.keys = [];
-
-	    this.KEY_ENTER = 13;
-	    this.KEY_SPACE = 32;
-	    this.KEY_LEFT = 37;
-	    this.KEY_UP = 38;
-	    this.KEY_RIGHT = 39;
-	    this.KEY_DOWN = 40;
-	    this.KEY_A = 65;
-	    this.KEY_D = 68;
-	    this.KEY_S = 83;
-	    this.KEY_W = 87;
-
-	    this.addKey = function(keyCode)
-	    {
-	        if (-1 == this.keys.indexOf(keyCode)) {
-	            this.keys.push(keyCode);
-	        }
-	    };
-
-	    this.removeKey = function(keyCode)
-	    {
-	        var index = this.keys.indexOf(keyCode);
-	        if (index != -1) {
-	            this.keys.splice(index, 1);
-	        }
-	    };
-
-	    this.isUp = function()
-	    {
-	        if (-1 != this.keys.indexOf(this.KEY_UP)) {
-	            return true;
-	        }
-
-	        return -1 != this.keys.indexOf(this.KEY_W);
-	    };
-
-	    this.isDown = function()
-	    {
-	        if (-1 != this.keys.indexOf(this.KEY_DOWN)) {
-	            return true;
-	        }
-
-	        return -1 != this.keys.indexOf(this.KEY_S);
-	    };
-
-	    this.isLeft = function()
-	    {
-	        if (-1 != this.keys.indexOf(this.KEY_LEFT)) {
-	            return true;
-	        }
-
-	        return -1 != this.keys.indexOf(this.KEY_A);
-	    };
-
-	    this.isRight = function()
-	    {
-	        if (-1 != this.keys.indexOf(this.KEY_RIGHT)) {
-	            return true;
-	        }
-
-	        return -1 != this.keys.indexOf(this.KEY_D);
-	    };
-	}
-
-	module.exports = new Keyboard();
 
 
 /***/ }

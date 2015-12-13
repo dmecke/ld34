@@ -3,6 +3,7 @@ Circle = require('./../Graphics/Circle.js');
 Cell = require('./Cell.js');
 PositionCheck = require('./../Util/PositionCheck.js');
 mouse = require('./../Input/Mouse.js');
+keyboard = require('./../Input/Keyboard.js');
 settings = require('./../Settings.js');
 
 function Player(level)
@@ -155,12 +156,12 @@ function Player(level)
 
     this.processUserInput = function()
     {
-        if (!this.mouse.clicked()) {
+        if (!this.accelerationActive()) {
             return;
         }
 
         var emittedMass = Math.max(0.2, this.mass * 0.2);
-        var direction = this.mouse.position.subtract(this.position).normalize();
+        var direction = this.movementDirection();
         var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
         this.addMass(-emittedMass);
         var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
@@ -189,6 +190,25 @@ function Player(level)
     this.addMass = function(amount)
     {
         this.mass = Math.max(this.minimumMass, this.mass + amount);
+    };
+
+    this.accelerationActive = function()
+    {
+        if (this.level.levelSettings.level == 5) {
+            this.velocity = keyboard.direction.normalize();
+            return false;
+        }
+
+        return this.mouse.clicked();
+    };
+
+    this.movementDirection = function()
+    {
+        if (this.level.levelSettings.level == 5) {
+            return keyboard.direction.normalize();
+        }
+
+        return this.mouse.position.subtract(this.position).normalize()
     };
 }
 

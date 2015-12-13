@@ -57,7 +57,7 @@ function Level(game, levelSettings)
 
     this.setup = function()
     {
-        var numberOfCells = 20;
+        var numberOfCells = 10;
         if (this.levelSettings.setup) {
             var setup = this.levelSettings.setup;
             if (setup.numberOfCells) {
@@ -70,7 +70,7 @@ function Level(game, levelSettings)
             var velocity = new Vector(Math.random() * 0.6 - 0.3, Math.random() * 0.6 - 0.3);
             var mass = Math.random() * 10 + 5;
             var type = settings.CELL_TYPE_SIMPLE;
-            if (setup.cells && setup.cells[i]) {
+            if (setup && setup.cells && setup.cells[i]) {
                 if (setup.cells[i].position) {
                     position = setup.cells[i].position;
                 }
