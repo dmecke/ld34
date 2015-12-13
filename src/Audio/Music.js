@@ -20,6 +20,7 @@ function Music()
         if (this.enabled) {
             this.playMenu();
         }
+        window.localStorage.setItem('disable_music', !this.enabled);
     };
 
     this.playMenu = function()

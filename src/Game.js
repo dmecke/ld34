@@ -26,6 +26,12 @@ function Game()
                 this.levels.push(level);
             }
         }
+        if (window.localStorage.getItem('disable_music') && window.localStorage.getItem('disable_music') == 'true') {
+            this.music.enabled = false;
+        }
+        if (window.localStorage.getItem('disable_sfx') && window.localStorage.getItem('disable_sfx') == 'true') {
+            this.sfx.enabled = false;
+        }
         this.showMenu();
     };
 

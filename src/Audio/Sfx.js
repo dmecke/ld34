@@ -9,6 +9,7 @@ function Sfx()
     this.toggle = function()
     {
         this.enabled = !this.enabled;
+        window.localStorage.setItem('disable_sfx', !this.enabled);
     };
 
     this.absorb = function()

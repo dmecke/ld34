@@ -445,6 +445,12 @@
 	                this.levels.push(level);
 	            }
 	        }
+	        if (window.localStorage.getItem('disable_music') && window.localStorage.getItem('disable_music') == 'true') {
+	            this.music.enabled = false;
+	        }
+	        if (window.localStorage.getItem('disable_sfx') && window.localStorage.getItem('disable_sfx') == 'true') {
+	            this.sfx.enabled = false;
+	        }
 	        this.showMenu();
 	    };
 
@@ -828,6 +834,7 @@
 	        if (this.enabled) {
 	            this.playMenu();
 	        }
+	        window.localStorage.setItem('disable_music', !this.enabled);
 	    };
 
 	    this.playMenu = function()
@@ -1587,6 +1594,7 @@
 	    this.toggle = function()
 	    {
 	        this.enabled = !this.enabled;
+	        window.localStorage.setItem('disable_sfx', !this.enabled);
 	    };
 
 	    this.absorb = function()
