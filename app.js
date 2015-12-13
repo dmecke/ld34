@@ -97,7 +97,7 @@
 
 
 	// module
-	exports.push([module.id, "body {\n    margin: 0;\n    background: #c6dde6;\n    font-family: 'Gloria Hallelujah', sans-serif;\n    color: #272727;\n}\nh1, h2 {\n    text-align: center;\n}\ncanvas {\n    background: white;\n    border: 1px solid #272727;\n    display: block;\n    margin: 50px auto;\n    width: 800px;\n    height: 600px;\n}\nfooter {\n    margin: 50px auto 0;\n    text-align: center;\n    width: 800px;\n}\nfooter.credits {\n    font-size: 12px;\n}\n.explanations {\n    margin: auto;\n    text-align: justify;\n    width: 800px;\n}\n", ""]);
+	exports.push([module.id, "body {\n    margin: 0;\n    background: #c6dde6;\n    font-family: 'Gloria Hallelujah', sans-serif;\n    color: #272727;\n}\nh1, h2 {\n    text-align: center;\n}\ncanvas {\n    background: white;\n    border: 1px solid #272727;\n    display: block;\n    margin: 50px auto;\n    width: 800px;\n    height: 600px;\n}\nfooter {\n    margin: 50px auto 0;\n    text-align: center;\n    width: 800px;\n}\nfooter.credits {\n    font-size: 12px;\n}\n.hint {\n    width: 800px;\n    margin: 50px auto;\n}\n.hint span {\n    color: rgb(207, 39, 39);\n    font-weight: bold;\n}\n.explanations {\n    margin: auto;\n    text-align: justify;\n    width: 800px;\n}\n", ""]);
 
 	// exports
 
