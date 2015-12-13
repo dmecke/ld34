@@ -923,7 +923,7 @@
 	    {
 	        level: 2,
 	        position: new Vector(250, 340),
-	        intro: 'There can be multiple cells and they are moving! Don\'t be afraid to lose mass - you cannot go below a certain level. Collect all green cells!',
+	        intro: 'There can be multiple cells and they are moving! Your mass cannot go below a certain level, but you won\'t be able to move anymore. Collect all green cells!',
 	        winningConditions:
 	        {
 	            cells: 5
@@ -943,7 +943,7 @@
 	        },
 	        setup:
 	        {
-	            numberOfCells: 20,
+	            numberOfCells: 15,
 	            cells: [
 	                {
 	                    mass: 5,
@@ -974,7 +974,7 @@
 	        intro: 'Uh oh! Yellow cells randomly change their directions. Can you still collect them all?',
 	        winningConditions:
 	        {
-	            cells: 10
+	            cells: 5
 	        },
 	        setup:
 	        {
@@ -1083,44 +1083,302 @@
 	                },
 	                {
 	                    type: settings.CELL_TYPE_ESCAPER
-	                },
+	                }
 	            ]
 	        }
 	    },
 	    {
 	        level: 7,
 	        position: new Vector(250, 490),
-	        intro: 'Collect 0 mass!',
+	        intro: 'Time ran out, so no new cell types here? Well then, at least the red ones are back, and they are huge! Try to grow to 100 before they hit you!',
 	        winningConditions:
 	        {
-	            mass: 110
+	            mass: 100
+	        },
+	        setup:
+	        {
+	            numberOfCells: 25,
+	            cells: [
+	                {
+	                    mass: 100,
+	                    type: settings.CELL_TYPE_ABSORB
+	                },
+	                {
+	                    mass: 100,
+	                    type: settings.CELL_TYPE_ABSORB
+	                },
+	                {
+	                    mass: 100,
+	                    type: settings.CELL_TYPE_ABSORB
+	                }
+	            ]
 	        }
 	    },
 	    {
 	        level: 8,
 	        position: new Vector(400, 490),
-	        intro: 'Collect 120 mass!',
+	        intro: 'Are you clever enough to catch the escaping cells without colliding with the red ones too often? Grow to at least 75.',
 	        winningConditions:
 	        {
-	            mass: 120
+	            mass: 75
+	        },
+	        setup:
+	        {
+	            numberOfCells: 22,
+	            cells: [
+	                {
+	                    mass: 25,
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(100, 100),
+	                    velocity: new Vector(0, 0)
+	                },
+	                {
+	                    mass: 25,
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(400, 100),
+	                    velocity: new Vector(0, 0)
+	                },
+	                {
+	                    mass: 25,
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(700, 100),
+	                    velocity: new Vector(0, 0)
+	                },
+	                {
+	                    mass: 25,
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(100, 300),
+	                    velocity: new Vector(0, 0)
+	                },
+	                {
+	                    mass: 25,
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(700, 300),
+	                    velocity: new Vector(0, 0)
+	                },
+	                {
+	                    mass: 25,
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(100, 500),
+	                    velocity: new Vector(0, 0)
+	                },
+	                {
+	                    mass: 25,
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(400, 500),
+	                    velocity: new Vector(0, 0)
+	                },
+	                {
+	                    mass: 25,
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(700, 500),
+	                    velocity: new Vector(0, 0)
+	                },
+	                {
+	                    mass: 25,
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(250, 200),
+	                    velocity: new Vector(0, 0)
+	                },
+	                {
+	                    mass: 25,
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(550, 200),
+	                    velocity: new Vector(0, 0)
+	                },
+	                {
+	                    mass: 25,
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(250, 400),
+	                    velocity: new Vector(0, 0)
+	                },
+	                {
+	                    mass: 25,
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(550, 400),
+	                    velocity: new Vector(0, 0)
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                }
+	            ]
 	        }
 	    },
 	    {
 	        level: 9,
 	        position: new Vector(550, 490),
-	        intro: 'Collect 130 mass!',
+	        intro: 'Lets throw in what we\'ve got! How huge can you grow? (Hint: really huge..)',
 	        winningConditions:
 	        {
-	            mass: 130
+	            cells: 30
+	        },
+	        setup:
+	        {
+	            numberOfCells: 30,
+	            cells: [
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER
+	                }
+	            ]
 	        }
 	    },
 	    {
 	        level: 10,
 	        position: new Vector(700, 490),
-	        intro: 'Collect 140 mass!',
+	        intro: 'Ok, that was too easy, right? So this time we have some red ones in here as well. Can you collect everything (including your emitted mass) and don\'t get hit by any red one? (That\'s really tough..)',
 	        winningConditions:
 	        {
-	            mass: 140
+	            mass: 110
+	        },
+	        setup:
+	        {
+	            numberOfCells: 15,
+	            cells: [
+	                {
+	                    type: settings.CELL_TYPE_SIMPLE,
+	                    mass: 5
+	                },
+	                {
+	                    type: settings.CELL_TYPE_SIMPLE,
+	                    mass: 5
+	                },
+	                {
+	                    type: settings.CELL_TYPE_SIMPLE,
+	                    mass: 10
+	                },
+	                {
+	                    type: settings.CELL_TYPE_SIMPLE,
+	                    mass: 10
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER,
+	                    mass: 5
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER,
+	                    mass: 5
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER,
+	                    mass: 10
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ESCAPER,
+	                    mass: 10
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION,
+	                    mass: 5
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION,
+	                    mass: 5
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION,
+	                    mass: 10
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION,
+	                    mass: 10
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    mass: 5
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    mass: 5
+	                },
+	                {
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    mass: 5
+	                }
+	            ]
 	        }
 	    }
 	];
