@@ -48,7 +48,7 @@
 
 	Game = __webpack_require__(5);
 	mouse = __webpack_require__(13);
-	keyboard = __webpack_require__(21);
+	keyboard = __webpack_require__(22);
 
 	var game = new Game();
 
@@ -736,7 +736,7 @@
 	Vector = __webpack_require__(11);
 
 	LevelDefinitions = [
-	    { level: 1, position: new Vector(100, 340), winningConditions: { mass: 50 }},
+	    { level: 1, position: new Vector(100, 340), winningConditions: { mass: 500 }},
 	    { level: 2, position: new Vector(250, 340), winningConditions: { mass: 60 }},
 	    { level: 3, position: new Vector(400, 340), winningConditions: { mass: 70 }},
 	    { level: 4, position: new Vector(550, 340), winningConditions: { mass: 80 }},
@@ -862,7 +862,7 @@
 	Player = __webpack_require__(17);
 	Vector = __webpack_require__(11);
 	Cell = __webpack_require__(18);
-	Ui = __webpack_require__(19);
+	Ui = __webpack_require__(20);
 	settings = __webpack_require__(15);
 
 	function Level(game, levelSettings)
@@ -920,7 +920,7 @@
 	    this.setup = function()
 	    {
 	        console.log('Level::setup');
-	        for (var i = 0; i < 20; i++) {
+	        for (var i = 0; i < 100; i++) {
 	            this.cells.push(
 	                new Cell(
 	                    this,
@@ -979,6 +979,7 @@
 	Vector = __webpack_require__(11);
 	Circle = __webpack_require__(10);
 	Cell = __webpack_require__(18);
+	PositionCheck = __webpack_require__(19);
 	mouse = __webpack_require__(13);
 	settings = __webpack_require__(15);
 
@@ -996,6 +997,7 @@
 	        this.checkCollision();
 	        this.processUserInput();
 	        this.updatePosition();
+	        this.position = mouse.position;
 	    };
 
 	    this.render = function()
@@ -1007,31 +1009,32 @@
 	    this.draw = function(radius)
 	    {
 	        var dimensions = this.level.game.dimensions;
+	        var check = new PositionCheck(this.position, radius, dimensions);
 
 	        this.drawElement(this.position, radius);
-	        if (this.position.x - radius < 0) {
+	        if (check.isOutOfLeftBorder()) {
 	            this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y), radius);
 	        }
-	        if (this.position.y - radius < 0) {
+	        if (check.isOutOfTopBorder()) {
 	            this.drawElement(new Vector(this.position.x, dimensions.y + this.position.y), radius);
 	        }
-	        if (this.position.x + radius > dimensions.x) {
+	        if (check.isOutOfRightBorder()) {
 	            this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y), radius);
 	        }
-	        if (this.position.y + radius > dimensions.y) {
+	        if (check.isOutOfBottomBorder()) {
 	            this.drawElement(new Vector(this.position.x, this.position.y - dimensions.y), radius);
 	        }
 
-	        if (this.position.x - radius < 0 && this.position.y - radius < 0) {
+	        if (check.isOutOfTopLeftCorner()) {
 	            this.drawElement(new Vector(dimensions.x + this.position.x, dimensions.y + this.position.y), radius);
 	        }
-	        if (this.position.x - radius < 0 && this.position.y + radius > dimensions.y) {
+	        if (check.isOutOfBottomLeftCorner()) {
 	            this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y - dimensions.y), radius);
 	        }
-	        if (this.position.x + radius > dimensions.x && this.position.y - radius < 0) {
+	        if (check.isOutOfTopRightCorner()) {
 	            this.drawElement(new Vector(this.position.x - dimensions.x, dimensions.y + this.position.y), radius);
 	        }
-	        if (this.position.x + radius > dimensions.x && this.position.y + radius > dimensions.y) {
+	        if (check.isOutOfBottomRightCorner()) {
 	            this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y - dimensions.y), radius);
 	        }
 	    };
@@ -1047,13 +1050,57 @@
 
 	    this.checkCollision = function()
 	    {
+	        var dimensions = this.level.game.dimensions;
+	        var check = new PositionCheck(this.position, this.mass, dimensions);
+
 	        for (var i = 0; i < this.level.cells.length; i++) {
 	            var cell = this.level.cells[i];
-	            if (cell.position.distanceTo(this.position) < this.mass + cell.mass) {
-	                this.mass += cell.mass;
-	                this.level.cells.splice(i, 1);
+	            this.checkCollisionAt(this.position, cell, i);
+
+	            if (check.isOutOfLeftBorder()) {
+	                this.checkCollisionAt(new Vector(dimensions.x + this.position.x, this.position.y), cell, i);
+	            }
+	            if (check.isOutOfTopBorder()) {
+	                this.checkCollisionAt(new Vector(this.position.x, dimensions.y + this.position.y), cell, i);
+	            }
+	            if (check.isOutOfRightBorder()) {
+	                this.checkCollisionAt(new Vector(this.position.x - dimensions.x, this.position.y), cell, i);
+	            }
+	            if (check.isOutOfBottomBorder()) {
+	                this.checkCollisionAt(new Vector(this.position.x, this.position.y - dimensions.y), cell, i);
+	            }
+
+	            if (check.isOutOfTopLeftCorner()) {
+	                this.checkCollisionAt(new Vector(dimensions.x + this.position.x, dimensions.y + this.position.y), cell, i);
+	            }
+	            if (check.isOutOfBottomLeftCorner()) {
+	                this.checkCollisionAt(new Vector(dimensions.x + this.position.x, this.position.y - dimensions.y), cell, i);
+	            }
+	            if (check.isOutOfTopRightCorner()) {
+	                this.checkCollisionAt(new Vector(this.position.x - dimensions.x, dimensions.y + this.position.y), cell, i);
+	            }
+	            if (check.isOutOfBottomRightCorner()) {
+	                this.checkCollisionAt(new Vector(this.position.x - dimensions.x, this.position.y - dimensions.y), cell, i);
 	            }
 	        }
+	    };
+
+	    this.checkCollisionAt = function(position, cell, index)
+	    {
+	        if (this.collidesWithCell(position, cell)) {
+	            this.incorporateCell(cell, index);
+	        }
+	    };
+
+	    this.collidesWithCell = function(position, cell)
+	    {
+	        return cell.position.distanceTo(position) < this.mass + cell.mass;
+	    };
+
+	    this.incorporateCell = function(cell, index)
+	    {
+	        this.mass += cell.mass;
+	        this.level.cells.splice(index, 1);
 	    };
 
 	    this.updatePosition = function()
@@ -1107,6 +1154,7 @@
 
 	Vector = __webpack_require__(11);
 	Circle = __webpack_require__(10);
+	PositionCheck = __webpack_require__(19);
 
 	function Cell(level, position, velocity, mass, color)
 	{
@@ -1119,6 +1167,7 @@
 
 	    this.update = function()
 	    {
+	        return;
 	        this.position = this.position.add(this.velocity);
 	        if (this.position.x > this.level.game.dimensions.x) {
 	            this.position.x -= this.level.game.dimensions.x;
@@ -1145,31 +1194,32 @@
 	    this.render = function()
 	    {
 	        var dimensions = this.level.game.dimensions;
+	        var check = new PositionCheck(this.position, this.mass, dimensions);
 
 	        this.drawElement(this.position);
-	        if (this.position.x - this.mass < 0) {
+	        if (check.isOutOfLeftBorder()) {
 	            this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y));
 	        }
-	        if (this.position.y - this.mass < 0) {
+	        if (check.isOutOfTopBorder()) {
 	            this.drawElement(new Vector(this.position.x, dimensions.y + this.position.y));
 	        }
-	        if (this.position.x + this.mass > dimensions.x) {
+	        if (check.isOutOfRightBorder()) {
 	            this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y));
 	        }
-	        if (this.position.y + this.mass > dimensions.y) {
+	        if (check.isOutOfBottomBorder()) {
 	            this.drawElement(new Vector(this.position.x, this.position.y - dimensions.y));
 	        }
 
-	        if (this.position.x - this.mass < 0 && this.position.y - this.mass < 0) {
+	        if (check.isOutOfTopLeftCorner()) {
 	            this.drawElement(new Vector(dimensions.x + this.position.x, dimensions.y + this.position.y));
 	        }
-	        if (this.position.x - this.mass < 0 && this.position.y + this.mass > dimensions.y) {
+	        if (check.isOutOfBottomLeftCorner()) {
 	            this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y - dimensions.y));
 	        }
-	        if (this.position.x + this.mass > dimensions.x && this.position.y - this.mass < 0) {
+	        if (check.isOutOfTopRightCorner()) {
 	            this.drawElement(new Vector(this.position.x - dimensions.x, dimensions.y + this.position.y));
 	        }
-	        if (this.position.x + this.mass > dimensions.x && this.position.y + this.mass > dimensions.y) {
+	        if (check.isOutOfBottomRightCorner()) {
 	            this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y - dimensions.y));
 	        }
 	    };
@@ -1189,11 +1239,65 @@
 
 /***/ },
 /* 19 */
+/***/ function(module, exports) {
+
+	function PositionCheck(position, radius, dimensions)
+	{
+	    this.position = position;
+	    this.radius = radius;
+	    this.dimensions = dimensions;
+
+	    this.isOutOfLeftBorder = function()
+	    {
+	        return this.position.x - this.radius < 0
+	    };
+
+	    this.isOutOfTopBorder = function()
+	    {
+	        return this.position.y - this.radius < 0;
+	    };
+
+	    this.isOutOfRightBorder = function()
+	    {
+	        return this.position.x + radius > this.dimensions.x;
+	    };
+
+	    this.isOutOfBottomBorder = function()
+	    {
+	        return this.position.y + this.radius > this.dimensions.y;
+	    };
+
+	    this.isOutOfTopLeftCorner = function()
+	    {
+	        return this.position.x - this.radius < 0 && this.position.y - this.radius < 0;
+	    };
+
+	    this.isOutOfTopRightCorner = function()
+	    {
+	        return this.position.x + this.radius > this.dimensions.x && this.position.y - this.radius < 0;
+	    };
+
+	    this.isOutOfBottomLeftCorner = function()
+	    {
+	        return this.position.x - this.radius < 0 && this.position.y + this.radius > this.dimensions.y;
+	    };
+
+	    this.isOutOfBottomRightCorner = function()
+	    {
+	        return this.position.x + this.radius > this.dimensions.x && this.position.y + this.radius > this.dimensions.y;
+	    };
+	}
+
+	module.exports = PositionCheck;
+
+
+/***/ },
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
 	Text = __webpack_require__(9);
-	Rectangle = __webpack_require__(20);
+	Rectangle = __webpack_require__(21);
 	settings = __webpack_require__(15);
 	mouse = __webpack_require__(13);
 
@@ -1303,7 +1407,7 @@
 
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Context = __webpack_require__(7);
@@ -1334,7 +1438,7 @@
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports) {
 
 	function Keyboard()

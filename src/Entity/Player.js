@@ -1,6 +1,7 @@
 Vector = require('./../Math/Vector.js');
 Circle = require('./../Graphics/Circle.js');
 Cell = require('./Cell.js');
+PositionCheck = require('./../Util/PositionCheck.js');
 mouse = require('./../Input/Mouse.js');
 settings = require('./../Settings.js');
 
@@ -29,31 +30,32 @@ function Player(level)
     this.draw = function(radius)
     {
         var dimensions = this.level.game.dimensions;
+        var check = new PositionCheck(this.position, radius, dimensions);
 
         this.drawElement(this.position, radius);
-        if (this.position.x - radius < 0) {
+        if (check.isOutOfLeftBorder()) {
             this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y), radius);
         }
-        if (this.position.y - radius < 0) {
+        if (check.isOutOfTopBorder()) {
             this.drawElement(new Vector(this.position.x, dimensions.y + this.position.y), radius);
         }
-        if (this.position.x + radius > dimensions.x) {
+        if (check.isOutOfRightBorder()) {
             this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y), radius);
         }
-        if (this.position.y + radius > dimensions.y) {
+        if (check.isOutOfBottomBorder()) {
             this.drawElement(new Vector(this.position.x, this.position.y - dimensions.y), radius);
         }
 
-        if (this.position.x - radius < 0 && this.position.y - radius < 0) {
+        if (check.isOutOfTopLeftCorner()) {
             this.drawElement(new Vector(dimensions.x + this.position.x, dimensions.y + this.position.y), radius);
         }
-        if (this.position.x - radius < 0 && this.position.y + radius > dimensions.y) {
+        if (check.isOutOfBottomLeftCorner()) {
             this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y - dimensions.y), radius);
         }
-        if (this.position.x + radius > dimensions.x && this.position.y - radius < 0) {
+        if (check.isOutOfTopRightCorner()) {
             this.drawElement(new Vector(this.position.x - dimensions.x, dimensions.y + this.position.y), radius);
         }
-        if (this.position.x + radius > dimensions.x && this.position.y + radius > dimensions.y) {
+        if (check.isOutOfBottomRightCorner()) {
             this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y - dimensions.y), radius);
         }
     };
@@ -69,13 +71,57 @@ function Player(level)
 
     this.checkCollision = function()
     {
+        var dimensions = this.level.game.dimensions;
+        var check = new PositionCheck(this.position, this.mass, dimensions);
+
         for (var i = 0; i < this.level.cells.length; i++) {
             var cell = this.level.cells[i];
-            if (cell.position.distanceTo(this.position) < this.mass + cell.mass) {
-                this.mass += cell.mass;
-                this.level.cells.splice(i, 1);
+            this.checkCollisionAt(this.position, cell, i);
+
+            if (check.isOutOfLeftBorder()) {
+                this.checkCollisionAt(new Vector(dimensions.x + this.position.x, this.position.y), cell, i);
+            }
+            if (check.isOutOfTopBorder()) {
+                this.checkCollisionAt(new Vector(this.position.x, dimensions.y + this.position.y), cell, i);
+            }
+            if (check.isOutOfRightBorder()) {
+                this.checkCollisionAt(new Vector(this.position.x - dimensions.x, this.position.y), cell, i);
+            }
+            if (check.isOutOfBottomBorder()) {
+                this.checkCollisionAt(new Vector(this.position.x, this.position.y - dimensions.y), cell, i);
+            }
+
+            if (check.isOutOfTopLeftCorner()) {
+                this.checkCollisionAt(new Vector(dimensions.x + this.position.x, dimensions.y + this.position.y), cell, i);
+            }
+            if (check.isOutOfBottomLeftCorner()) {
+                this.checkCollisionAt(new Vector(dimensions.x + this.position.x, this.position.y - dimensions.y), cell, i);
+            }
+            if (check.isOutOfTopRightCorner()) {
+                this.checkCollisionAt(new Vector(this.position.x - dimensions.x, dimensions.y + this.position.y), cell, i);
+            }
+            if (check.isOutOfBottomRightCorner()) {
+                this.checkCollisionAt(new Vector(this.position.x - dimensions.x, this.position.y - dimensions.y), cell, i);
             }
         }
+    };
+
+    this.checkCollisionAt = function(position, cell, index)
+    {
+        if (this.collidesWithCell(position, cell)) {
+            this.incorporateCell(cell, index);
+        }
+    };
+
+    this.collidesWithCell = function(position, cell)
+    {
+        return cell.position.distanceTo(position) < this.mass + cell.mass;
+    };
+
+    this.incorporateCell = function(cell, index)
+    {
+        this.mass += cell.mass;
+        this.level.cells.splice(index, 1);
     };
 
     this.updatePosition = function()

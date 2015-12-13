@@ -1,5 +1,6 @@
 Vector = require('./../Math/Vector.js');
 Circle = require('./../Graphics/Circle.js');
+PositionCheck = require('./../Util/PositionCheck.js');
 
 function Cell(level, position, velocity, mass, color)
 {
@@ -38,31 +39,32 @@ function Cell(level, position, velocity, mass, color)
     this.render = function()
     {
         var dimensions = this.level.game.dimensions;
+        var check = new PositionCheck(this.position, this.mass, dimensions);
 
         this.drawElement(this.position);
-        if (this.position.x - this.mass < 0) {
+        if (check.isOutOfLeftBorder()) {
             this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y));
         }
-        if (this.position.y - this.mass < 0) {
+        if (check.isOutOfTopBorder()) {
             this.drawElement(new Vector(this.position.x, dimensions.y + this.position.y));
         }
-        if (this.position.x + this.mass > dimensions.x) {
+        if (check.isOutOfRightBorder()) {
             this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y));
         }
-        if (this.position.y + this.mass > dimensions.y) {
+        if (check.isOutOfBottomBorder()) {
             this.drawElement(new Vector(this.position.x, this.position.y - dimensions.y));
         }
 
-        if (this.position.x - this.mass < 0 && this.position.y - this.mass < 0) {
+        if (check.isOutOfTopLeftCorner()) {
             this.drawElement(new Vector(dimensions.x + this.position.x, dimensions.y + this.position.y));
         }
-        if (this.position.x - this.mass < 0 && this.position.y + this.mass > dimensions.y) {
+        if (check.isOutOfBottomLeftCorner()) {
             this.drawElement(new Vector(dimensions.x + this.position.x, this.position.y - dimensions.y));
         }
-        if (this.position.x + this.mass > dimensions.x && this.position.y - this.mass < 0) {
+        if (check.isOutOfTopRightCorner()) {
             this.drawElement(new Vector(this.position.x - dimensions.x, dimensions.y + this.position.y));
         }
-        if (this.position.x + this.mass > dimensions.x && this.position.y + this.mass > dimensions.y) {
+        if (check.isOutOfBottomRightCorner()) {
             this.drawElement(new Vector(this.position.x - dimensions.x, this.position.y - dimensions.y));
         }
     };
