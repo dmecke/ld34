@@ -936,10 +936,10 @@
 	    {
 	        level: 3,
 	        position: new Vector(400, 340),
-	        intro: 'Be aware of the red cells - they withdraw some mass! Grow up to 100 mass anyway!',
+	        intro: 'Be aware of the red cells - they withdraw some mass! Grow up to 50 mass anyway!',
 	        winningConditions:
 	        {
-	            mass: 100
+	            mass: 50
 	        },
 	        setup:
 	        {
@@ -1049,26 +1049,12 @@
 	        intro: 'Back to normal now. But wait! These purple ones seem to flee! Can you catch them?',
 	        winningConditions:
 	        {
-	            cells: 10
+	            cells: 5
 	        },
 	        setup:
 	        {
+	            numberOfCells: 5,
 	            cells: [
-	                {
-	                    type: settings.CELL_TYPE_ESCAPER
-	                },
-	                {
-	                    type: settings.CELL_TYPE_ESCAPER
-	                },
-	                {
-	                    type: settings.CELL_TYPE_ESCAPER
-	                },
-	                {
-	                    type: settings.CELL_TYPE_ESCAPER
-	                },
-	                {
-	                    type: settings.CELL_TYPE_ESCAPER
-	                },
 	                {
 	                    type: settings.CELL_TYPE_ESCAPER
 	                },
@@ -1097,19 +1083,22 @@
 	        },
 	        setup:
 	        {
-	            numberOfCells: 25,
+	            numberOfCells: 15,
 	            cells: [
 	                {
 	                    mass: 100,
-	                    type: settings.CELL_TYPE_ABSORB
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(100, 100)
 	                },
 	                {
 	                    mass: 100,
-	                    type: settings.CELL_TYPE_ABSORB
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(750, 400)
 	                },
 	                {
 	                    mass: 100,
-	                    type: settings.CELL_TYPE_ABSORB
+	                    type: settings.CELL_TYPE_ABSORB,
+	                    position: new Vector(200, 300)
 	                }
 	            ]
 	        }
@@ -1117,10 +1106,10 @@
 	    {
 	        level: 8,
 	        position: new Vector(400, 490),
-	        intro: 'Are you clever enough to catch the escaping cells without colliding with the red ones too often? Grow to at least 75.',
+	        intro: 'Are you clever enough to catch the escaping cells without colliding with the red ones too often? Grow to at least 50.',
 	        winningConditions:
 	        {
-	            mass: 75
+	            mass: 50
 	        },
 	        setup:
 	        {
