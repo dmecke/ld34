@@ -1,6 +1,7 @@
 Vector = require('./../Math/Vector.js');
 Circle = require('./../Graphics/Circle.js');
 PositionCheck = require('./../Util/PositionCheck.js');
+settings = require('./../Settings.js');
 
 function Cell(level, position, velocity, mass, color)
 {
@@ -9,6 +10,8 @@ function Cell(level, position, velocity, mass, color)
     this.velocity = velocity;
     this.mass = mass;
     this.color = color;
+    this.transparency = 0.5;
+    this.transparencyFlag = true;
     this.disappearsIn = undefined;
 
     this.update = function()
@@ -34,6 +37,8 @@ function Cell(level, position, velocity, mass, color)
                 this.level.cells.splice(index, 1);
             }
         }
+
+        this.updateTransparency();
     };
 
     this.render = function()
@@ -73,9 +78,27 @@ function Cell(level, position, velocity, mass, color)
     {
         var circle = new Circle(position, this.mass);
         circle.strokeStyle = this.color;
-        circle.fillStyle = this.color.replace(')', ', 0.1)').replace('rgb', 'rgba');
-        circle.lineWidth = 2;
+        circle.fillStyle = this.color.replace(')', ', 0.3)').replace('rgb', 'rgba');
+        circle.lineWidth = 3;
         circle.draw();
+
+        var outline = new Circle(position, this.mass + 1);
+        outline.strokeStyle = settings.white.replace(')', ', ' + this.transparency + ')').replace('rgb', 'rgba');
+        outline.lineWidth = 1;
+        outline.draw();
+    };
+
+    this.updateTransparency = function()
+    {
+        if (this.transparencyFlag) {
+            this.transparency += 0.005;
+        } else {
+            this.transparency -= 0.005;
+        }
+
+        if (this.transparency >= 0.8 || this.transparency <= 0.2) {
+            this.transparencyFlag = !this.transparencyFlag;
+        }
     };
 }
 

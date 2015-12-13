@@ -1039,7 +1039,6 @@
 
 	    this.update = function()
 	    {
-	        console.log(this.showScore);
 	        if (this.paused()) {
 	            return;
 	        }
@@ -1091,7 +1090,6 @@
 
 	    this.cleanup = function()
 	    {
-	        console.log('cleanup');
 	        this.cells = [];
 	        this.showScore = false;
 	        this.game.music.pauseLevel(this.levelSettings.level);
@@ -1142,18 +1140,26 @@
 	    this.minimumMass = 10;
 	    this.mass = this.minimumMass + 10;
 	    this.mouse = mouse;
+	    this.transparency = 0.5;
+	    this.transparencyFlag = true;
 
 	    this.update = function()
 	    {
 	        this.checkCollision();
 	        this.processUserInput();
 	        this.updatePosition();
+	        this.updateTransparency();
 	    };
 
 	    this.render = function()
 	    {
 	        this.draw(this.mass);
 	        this.draw(this.minimumMass);
+
+	        var outline = new Circle(this.position, this.mass + 1);
+	        outline.strokeStyle = settings.white.replace(')', ', ' + this.transparency + ')').replace('rgb', 'rgba');
+	        outline.lineWidth = 1;
+	        outline.draw();
 	    };
 
 	    this.draw = function(radius)
@@ -1295,6 +1301,19 @@
 	    {
 	        this.mass = Math.max(this.minimumMass, this.mass - amount);
 	    };
+
+	    this.updateTransparency = function()
+	    {
+	        if (this.transparencyFlag) {
+	            this.transparency += 0.005;
+	        } else {
+	            this.transparency -= 0.005;
+	        }
+
+	        if (this.transparency >= 0.8 || this.transparency <= 0.2) {
+	            this.transparencyFlag = !this.transparencyFlag;
+	        }
+	    };
 	}
 
 	module.exports = Player;
@@ -1307,6 +1326,7 @@
 	Vector = __webpack_require__(11);
 	Circle = __webpack_require__(10);
 	PositionCheck = __webpack_require__(20);
+	settings = __webpack_require__(16);
 
 	function Cell(level, position, velocity, mass, color)
 	{
@@ -1315,6 +1335,8 @@
 	    this.velocity = velocity;
 	    this.mass = mass;
 	    this.color = color;
+	    this.transparency = 0.5;
+	    this.transparencyFlag = true;
 	    this.disappearsIn = undefined;
 
 	    this.update = function()
@@ -1340,6 +1362,8 @@
 	                this.level.cells.splice(index, 1);
 	            }
 	        }
+
+	        this.updateTransparency();
 	    };
 
 	    this.render = function()
@@ -1379,9 +1403,27 @@
 	    {
 	        var circle = new Circle(position, this.mass);
 	        circle.strokeStyle = this.color;
-	        circle.fillStyle = this.color.replace(')', ', 0.1)').replace('rgb', 'rgba');
-	        circle.lineWidth = 2;
+	        circle.fillStyle = this.color.replace(')', ', 0.3)').replace('rgb', 'rgba');
+	        circle.lineWidth = 3;
 	        circle.draw();
+
+	        var outline = new Circle(position, this.mass + 1);
+	        outline.strokeStyle = settings.white.replace(')', ', ' + this.transparency + ')').replace('rgb', 'rgba');
+	        outline.lineWidth = 1;
+	        outline.draw();
+	    };
+
+	    this.updateTransparency = function()
+	    {
+	        if (this.transparencyFlag) {
+	            this.transparency += 0.005;
+	        } else {
+	            this.transparency -= 0.005;
+	        }
+
+	        if (this.transparency >= 0.8 || this.transparency <= 0.2) {
+	            this.transparencyFlag = !this.transparencyFlag;
+	        }
 	    };
 	}
 

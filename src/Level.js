@@ -32,7 +32,6 @@ function Level(game, levelSettings)
 
     this.update = function()
     {
-        console.log(this.showScore);
         if (this.paused()) {
             return;
         }
@@ -84,7 +83,6 @@ function Level(game, levelSettings)
 
     this.cleanup = function()
     {
-        console.log('cleanup');
         this.cells = [];
         this.showScore = false;
         this.game.music.pauseLevel(this.levelSettings.level);

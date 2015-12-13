@@ -13,18 +13,26 @@ function Player(level)
     this.minimumMass = 10;
     this.mass = this.minimumMass + 10;
     this.mouse = mouse;
+    this.transparency = 0.5;
+    this.transparencyFlag = true;
 
     this.update = function()
     {
         this.checkCollision();
         this.processUserInput();
         this.updatePosition();
+        this.updateTransparency();
     };
 
     this.render = function()
     {
         this.draw(this.mass);
         this.draw(this.minimumMass);
+
+        var outline = new Circle(this.position, this.mass + 1);
+        outline.strokeStyle = settings.white.replace(')', ', ' + this.transparency + ')').replace('rgb', 'rgba');
+        outline.lineWidth = 1;
+        outline.draw();
     };
 
     this.draw = function(radius)
@@ -165,6 +173,19 @@ function Player(level)
     this.reduceMass = function(amount)
     {
         this.mass = Math.max(this.minimumMass, this.mass - amount);
+    };
+
+    this.updateTransparency = function()
+    {
+        if (this.transparencyFlag) {
+            this.transparency += 0.005;
+        } else {
+            this.transparency -= 0.005;
+        }
+
+        if (this.transparency >= 0.8 || this.transparency <= 0.2) {
+            this.transparencyFlag = !this.transparencyFlag;
+        }
     };
 }
 
