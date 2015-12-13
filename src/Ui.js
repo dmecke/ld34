@@ -15,11 +15,26 @@ function Ui(level)
         this.showScore();
     };
 
+    this.update = function()
+    {
+        if (mouse.clicked()) {
+            if (mouse.position.x >= 210 &&
+                mouse.position.x <= 290 &&
+                mouse.position.y >= this.level.game.dimensions.y - 35 &&
+                mouse.position.y <= this.level.game.dimensions.y - 15)
+            {
+                mouse.timer.reset();
+                this.level.game.finishLevel();
+                this.level.game.showMenu();
+            }
+        }
+    };
+
     this.drawHud = function()
     {
         var winningConditions = this.level.levelSettings.winningConditions;
 
-        var container = new Rectangle(new Vector(100, this.level.game.dimensions.y - 25), 200, 50);
+        var container = new Rectangle(new Vector(150, this.level.game.dimensions.y - 25), 300, 50);
         container.strokeStyle = settings.white;
         container.lineWidth = 2;
         container.fillStyle = settings.white.replace(')', ', 0.6)').replace('rgb', 'rgba');
@@ -44,6 +59,16 @@ function Ui(level)
         mass.textAlign = 'left';
         mass.fillStyle = settings.blue;
         mass.draw();
+
+        var abortButton = new Rectangle(new Vector(250, this.level.game.dimensions.y - 25), 80, 20);
+        abortButton.strokeStyle = settings.red;
+        abortButton.fillStyle = settings.red.replace(')', ', 0.2)').replace('rgb', 'rgba');
+        abortButton.draw();
+
+        var abortText = new Text(new Vector(250, this.level.game.dimensions.y - 19), 'back to menu');
+        abortText.font = '14px Oswald';
+        abortText.fillStyle = settings.red;
+        abortText.draw();
     };
 
     this.showObjectives = function()
@@ -65,6 +90,7 @@ function Ui(level)
         this.drawContinueText('Click to start!');
 
         if (mouse.clicked()) {
+            mouse.timer.reset();
             this.level.showObjectives = false;
         }
     };
@@ -88,6 +114,7 @@ function Ui(level)
         this.drawContinueText('Click to return to main menu!');
 
         if (mouse.clicked()) {
+            mouse.timer.reset();
             this.level.game.finishLevel();
             this.level.game.showMenu();
         }

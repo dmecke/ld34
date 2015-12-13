@@ -33,6 +33,8 @@ function Level(game, levelSettings)
 
     this.update = function()
     {
+        this.ui.update();
+
         if (this.paused()) {
             return;
         }
@@ -89,7 +91,6 @@ function Level(game, levelSettings)
         var background = this.levelSettings.level % 10;
         this.background.src = 'img/background/' + background + '.jpg';
         this.game.music.playLevel(this.levelSettings.level);
-        this.game.showObjectives = true;
         this.player = new Player(this);
     };
 
@@ -115,6 +116,7 @@ function Level(game, levelSettings)
         this.collectedCells = 0;
         this.cells = [];
         this.showScore = false;
+        this.showObjectives = true;
         this.game.music.pauseLevel(this.levelSettings.level);
         clearInterval(this.interval);
     };

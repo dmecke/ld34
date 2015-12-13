@@ -199,7 +199,12 @@ function Player(level)
             return false;
         }
 
-        return this.mouse.clicked();
+        var clicked = this.mouse.clicked();
+        if (clicked) {
+            this.mouse.timer.reset();
+        }
+
+        return clicked;
     };
 
     this.movementDirection = function()

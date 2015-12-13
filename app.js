@@ -526,6 +526,7 @@
 	    this.update = function()
 	    {
 	        if (this.mouse.clicked()) {
+	            this.mouse.timer.reset();
 	            var level = this.levelAtPosition(this.mouse.position);
 	            if (level && !level.isLocked()) {
 	                this.game.startLevel(level);
@@ -1157,12 +1158,8 @@
 
 	    this.clicked = function()
 	    {
-	        var clicked = this.click && this.timer.isReady();
-	        if (clicked) {
-	            this.timer.reset();
-	        }
-
-	        return clicked;
+	        console.log(this.timer.current);
+	        return this.click && this.timer.isReady();
 	    };
 	}
 
@@ -1241,6 +1238,8 @@
 
 	    this.update = function()
 	    {
+	        this.ui.update();
+
 	        if (this.paused()) {
 	            return;
 	        }
@@ -1297,7 +1296,6 @@
 	        var background = this.levelSettings.level % 10;
 	        this.background.src = 'img/background/' + background + '.jpg';
 	        this.game.music.playLevel(this.levelSettings.level);
-	        this.game.showObjectives = true;
 	        this.player = new Player(this);
 	    };
 
@@ -1323,6 +1321,7 @@
 	        this.collectedCells = 0;
 	        this.cells = [];
 	        this.showScore = false;
+	        this.showObjectives = true;
 	        this.game.music.pauseLevel(this.levelSettings.level);
 	        clearInterval(this.interval);
 	    };
@@ -1557,7 +1556,12 @@
 	            return false;
 	        }
 
-	        return this.mouse.clicked();
+	        var clicked = this.mouse.clicked();
+	        if (clicked) {
+	            this.mouse.timer.reset();
+	        }
+
+	        return clicked;
 	    };
 
 	    this.movementDirection = function()
@@ -1831,11 +1835,26 @@
 	        this.showScore();
 	    };
 
+	    this.update = function()
+	    {
+	        if (mouse.clicked()) {
+	            if (mouse.position.x >= 210 &&
+	                mouse.position.x <= 290 &&
+	                mouse.position.y >= this.level.game.dimensions.y - 35 &&
+	                mouse.position.y <= this.level.game.dimensions.y - 15)
+	            {
+	                mouse.timer.reset();
+	                this.level.game.finishLevel();
+	                this.level.game.showMenu();
+	            }
+	        }
+	    };
+
 	    this.drawHud = function()
 	    {
 	        var winningConditions = this.level.levelSettings.winningConditions;
 
-	        var container = new Rectangle(new Vector(100, this.level.game.dimensions.y - 25), 200, 50);
+	        var container = new Rectangle(new Vector(150, this.level.game.dimensions.y - 25), 300, 50);
 	        container.strokeStyle = settings.white;
 	        container.lineWidth = 2;
 	        container.fillStyle = settings.white.replace(')', ', 0.6)').replace('rgb', 'rgba');
@@ -1860,6 +1879,16 @@
 	        mass.textAlign = 'left';
 	        mass.fillStyle = settings.blue;
 	        mass.draw();
+
+	        var abortButton = new Rectangle(new Vector(250, this.level.game.dimensions.y - 25), 80, 20);
+	        abortButton.strokeStyle = settings.red;
+	        abortButton.fillStyle = settings.red.replace(')', ', 0.2)').replace('rgb', 'rgba');
+	        abortButton.draw();
+
+	        var abortText = new Text(new Vector(250, this.level.game.dimensions.y - 19), 'back to menu');
+	        abortText.font = '14px Oswald';
+	        abortText.fillStyle = settings.red;
+	        abortText.draw();
 	    };
 
 	    this.showObjectives = function()
@@ -1881,6 +1910,7 @@
 	        this.drawContinueText('Click to start!');
 
 	        if (mouse.clicked()) {
+	            mouse.timer.reset();
 	            this.level.showObjectives = false;
 	        }
 	    };
@@ -1904,6 +1934,7 @@
 	        this.drawContinueText('Click to return to main menu!');
 
 	        if (mouse.clicked()) {
+	            mouse.timer.reset();
 	            this.level.game.finishLevel();
 	            this.level.game.showMenu();
 	        }

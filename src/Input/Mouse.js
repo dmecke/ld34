@@ -38,12 +38,7 @@ function Mouse()
 
     this.clicked = function()
     {
-        var clicked = this.click && this.timer.isReady();
-        if (clicked) {
-            this.timer.reset();
-        }
-
-        return clicked;
+        return this.click && this.timer.isReady();
     };
 }
 
