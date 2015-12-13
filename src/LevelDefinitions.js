@@ -26,10 +26,14 @@ LevelDefinitions = [
     {
         level: 2,
         position: new Vector(250, 340),
-        intro: 'Collect 60 mass!',
+        intro: 'There can be multiple cells and they are moving! Don\'t be afraid to lose mass - you cannot go below a certain level. Collect all green cells!',
         winningConditions:
         {
-            mass: 60
+            cells: 5
+        },
+        setup:
+        {
+            numberOfCells: 5
         }
     },
     {

@@ -907,16 +907,20 @@
 	    {
 	        level: 2,
 	        position: new Vector(250, 340),
-	        intro: 'Solve all conditions!',
+	        intro: 'There can be multiple cells and they are moving! Don\'t be afraid to lose mass - you cannot go below a certain level. Collect all green cells!',
 	        winningConditions:
 	        {
-	            mass: 60
+	            cells: 5
+	        },
+	        setup:
+	        {
+	            numberOfCells: 5
 	        }
 	    },
 	    {
 	        level: 3,
 	        position: new Vector(400, 340),
-	        intro: 'Solve all conditions!',
+	        intro: 'Collect 70 mass!',
 	        winningConditions:
 	        {
 	            mass: 70
@@ -925,7 +929,7 @@
 	    {
 	        level: 4,
 	        position: new Vector(550, 340),
-	        intro: 'Solve all conditions!',
+	        intro: 'Collect 80 mass!',
 	        winningConditions:
 	        {
 	            mass: 80
@@ -934,7 +938,7 @@
 	    {
 	        level: 5,
 	        position: new Vector(700, 340),
-	        intro: 'Solve all conditions!',
+	        intro: 'Collect 90 mass!',
 	        winningConditions:
 	        {
 	            mass: 90
@@ -943,7 +947,7 @@
 	    {
 	        level: 6,
 	        position: new Vector(100, 490),
-	        intro: 'Solve all conditions!',
+	        intro: 'Collect 100 mass!',
 	        winningConditions:
 	        {
 	            mass: 100
@@ -952,7 +956,7 @@
 	    {
 	        level: 7,
 	        position: new Vector(250, 490),
-	        intro: 'Solve all conditions!',
+	        intro: 'Collect 0 mass!',
 	        winningConditions:
 	        {
 	            mass: 110
@@ -961,7 +965,7 @@
 	    {
 	        level: 8,
 	        position: new Vector(400, 490),
-	        intro: 'Solve all conditions!',
+	        intro: 'Collect 120 mass!',
 	        winningConditions:
 	        {
 	            mass: 120
@@ -970,7 +974,7 @@
 	    {
 	        level: 9,
 	        position: new Vector(550, 490),
-	        intro: 'Solve all conditions!',
+	        intro: 'Collect 130 mass!',
 	        winningConditions:
 	        {
 	            mass: 130
@@ -979,7 +983,7 @@
 	    {
 	        level: 10,
 	        position: new Vector(700, 490),
-	        intro: 'Solve all conditions!',
+	        intro: 'Collect 140 mass!',
 	        winningConditions:
 	        {
 	            mass: 140
@@ -1166,9 +1170,6 @@
 	            if (setup.numberOfCells) {
 	                numberOfCells = setup.numberOfCells;
 	            }
-	            if (setup.cells) {
-	                //cells.push();
-	            }
 	        }
 
 	        for (var i = 0; i < numberOfCells; i++) {
@@ -1176,7 +1177,7 @@
 	            var velocity = new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1);
 	            var mass = Math.random() * 10;
 	            var type = settings.CELL_TYPE_SIMPLE;
-	            if (setup.cells[i]) {
+	            if (setup.cells && setup.cells[i]) {
 	                if (setup.cells[i].position) {
 	                    position = setup.cells[i].position;
 	                }

@@ -63,9 +63,6 @@ function Level(game, levelSettings)
             if (setup.numberOfCells) {
                 numberOfCells = setup.numberOfCells;
             }
-            if (setup.cells) {
-                //cells.push();
-            }
         }
 
         for (var i = 0; i < numberOfCells; i++) {
@@ -73,7 +70,7 @@ function Level(game, levelSettings)
             var velocity = new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1);
             var mass = Math.random() * 10;
             var type = settings.CELL_TYPE_SIMPLE;
-            if (setup.cells[i]) {
+            if (setup.cells && setup.cells[i]) {
                 if (setup.cells[i].position) {
                     position = setup.cells[i].position;
                 }
