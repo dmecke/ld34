@@ -931,23 +931,23 @@
 	            cells: [
 	                {
 	                    mass: 5,
-	                    type: settings.CELL_TYPE_DEDUCT
+	                    type: settings.CELL_TYPE_ABSORB
 	                },
 	                {
 	                    mass: 10,
-	                    type: settings.CELL_TYPE_DEDUCT
+	                    type: settings.CELL_TYPE_ABSORB
 	                },
 	                {
 	                    mass: 20,
-	                    type: settings.CELL_TYPE_DEDUCT
+	                    type: settings.CELL_TYPE_ABSORB
 	                },
 	                {
 	                    mass: 10,
-	                    type: settings.CELL_TYPE_DEDUCT
+	                    type: settings.CELL_TYPE_ABSORB
 	                },
 	                {
 	                    mass: 15,
-	                    type: settings.CELL_TYPE_DEDUCT
+	                    type: settings.CELL_TYPE_ABSORB
 	                }
 	            ]
 	        }
@@ -955,10 +955,31 @@
 	    {
 	        level: 4,
 	        position: new Vector(550, 340),
-	        intro: 'Collect 80 mass!',
+	        intro: 'Uh oh! Yellow cells randomly change their directions. Can you still collect them all?',
 	        winningConditions:
 	        {
-	            mass: 80
+	            cells: 5
+	        },
+	        setup:
+	        {
+	            numberOfCells: 5,
+	            cells: [
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                },
+	                {
+	                    type: settings.CELL_TYPE_DIRECTION
+	                }
+	            ]
 	        }
 	    },
 	    {
@@ -1030,10 +1051,12 @@
 	    blue: 'rgb(4, 97, 182)',
 	    green: 'rgb(99, 170, 51)',
 	    red: 'rgb(207, 39, 39)',
+	    yellow: 'rgb(234, 197, 27)',
 
 	    CELL_TYPE_PLAYER: 1,
 	    CELL_TYPE_SIMPLE: 2,
-	    CELL_TYPE_DEDUCT: 3
+	    CELL_TYPE_ABSORB: 3,
+	    CELL_TYPE_DIRECTION: 4
 	};
 
 	module.exports = Settings;
@@ -1201,7 +1224,7 @@
 
 	        for (var i = 0; i < numberOfCells; i++) {
 	            var position = new Vector(Math.random() * this.game.dimensions.x, Math.random() * this.game.dimensions.y);
-	            var velocity = new Vector(Math.random() * 0.2 - 0.1, Math.random() * 0.2 - 0.1);
+	            var velocity = new Vector(Math.random() * 0.6 - 0.3, Math.random() * 0.6 - 0.3);
 	            var mass = Math.random() * 10 + 5;
 	            var type = settings.CELL_TYPE_SIMPLE;
 	            if (setup.cells && setup.cells[i]) {
@@ -1501,6 +1524,9 @@
 
 	    this.update = function()
 	    {
+	        if (this.type == settings.CELL_TYPE_DIRECTION && Math.random() < 0.005) {
+	            this.velocity = new Vector(Math.random() * 0.6 - 0.3, Math.random() * 0.6 - 0.3);
+	        }
 	        this.position = this.position.add(this.velocity);
 	        if (this.position.x > this.level.game.dimensions.x) {
 	            this.position.x -= this.level.game.dimensions.x;
@@ -1592,8 +1618,10 @@
 	            return settings.blue;
 	        } else if (this.type == settings.CELL_TYPE_SIMPLE) {
 	            return settings.green;
-	        } else if (this.type == settings.CELL_TYPE_DEDUCT) {
+	        } else if (this.type == settings.CELL_TYPE_ABSORB) {
 	            return settings.red;
+	        } else if (this.type == settings.CELL_TYPE_DIRECTION) {
+	            return settings.yellow;
 	        }
 	    };
 
@@ -1606,7 +1634,7 @@
 	    {
 	        var mass = this.mass;
 
-	        if (this.type == settings.CELL_TYPE_DEDUCT) {
+	        if (this.type == settings.CELL_TYPE_ABSORB) {
 	            mass *= -1;
 	        }
 

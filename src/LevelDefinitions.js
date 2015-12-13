@@ -74,10 +74,31 @@ LevelDefinitions = [
     {
         level: 4,
         position: new Vector(550, 340),
-        intro: 'Collect 80 mass!',
+        intro: 'Uh oh! Yellow cells randomly change their directions. Can you still collect them all?',
         winningConditions:
         {
-            mass: 80
+            cells: 5
+        },
+        setup:
+        {
+            numberOfCells: 5,
+            cells: [
+                {
+                    type: settings.CELL_TYPE_DIRECTION
+                },
+                {
+                    type: settings.CELL_TYPE_DIRECTION
+                },
+                {
+                    type: settings.CELL_TYPE_DIRECTION
+                },
+                {
+                    type: settings.CELL_TYPE_DIRECTION
+                },
+                {
+                    type: settings.CELL_TYPE_DIRECTION
+                }
+            ]
         }
     },
     {

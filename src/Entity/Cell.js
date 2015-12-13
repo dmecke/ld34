@@ -16,6 +16,9 @@ function Cell(level, position, velocity, mass, type)
 
     this.update = function()
     {
+        if (this.type == settings.CELL_TYPE_DIRECTION && Math.random() < 0.005) {
+            this.velocity = new Vector(Math.random() * 0.6 - 0.3, Math.random() * 0.6 - 0.3);
+        }
         this.position = this.position.add(this.velocity);
         if (this.position.x > this.level.game.dimensions.x) {
             this.position.x -= this.level.game.dimensions.x;
@@ -109,6 +112,8 @@ function Cell(level, position, velocity, mass, type)
             return settings.green;
         } else if (this.type == settings.CELL_TYPE_ABSORB) {
             return settings.red;
+        } else if (this.type == settings.CELL_TYPE_DIRECTION) {
+            return settings.yellow;
         }
     };
 
