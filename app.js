@@ -48,7 +48,7 @@
 
 	Game = __webpack_require__(5);
 	mouse = __webpack_require__(13);
-	keyboard = __webpack_require__(23);
+	keyboard = __webpack_require__(24);
 
 	var game = new Game();
 
@@ -420,6 +420,7 @@
 	Menu = __webpack_require__(6);
 	Level = __webpack_require__(16);
 	Vector = __webpack_require__(11);
+	Sfx = __webpack_require__(22);
 	levelDefinitions = __webpack_require__(12);
 	canvas = __webpack_require__(8);
 
@@ -429,10 +430,10 @@
 	    this.levels = [];
 	    this.currentLevel = undefined;
 	    this.dimensions = new Vector(canvas.width, canvas.height);
+	    this.sfx = new Sfx();
 
 	    this.run = function()
 	    {
-	        console.log('Game::run');
 	        for (var key in levelDefinitions) {
 	            if (levelDefinitions.hasOwnProperty(key)) {
 	                var level = new Level(this, levelDefinitions[key]);
@@ -447,7 +448,6 @@
 
 	    this.startLevel = function(level)
 	    {
-	        console.log('Game::startLevel');
 	        this.menu.hide();
 
 	        this.currentLevel = level;
@@ -490,13 +490,13 @@
 	    this.interval = undefined;
 	    this.background = new Image();
 	    this.lock = new Image();
+	    this.sfx = new Image();
 
 	    this.show = function()
 	    {
-	        console.log('Menu::show');
-
 	        this.background.src = 'img/startscreen.jpg';
 	        this.lock.src = 'img/lock.png';
+	        this.sfx.src = 'img/sfx.png';
 
 	        var menu = this;
 	        this.interval = setInterval(function() {
@@ -507,17 +507,18 @@
 
 	    this.hide = function()
 	    {
-	        console.log('Menu::hide');
 	        clearInterval(this.interval);
 	    };
 
 	    this.update = function()
 	    {
-	        console.log('Menu::update');
 	        if (this.mouse.clicked()) {
 	            var level = this.levelAtPosition(this.mouse.position);
 	            if (level && !level.isLocked()) {
 	                this.game.startLevel(level);
+	            }
+	            if (this.mouseIsAtSfx()) {
+	                this.game.sfx.toggle();
 	            }
 	        }
 	    };
@@ -528,8 +529,32 @@
 
 	        context.drawImage(this.background, 0, 0);
 
+	        this.drawSfx();
+
 	        for (var i = 0; i < this.game.levels.length; i++) {
 	            this.drawLevel(this.game.levels[i]);
+	        }
+	    };
+
+	    this.drawSfx = function()
+	    {
+	        var position = new Vector(this.game.dimensions.x - 50, 50);
+
+	        var circle = new Circle(position, 25);
+	        circle.strokeStyle = settings.white;
+	        circle.lineWidth = 2;
+	        circle.fillStyle = settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba');
+	        circle.draw();
+
+	        context.drawImage(this.sfx, position.x - 19, position.y - 18);
+
+	        if (!this.game.sfx.enabled) {
+	            var x = new Text(position.add(new Vector(1, 18)), 'X');
+	            x.font = '44px "Gloria Hallelujah"';
+	            x.fillStyle = settings.red;
+	            x.strokeStyle = settings.white;
+	            x.lineWidth = 5;
+	            x.draw();
 	        }
 	    };
 
@@ -562,6 +587,13 @@
 	        }
 
 	        return null;
+	    };
+
+	    this.mouseIsAtSfx = function()
+	    {
+	        var sfxPosition = new Vector(this.game.dimensions.x - 50, 50);
+
+	        return sfxPosition.distanceTo(this.mouse.position) <= 50;
 	    };
 	}
 
@@ -848,7 +880,8 @@
 	    white: 'rgb(255, 255, 255)',
 	    grey: 'rgb(55, 73, 89)',
 	    blue: 'rgb(4, 97, 182)',
-	    green: 'rgb(99, 170, 51)'
+	    green: 'rgb(99, 170, 51)',
+	    red: 'rgb(207, 39, 39)'
 	};
 
 	module.exports = Settings;
@@ -862,7 +895,7 @@
 	Player = __webpack_require__(17);
 	Vector = __webpack_require__(11);
 	Cell = __webpack_require__(18);
-	Ui = __webpack_require__(21);
+	Ui = __webpack_require__(20);
 	settings = __webpack_require__(15);
 
 	function Level(game, levelSettings)
@@ -975,7 +1008,6 @@
 	Circle = __webpack_require__(10);
 	Cell = __webpack_require__(18);
 	PositionCheck = __webpack_require__(19);
-	Sound = __webpack_require__(20);
 	mouse = __webpack_require__(13);
 	settings = __webpack_require__(15);
 
@@ -987,8 +1019,6 @@
 	    this.minimumMass = 10;
 	    this.mass = this.minimumMass + 10;
 	    this.mouse = mouse;
-	    this.soundAccelerate = new Sound('sfx/accelerate.m4a');
-	    this.soundAbsorb = new Sound('sfx/absorb.m4a');
 
 	    this.update = function()
 	    {
@@ -1098,7 +1128,7 @@
 	    {
 	        this.mass += cell.mass;
 	        this.level.cells.splice(index, 1);
-	        this.soundAbsorb.play();
+	        this.level.game.sfx.absorb();
 	    };
 
 	    this.updatePosition = function()
@@ -1135,7 +1165,7 @@
 	            cell.disappearsIn = 100;
 	        }
 	        this.level.cells.push(cell);
-	        this.soundAccelerate.play();
+	        this.level.game.sfx.accelerate();
 	    };
 
 	    this.reduceMass = function(amount)
@@ -1291,39 +1321,11 @@
 
 /***/ },
 /* 20 */
-/***/ function(module, exports) {
-
-	function Sound(src)
-	{
-	    this.audio = [
-	        new Audio(src),
-	        new Audio(src),
-	        new Audio(src),
-	        new Audio(src),
-	        new Audio(src)
-	    ];
-
-	    this.play = function()
-	    {
-	        for (var i = 0; i < this.audio.length; i++) {
-	            if (this.audio[i].paused) {
-	                this.audio[i].play();
-	                return;
-	            }
-	        }
-	    };
-	}
-
-	module.exports = Sound;
-
-
-/***/ },
-/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Vector = __webpack_require__(11);
 	Text = __webpack_require__(9);
-	Rectangle = __webpack_require__(22);
+	Rectangle = __webpack_require__(21);
 	settings = __webpack_require__(15);
 	mouse = __webpack_require__(13);
 
@@ -1347,11 +1349,13 @@
 	        container.draw();
 
 	        var currentMass = new Text(new Vector(10, this.level.game.dimensions.y - 30), 'Current mass: ' + Math.floor(this.level.player.mass));
+	        currentMass.font = '14px "Gloria Hallelujah"';
 	        currentMass.textAlign = 'left';
 	        currentMass.fillStyle = settings.blue;
 	        currentMass.draw();
 
 	        var targetMass = new Text(new Vector(10, this.level.game.dimensions.y - 10), 'Target mass: ' + this.level.levelSettings.winningConditions.mass);
+	        targetMass.font = '14px "Gloria Hallelujah"';
 	        targetMass.textAlign = 'left';
 	        targetMass.fillStyle = settings.blue;
 	        targetMass.draw();
@@ -1428,7 +1432,7 @@
 
 
 /***/ },
-/* 22 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	Context = __webpack_require__(7);
@@ -1459,7 +1463,74 @@
 
 
 /***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	Container = __webpack_require__(23);
+
+	function Sfx()
+	{
+	    this.audioAccelerate = new Container('sfx/accelerate.m4a');
+	    this.audioAbsorb = new Container('sfx/absorb.m4a');
+	    this.enabled = true;
+
+	    this.toggle = function()
+	    {
+	        this.enabled = !this.enabled;
+	    };
+
+	    this.absorb = function()
+	    {
+	        if (!this.enabled) {
+	            return;
+	        }
+
+	        this.audioAbsorb.play();
+	    };
+
+	    this.accelerate = function()
+	    {
+	        if (!this.enabled) {
+	            return;
+	        }
+
+	        this.audioAccelerate.play();
+	    };
+	}
+
+	module.exports = Sfx;
+
+
+/***/ },
 /* 23 */
+/***/ function(module, exports) {
+
+	function Container(src)
+	{
+	    this.audio = [
+	        new Audio(src),
+	        new Audio(src),
+	        new Audio(src),
+	        new Audio(src),
+	        new Audio(src)
+	    ];
+
+	    this.play = function()
+	    {
+	        for (var i = 0; i < this.audio.length; i++) {
+	            if (this.audio[i].paused) {
+	                this.audio[i].play();
+	                return;
+	            }
+	        }
+	    };
+	}
+
+	module.exports = Container;
+
+
+/***/ },
+/* 24 */
 /***/ function(module, exports) {
 
 	function Keyboard()

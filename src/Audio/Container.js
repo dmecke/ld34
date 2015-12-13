@@ -1,4 +1,4 @@
-function Sound(src)
+function Container(src)
 {
     this.audio = [
         new Audio(src),
@@ -19,4 +19,4 @@ function Sound(src)
     };
 }
 
-module.exports = Sound;
+module.exports = Container;

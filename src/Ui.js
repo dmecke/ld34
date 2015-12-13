@@ -24,11 +24,13 @@ function Ui(level)
         container.draw();
 
         var currentMass = new Text(new Vector(10, this.level.game.dimensions.y - 30), 'Current mass: ' + Math.floor(this.level.player.mass));
+        currentMass.font = '14px "Gloria Hallelujah"';
         currentMass.textAlign = 'left';
         currentMass.fillStyle = settings.blue;
         currentMass.draw();
 
         var targetMass = new Text(new Vector(10, this.level.game.dimensions.y - 10), 'Target mass: ' + this.level.levelSettings.winningConditions.mass);
+        targetMass.font = '14px "Gloria Hallelujah"';
         targetMass.textAlign = 'left';
         targetMass.fillStyle = settings.blue;
         targetMass.draw();

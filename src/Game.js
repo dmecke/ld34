@@ -1,6 +1,7 @@
 Menu = require('./Menu.js');
 Level = require('./Level.js');
 Vector = require('./Math/Vector.js');
+Sfx = require('./Audio/Sfx.js');
 levelDefinitions = require('./LevelDefinitions.js');
 canvas = require('./System/Canvas.js');
 
@@ -10,10 +11,10 @@ function Game()
     this.levels = [];
     this.currentLevel = undefined;
     this.dimensions = new Vector(canvas.width, canvas.height);
+    this.sfx = new Sfx();
 
     this.run = function()
     {
-        console.log('Game::run');
         for (var key in levelDefinitions) {
             if (levelDefinitions.hasOwnProperty(key)) {
                 var level = new Level(this, levelDefinitions[key]);
@@ -28,7 +29,6 @@ function Game()
 
     this.startLevel = function(level)
     {
-        console.log('Game::startLevel');
         this.menu.hide();
 
         this.currentLevel = level;

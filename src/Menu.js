@@ -13,13 +13,13 @@ function Menu(game)
     this.interval = undefined;
     this.background = new Image();
     this.lock = new Image();
+    this.sfx = new Image();
 
     this.show = function()
     {
-        console.log('Menu::show');
-
         this.background.src = 'img/startscreen.jpg';
         this.lock.src = 'img/lock.png';
+        this.sfx.src = 'img/sfx.png';
 
         var menu = this;
         this.interval = setInterval(function() {
@@ -30,17 +30,18 @@ function Menu(game)
 
     this.hide = function()
     {
-        console.log('Menu::hide');
         clearInterval(this.interval);
     };
 
     this.update = function()
     {
-        console.log('Menu::update');
         if (this.mouse.clicked()) {
             var level = this.levelAtPosition(this.mouse.position);
             if (level && !level.isLocked()) {
                 this.game.startLevel(level);
+            }
+            if (this.mouseIsAtSfx()) {
+                this.game.sfx.toggle();
             }
         }
     };
@@ -51,8 +52,32 @@ function Menu(game)
 
         context.drawImage(this.background, 0, 0);
 
+        this.drawSfx();
+
         for (var i = 0; i < this.game.levels.length; i++) {
             this.drawLevel(this.game.levels[i]);
+        }
+    };
+
+    this.drawSfx = function()
+    {
+        var position = new Vector(this.game.dimensions.x - 50, 50);
+
+        var circle = new Circle(position, 25);
+        circle.strokeStyle = settings.white;
+        circle.lineWidth = 2;
+        circle.fillStyle = settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba');
+        circle.draw();
+
+        context.drawImage(this.sfx, position.x - 19, position.y - 18);
+
+        if (!this.game.sfx.enabled) {
+            var x = new Text(position.add(new Vector(1, 18)), 'X');
+            x.font = '44px "Gloria Hallelujah"';
+            x.fillStyle = settings.red;
+            x.strokeStyle = settings.white;
+            x.lineWidth = 5;
+            x.draw();
         }
     };
 
@@ -85,6 +110,13 @@ function Menu(game)
         }
 
         return null;
+    };
+
+    this.mouseIsAtSfx = function()
+    {
+        var sfxPosition = new Vector(this.game.dimensions.x - 50, 50);
+
+        return sfxPosition.distanceTo(this.mouse.position) <= 50;
     };
 }
 
