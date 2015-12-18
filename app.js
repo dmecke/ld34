@@ -97,7 +97,7 @@
 
 
 	// module
-	exports.push([module.id, "body {\n    margin: 0;\n    background: #c6dde6;\n    font-family: 'Gloria Hallelujah', sans-serif;\n    color: #272727;\n}\nh1, h2 {\n    text-align: center;\n}\ncanvas {\n    background: white;\n    border: 1px solid #272727;\n    display: block;\n    margin: 50px auto;\n    width: 800px;\n    height: 600px;\n}\nfooter {\n    margin: 50px auto 0;\n    text-align: center;\n    width: 800px;\n}\nfooter.credits {\n    font-size: 12px;\n}\n.hint {\n    width: 800px;\n    margin: 50px auto;\n}\n.hint span {\n    color: rgb(207, 39, 39);\n    font-weight: bold;\n}\n.explanations {\n    margin: auto;\n    text-align: justify;\n    width: 800px;\n}\n", ""]);
+	exports.push([module.id, "html, body {\n    margin: 0;\n    width: 100%;\n    height: 100%;\n}\ncanvas {\n    background: white;\n    display: block;\n}\n", ""]);
 
 	// exports
 
@@ -544,7 +544,7 @@
 	    {
 	        context.clearRect(0, 0, this.game.dimensions.x, this.game.dimensions.y);
 
-	        context.drawImage(this.background, 0, 0);
+	        context.drawImage(this.background, 0, 0, this.game.dimensions.x, this.game.dimensions.y);
 
 	        this.drawMusic();
 	        this.drawSfx();
@@ -600,16 +600,19 @@
 
 	    this.drawLevel = function(level)
 	    {
-	        var circle = new Circle(level.levelSettings.position, 50);
+	        var row = Math.floor((level.levelSettings.level - 1) / 5);
+	        var position = new Vector(0, this.game.dimensions.y / 3 * 2).add(new Vector(this.game.dimensions.x / 6 * ((level.levelSettings.level - 1) % 5 + 1), row * 150));
+
+	        var circle = new Circle(position, 50);
 	        circle.strokeStyle = settings.white;
 	        circle.lineWidth = 2;
 	        circle.fillStyle = settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba');
 	        circle.draw();
 
 	        if (level.isLocked()) {
-	            context.drawImage(this.lock, level.levelSettings.position.x - 29, level.levelSettings.position.y - 44);
+	            context.drawImage(this.lock, position.x - 29, position.y - 44);
 	        } else {
-	            var label = new Text(level.levelSettings.position.add(new Vector(0, 20)), level.levelSettings.level);
+	            var label = new Text(position.add(new Vector(0, 20)), level.levelSettings.level);
 	            label.font = '52px "Gloria Hallelujah"';
 	            label.fillStyle = settings.white;
 	            label.strokeStyle = settings.grey;
@@ -661,8 +664,8 @@
 /***/ function(module, exports) {
 
 	var Canvas = document.getElementById('canvas');
-	Canvas.width = 800;
-	Canvas.height = 600;
+	Canvas.width = window.innerWidth;
+	Canvas.height = window.innerHeight;
 
 	module.exports = Canvas;
 
@@ -1537,7 +1540,7 @@
 	    this.render = function()
 	    {
 	        context.clearRect(0, 0, this.game.dimensions.x, this.game.dimensions.y);
-	        context.drawImage(this.background, 0, 0);
+	        context.drawImage(this.background, 0, 0, this.game.dimensions.x, this.game.dimensions.y);
 	        this.player.render();
 	        for (var i = 0; i < this.cells.length; i++) {
 	            this.cells[i].render();

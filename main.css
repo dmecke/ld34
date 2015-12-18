@@ -1,0 +1,35 @@
+html, body {
+    margin: 0;
+    background: #c6dde6;
+    font-family: 'Gloria Hallelujah', sans-serif;
+    color: #272727;
+}
+iframe {
+    width: 800px;
+    height: 600px;
+    border: none;
+}
+h1, h2 {
+    text-align: center;
+}
+footer {
+    margin: 50px auto 0;
+    text-align: center;
+    width: 800px;
+}
+footer.credits {
+    font-size: 12px;
+}
+.hint {
+    width: 800px;
+    margin: 50px auto;
+}
+.hint span {
+    color: rgb(207, 39, 39);
+    font-weight: bold;
+}
+.explanations {
+    margin: auto;
+    text-align: justify;
+    width: 800px;
+}

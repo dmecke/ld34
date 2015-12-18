@@ -1,5 +1,5 @@
 var Canvas = document.getElementById('canvas');
-Canvas.width = 800;
-Canvas.height = 600;
+Canvas.width = window.innerWidth;
+Canvas.height = window.innerHeight;
 
 module.exports = Canvas;

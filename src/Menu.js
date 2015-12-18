@@ -60,7 +60,7 @@ function Menu(game)
     {
         context.clearRect(0, 0, this.game.dimensions.x, this.game.dimensions.y);
 
-        context.drawImage(this.background, 0, 0);
+        context.drawImage(this.background, 0, 0, this.game.dimensions.x, this.game.dimensions.y);
 
         this.drawMusic();
         this.drawSfx();
@@ -116,16 +116,19 @@ function Menu(game)
 
     this.drawLevel = function(level)
     {
-        var circle = new Circle(level.levelSettings.position, 50);
+        var row = Math.floor((level.levelSettings.level - 1) / 5);
+        var position = new Vector(0, this.game.dimensions.y / 3 * 2).add(new Vector(this.game.dimensions.x / 6 * ((level.levelSettings.level - 1) % 5 + 1), row * 150));
+
+        var circle = new Circle(position, 50);
         circle.strokeStyle = settings.white;
         circle.lineWidth = 2;
         circle.fillStyle = settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba');
         circle.draw();
 
         if (level.isLocked()) {
-            context.drawImage(this.lock, level.levelSettings.position.x - 29, level.levelSettings.position.y - 44);
+            context.drawImage(this.lock, position.x - 29, position.y - 44);
         } else {
-            var label = new Text(level.levelSettings.position.add(new Vector(0, 20)), level.levelSettings.level);
+            var label = new Text(position.add(new Vector(0, 20)), level.levelSettings.level);
             label.font = '52px "Gloria Hallelujah"';
             label.fillStyle = settings.white;
             label.strokeStyle = settings.grey;

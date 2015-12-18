@@ -49,7 +49,7 @@ function Level(game, levelSettings)
     this.render = function()
     {
         context.clearRect(0, 0, this.game.dimensions.x, this.game.dimensions.y);
-        context.drawImage(this.background, 0, 0);
+        context.drawImage(this.background, 0, 0, this.game.dimensions.x, this.game.dimensions.y);
         this.player.render();
         for (var i = 0; i < this.cells.length; i++) {
             this.cells[i].render();
