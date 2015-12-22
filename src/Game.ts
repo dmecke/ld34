@@ -1,21 +1,21 @@
-Menu = require('./Menu.js');
-Level = require('./Level.js');
-Vector = require('./Math/Vector.js');
-Sfx = require('./Audio/Sfx.js');
-Music = require('./Audio/Music.js');
-levelDefinitions = require('./LevelDefinitions.js');
-canvas = require('./System/Canvas.js');
+import Menu from "./Menu";
+import Level from "./Level";
+import Vector from "./Math/Vector";
+import Sfx from "./Audio/Sfx";
+import Music from "./Audio/Music";
+import levelDefinitions from "./LevelDefinitions";
+import canvas from "./System/Canvas";
 
-function Game()
+class Game
 {
-    this.menu = new Menu(this);
-    this.levels = [];
-    this.currentLevel = undefined;
-    this.dimensions = new Vector(canvas.width, canvas.height);
-    this.sfx = new Sfx();
-    this.music = new Music();
+    private menu:Menu = new Menu(this);
+    public levels:Array<Level> = [];
+    private currentLevel:Level;
+    public dimensions:Vector = new Vector(canvas.width, canvas.height);
+    public sfx:Sfx = new Sfx();
+    public music:Music = new Music();
 
-    this.run = function()
+    public run():void
     {
         for (var key in levelDefinitions) {
             if (levelDefinitions.hasOwnProperty(key)) {
@@ -33,28 +33,28 @@ function Game()
             this.sfx.enabled = false;
         }
         this.showMenu();
-    };
+    }
 
-    this.startLevel = function(level)
+    public startLevel(level:Level):void
     {
         this.menu.hide();
 
         this.currentLevel = level;
         this.currentLevel.start();
-    };
+    }
 
-    this.finishLevel = function()
+    public finishLevel():void
     {
         this.currentLevel.isFinished = true;
-        window.localStorage.setItem('level_' +  this.currentLevel.levelSettings.level, true);
+        window.localStorage.setItem('level_' +  this.currentLevel.levelSettings.level, true.toString());
         this.currentLevel.cleanup();
         this.currentLevel = undefined;
-    };
+    }
 
-    this.showMenu = function()
+    public showMenu():void
     {
         this.menu.show();
-    };
+    }
 }
 
-module.exports = Game;
+export default Game;

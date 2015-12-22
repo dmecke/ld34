@@ -1,7 +1,7 @@
-Vector = require('./Math/Vector.js');
-settings = require('./Settings.js');
+import Vector from "./Math/Vector";
+import settings from "./Settings";
 
-LevelDefinitions = [
+var LevelDefinitions = [
     {
         level: 1,
         position: new Vector(100, 340),
@@ -475,4 +475,4 @@ LevelDefinitions = [
     }
 ];
 
-module.exports = LevelDefinitions;
+export default LevelDefinitions;

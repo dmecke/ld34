@@ -1,4 +1,4 @@
-Settings = {
+var Settings = {
     white: 'rgb(255, 255, 255)',
     grey: 'rgb(55, 73, 89)',
     blue: 'rgb(4, 97, 182)',
@@ -14,4 +14,4 @@ Settings = {
     CELL_TYPE_ESCAPER: 5
 };
 
-module.exports = Settings;
+export default Settings;

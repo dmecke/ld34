@@ -1,7 +1,10 @@
-function Music()
+import Level from "../Level";
+
+class Music
 {
-    this.musicMenu = new Audio('music/menu.mp3');
-    this.musicLevels = [
+    public enabled = true;
+    private musicMenu:HTMLAudioElement = new Audio('music/menu.mp3');
+    private musicLevels:Array<HTMLAudioElement> = [
         new Audio('music/0.mp3'),
         new Audio('music/1.mp3'),
         new Audio('music/2.mp3'),
@@ -9,9 +12,8 @@ function Music()
         new Audio('music/4.mp3'),
         new Audio('music/5.mp3')
     ];
-    this.enabled = true;
 
-    this.toggle = function()
+    public toggle():void
     {
         this.enabled = !this.enabled;
         if (!this.enabled) {
@@ -20,10 +22,10 @@ function Music()
         if (this.enabled) {
             this.playMenu();
         }
-        window.localStorage.setItem('disable_music', !this.enabled);
-    };
+        window.localStorage.setItem('disable_music', (!this.enabled).toString());
+    }
 
-    this.playMenu = function()
+    public playMenu():void
     {
         if (!this.enabled) {
             return;
@@ -31,9 +33,9 @@ function Music()
 
         this.musicMenu.loop = true;
         this.musicMenu.play();
-    };
+    }
 
-    this.playLevel = function(level)
+    public playLevel(level:number):void
     {
         if (!this.enabled) {
             return;
@@ -43,19 +45,19 @@ function Music()
 
         this.musicLevels[index].loop = true;
         this.musicLevels[index].play();
-    };
+    }
 
-    this.pauseMenu = function()
+    public pauseMenu():void
     {
         this.musicMenu.pause();
-    };
+    }
 
-    this.pauseLevel = function(level)
+    public pauseLevel(level:number):void
     {
         var index = level % 6;
 
         this.musicLevels[index].pause();
-    };
+    }
 }
 
-module.exports = Music;
+export default Music;

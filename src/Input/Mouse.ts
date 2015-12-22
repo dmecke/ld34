@@ -1,14 +1,14 @@
-Timer = require('./../Util/Timer.js');
-Vector = require('./../Math/Vector.js');
-canvas = require('./../System/Canvas.js');
+import Timer from "./../Util/Timer";
+import Vector from "./../Math/Vector";
+import canvas from "./../System/Canvas";
 
-function Mouse()
+class Mouse
 {
-    this.position = new Vector(0, 0);
-    this.click = false;
-    this.timer = new Timer(30);
+    public position = new Vector(0, 0);
+    private click = false;
+    public timer = new Timer(30);
 
-    this.updatePosition = function(event)
+    public updatePosition(event):void
     {
         var canvasRect = canvas.getBoundingClientRect();
         var x, y;
@@ -24,27 +24,25 @@ function Mouse()
         }
 
         this.position = new Vector(x - canvasRect.left, y - canvasRect.top);
-    };
+    }
 
-    this.buttonDown = function(event)
+    public buttonDown():void
     {
         this.click = true;
-    };
+    }
 
-    this.buttonUp = function(event)
+    public buttonUp():void
     {
         this.click = false;
-    };
+    }
 
-    this.clicked = function()
+    public clicked():boolean
     {
         return this.click && this.timer.isReady();
-    };
+    }
 }
 
 var mouse = new Mouse();
-setInterval(function() {
-    mouse.timer.update();
-}, 1 / 30);
+setInterval(function() { mouse.timer.update(); }, 1 / 30);
 
-module.exports = mouse;
+export default mouse;

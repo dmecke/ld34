@@ -1,8 +1,8 @@
 require('./app.css');
 
-Game = require('./Game.js');
-mouse = require('./Input/Mouse.js');
-keyboard = require('./Input/Keyboard.js');
+import Game from "./Game";
+import mouse from "./Input/Mouse";
+import keyboard from "./Input/Keyboard";
 
 var game = new Game();
 

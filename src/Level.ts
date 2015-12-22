@@ -1,26 +1,33 @@
-context = require('./System/Context.js');
-Player = require('./Entity/Player.js');
-Vector = require('./Math/Vector.js');
-Cell = require('./Entity/Cell.js');
-Ui = require('./Ui.js');
-Music = require('./Audio/Music.js');
-settings = require('./Settings.js');
+import context from "./System/Context";
+import Player from "./Entity/Player";
+import Vector from "./Math/Vector";
+import Cell from "./Entity/Cell";
+import Ui from "./Ui";
+import Music from "./Audio/Music";
+import settings from "./Settings";
+import Game from "./Game";
 
-function Level(game, levelSettings)
+class Level
 {
-    this.game = game;
-    this.player = null;
-    this.cells = [];
-    this.ui = new Ui(this);
-    this.interval = undefined;
-    this.levelSettings = levelSettings;
-    this.background = new Image();
-    this.showObjectives = true;
-    this.showScore = false;
-    this.isFinished = false;
-    this.collectedCells = 0;
+    public game:Game;
+    public player:Player;
+    public cells:Array<Cell> = [];
+    private ui:Ui = new Ui(this);
+    private interval;
+    public levelSettings;
+    private background:HTMLImageElement = new Image();
+    public showObjectives:boolean = true;
+    public showScore:boolean = false;
+    public isFinished:boolean = false;
+    public collectedCells:number = 0;
 
-    this.start = function()
+    constructor(game:Game, levelSettings)
+    {
+        this.game = game;
+        this.levelSettings = levelSettings;
+    }
+
+    public start():void
     {
         var level = this;
         this.setup();
@@ -29,9 +36,9 @@ function Level(game, levelSettings)
             level.update();
             level.render();
         }, 1 / 30);
-    };
+    }
 
-    this.update = function()
+    public update():void
     {
         this.ui.update();
 
@@ -44,20 +51,20 @@ function Level(game, levelSettings)
             this.cells[i].update();
         }
         this.checkWinningConditions();
-    };
+    }
 
-    this.render = function()
+    public render():void
     {
-        context.clearRect(0, 0, this.game.dimensions.x, this.game.dimensions.y);
-        context.drawImage(this.background, 0, 0, this.game.dimensions.x, this.game.dimensions.y);
+        context.clearRect(0, 0, this.game.dimensions.x(), this.game.dimensions.y());
+        context.drawImage(this.background, 0, 0, this.game.dimensions.x(), this.game.dimensions.y());
         this.player.render();
         for (var i = 0; i < this.cells.length; i++) {
             this.cells[i].render();
         }
         this.ui.render();
-    };
+    }
 
-    this.setup = function()
+    public setup():void
     {
         var numberOfCells = 10;
         if (this.levelSettings.setup) {
@@ -68,7 +75,7 @@ function Level(game, levelSettings)
         }
 
         for (var i = 0; i < numberOfCells; i++) {
-            var position = new Vector(Math.random() * this.game.dimensions.x, Math.random() * this.game.dimensions.y);
+            var position = new Vector(Math.random() * this.game.dimensions.x(), Math.random() * this.game.dimensions.y());
             var velocity = new Vector(Math.random() * 0.6 - 0.3, Math.random() * 0.6 - 0.3);
             var mass = Math.random() * 10 + 5;
             var type = settings.CELL_TYPE_SIMPLE;
@@ -92,9 +99,9 @@ function Level(game, levelSettings)
         this.background.src = 'img/background/' + background + '.jpg';
         this.game.music.playLevel(this.levelSettings.level);
         this.player = new Player(this);
-    };
+    }
 
-    this.checkWinningConditions = function()
+    private checkWinningConditions():void
     {
         var conditions = this.levelSettings.winningConditions;
         var solved = true;
@@ -109,9 +116,9 @@ function Level(game, levelSettings)
         if (solved) {
             this.showScore = true;
         }
-    };
+    }
 
-    this.cleanup = function()
+    public cleanup():void
     {
         this.collectedCells = 0;
         this.cells = [];
@@ -119,19 +126,19 @@ function Level(game, levelSettings)
         this.showObjectives = true;
         this.game.music.pauseLevel(this.levelSettings.level);
         clearInterval(this.interval);
-    };
+    }
 
-    this.paused = function()
+    public paused():boolean
     {
         return this.showObjectives || this.showScore;
-    };
+    }
 
-    this.isLocked = function()
+    public isLocked():boolean
     {
         return this.levelSettings.level > 1 && this.previousLevel().isFinished == false;
-    };
+    }
 
-    this.previousLevel = function()
+    public previousLevel():Level
     {
         for (var i = 0; i < this.game.levels.length; i++) {
             if (this.game.levels[i].levelSettings.level == this.levelSettings.level - 1) {
@@ -140,7 +147,7 @@ function Level(game, levelSettings)
         }
 
         return null;
-    };
+    }
 }
 
-module.exports = Level;
+export default Level;

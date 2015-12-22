@@ -1,29 +1,30 @@
-Timer = require('./../Util/Timer.js');
-Vector = require('./../Math/Vector.js');
+import Timer from "./../Util/Timer";
+import Vector from "./../Math/Vector";
 
-function Keyboard()
+class Keyboard
 {
-    this.KEY_A = 65;
-    this.KEY_D = 68;
-    this.direction = new Vector(1, 0);
-    this.timer = new Timer(30);
+    static KEY_A = 65;
+    static KEY_D = 68;
 
-    this.steer = function(keyCode)
+    public direction:Vector = new Vector(1, 0);
+    public timer:Timer = new Timer(30);
+
+    public steer(keyCode:number):void
     {
         if (!this.timer.isReady()) {
             return;
         }
 
-        if (keyCode == this.KEY_A) {
+        if (keyCode == Keyboard.KEY_A) {
             this.direction = this.direction.rotateByDegress(-45);
             this.timer.reset();
         }
 
-        if (keyCode == this.KEY_D) {
+        if (keyCode == Keyboard.KEY_D) {
             this.direction = this.direction.rotateByDegress(45);
             this.timer.reset();
         }
-    };
+    }
 }
 
 var keyboard = new Keyboard();
@@ -31,4 +32,4 @@ setInterval(function() {
     keyboard.timer.update();
 }, 1 / 30);
 
-module.exports = keyboard;
+export default keyboard;
