@@ -50,52 +50,25 @@
 	
 	var _Game2 = _interopRequireDefault(_Game);
 	
-	var _Mouse = __webpack_require__(8);
-	
-	var _Mouse2 = _interopRequireDefault(_Mouse);
-	
-	var _Keyboard = __webpack_require__(15);
-	
-	var _Keyboard2 = _interopRequireDefault(_Keyboard);
-	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	__webpack_require__(22);
+	__webpack_require__(23);
 	
-	var game = new _Game2.default();
-	
-	game.run();
-	
-	document.addEventListener('mousemove', function (event) {
-	  _Mouse2.default.updatePosition(event);
-	});
-	document.addEventListener('mousedown', function (event) {
-	  _Mouse2.default.buttonDown(event);
-	});
-	document.addEventListener('mouseup', function (event) {
-	  _Mouse2.default.buttonUp(event);
-	});
-	document.addEventListener('touchstart', function (event) {
-	  _Mouse2.default.updatePosition(event);_Mouse2.default.buttonDown(event);
-	});
-	document.addEventListener('touchend', function (event) {
-	  _Mouse2.default.buttonUp(event);
-	});
-	document.addEventListener('keydown', function (event) {
-	  _Keyboard2.default.steer(event.keyCode);
-	});
+	new _Game2.default().run();
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Menu_1 = __webpack_require__(2);
-	var Level_1 = __webpack_require__(11);
-	var Vector_1 = __webpack_require__(7);
-	var Sfx_1 = __webpack_require__(18);
-	var Music_1 = __webpack_require__(20);
-	var LevelDefinitions_1 = __webpack_require__(21);
+	var Level_1 = __webpack_require__(12);
+	var Vector_1 = __webpack_require__(8);
+	var Sfx_1 = __webpack_require__(19);
+	var Music_1 = __webpack_require__(21);
+	var LevelDefinitions_1 = __webpack_require__(22);
 	var Canvas_1 = __webpack_require__(4);
+	var Mouse_1 = __webpack_require__(10);
+	var Keyboard_1 = __webpack_require__(16);
 	var Game = (function () {
 	    function Game() {
 	        this.menu = new Menu_1["default"](this);
@@ -105,6 +78,8 @@
 	        this.music = new Music_1["default"]();
 	    }
 	    Game.prototype.run = function () {
+	        Mouse_1["default"].init();
+	        Keyboard_1["default"].init();
 	        for (var key in LevelDefinitions_1["default"]) {
 	            if (LevelDefinitions_1["default"].hasOwnProperty(key)) {
 	                var level = new Level_1["default"](this, LevelDefinitions_1["default"][key]);
@@ -148,10 +123,10 @@
 
 	var Context_1 = __webpack_require__(3);
 	var Text_1 = __webpack_require__(5);
-	var Circle_1 = __webpack_require__(6);
-	var Vector_1 = __webpack_require__(7);
-	var Mouse_1 = __webpack_require__(8);
-	var Settings_1 = __webpack_require__(10);
+	var Circle_1 = __webpack_require__(7);
+	var Vector_1 = __webpack_require__(8);
+	var Settings_1 = __webpack_require__(9);
+	var Mouse_1 = __webpack_require__(10);
 	var Menu = (function () {
 	    function Menu(game) {
 	        this.background = new Image();
@@ -159,7 +134,6 @@
 	        this.symbolSfx = new Image();
 	        this.symbolMusic = new Image();
 	        this.game = game;
-	        this.mouse = Mouse_1["default"];
 	    }
 	    Menu.prototype.show = function () {
 	        this.background.src = 'img/startscreen.jpg';
@@ -178,18 +152,19 @@
 	        clearInterval(this.interval);
 	    };
 	    Menu.prototype.update = function () {
-	        if (this.mouse.clicked()) {
-	            this.mouse.timer.reset();
-	            var level = this.levelAtPosition(this.mouse.position);
-	            if (level && !level.isLocked()) {
-	                this.game.startLevel(level);
-	            }
-	            if (this.mouseIsAtMusic()) {
-	                this.game.music.toggle();
-	            }
-	            if (this.mouseIsAtSfx()) {
-	                this.game.sfx.toggle();
-	            }
+	        if (!Mouse_1["default"].clicked()) {
+	            return;
+	        }
+	        Mouse_1["default"].timer.reset();
+	        var level = this.levelAtPosition(Mouse_1["default"].position);
+	        if (level && !level.isLocked()) {
+	            this.game.startLevel(level);
+	        }
+	        if (this.mouseIsAtMusic()) {
+	            this.game.music.toggle();
+	        }
+	        if (this.mouseIsAtSfx()) {
+	            this.game.sfx.toggle();
 	        }
 	    };
 	    Menu.prototype.render = function () {
@@ -203,22 +178,34 @@
 	    };
 	    Menu.prototype.drawMusic = function () {
 	        var position = new Vector_1["default"](this.game.dimensions.x() - 50, 50);
-	        new Circle_1["default"](position, 25, Settings_1["default"].white, Settings_1["default"].blue.replace(')', ', 0.2)').replace('rgb', 'rgba'), 2).draw();
+	        new Circle_1["default"](position, 25)
+	            .setStrokeStyle(Settings_1["default"].white)
+	            .setFillStyle(Settings_1["default"].blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+	            .setLineWidth(2)
+	            .draw();
 	        Context_1["default"].drawImage(this.symbolMusic, position.x() - 15, position.y() - 18);
 	        if (!this.game.music.enabled) {
-	            var x = new Text_1["default"](position.add(new Vector_1["default"](1, 18)), 'X', Settings_1["default"].white, Settings_1["default"].red, '44px "Gloria Hallelujah"');
-	            x.lineWidth = 5;
-	            x.draw();
+	            new Text_1["default"](position.add(new Vector_1["default"](1, 18)), 'X', '44px "Gloria Hallelujah"')
+	                .setStrokeStyle(Settings_1["default"].white)
+	                .setFillStyle(Settings_1["default"].red)
+	                .setLineWidth(5)
+	                .draw();
 	        }
 	    };
 	    Menu.prototype.drawSfx = function () {
 	        var position = new Vector_1["default"](this.game.dimensions.x() - 50, 120);
-	        new Circle_1["default"](position, 25, Settings_1["default"].white, Settings_1["default"].blue.replace(')', ', 0.2)').replace('rgb', 'rgba'), 2).draw();
+	        new Circle_1["default"](position, 25)
+	            .setStrokeStyle(Settings_1["default"].blue)
+	            .setFillStyle(Settings_1["default"].blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+	            .setLineWidth(2)
+	            .draw();
 	        Context_1["default"].drawImage(this.symbolSfx, position.x() - 19, position.y() - 18);
 	        if (!this.game.sfx.enabled) {
-	            var x = new Text_1["default"](position.add(new Vector_1["default"](1, 18)), 'X', Settings_1["default"].white, Settings_1["default"].red, '44px "Gloria Hallelujah"');
-	            x.lineWidth = 5;
-	            x.draw();
+	            new Text_1["default"](position.add(new Vector_1["default"](1, 18)), 'X', '44px "Gloria Hallelujah"')
+	                .setStrokeStyle(Settings_1["default"].white)
+	                .setFillStyle(Settings_1["default"].red)
+	                .setLineWidth(5)
+	                .draw();
 	        }
 	    };
 	    Menu.prototype.positionByLevel = function (level) {
@@ -227,14 +214,20 @@
 	    };
 	    Menu.prototype.drawLevel = function (level) {
 	        var position = this.positionByLevel(level.levelSettings.level);
-	        new Circle_1["default"](position, 50, Settings_1["default"].white, Settings_1["default"].blue.replace(')', ', 0.2)').replace('rgb', 'rgba'), 2).draw();
+	        new Circle_1["default"](position, 50)
+	            .setStrokeStyle(Settings_1["default"].white)
+	            .setFillStyle(Settings_1["default"].blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+	            .setLineWidth(2)
+	            .draw();
 	        if (level.isLocked()) {
 	            Context_1["default"].drawImage(this.lock, position.x() - 29, position.y() - 44);
 	        }
 	        else {
-	            var label = new Text_1["default"](position.add(new Vector_1["default"](0, 20)), level.levelSettings.level.toString(), Settings_1["default"].grey, Settings_1["default"].white, '52px "Gloria Hallelujah"');
-	            label.lineWidth = 8;
-	            label.draw();
+	            new Text_1["default"](position.add(new Vector_1["default"](0, 20)), level.levelSettings.level.toString(), '52px "Gloria Hallelujah"')
+	                .setStrokeStyle(Settings_1["default"].grey)
+	                .setFillStyle(Settings_1["default"].white)
+	                .setLineWidth(8)
+	                .draw();
 	        }
 	    };
 	    Menu.prototype.levelAtPosition = function (position) {
@@ -247,11 +240,11 @@
 	    };
 	    Menu.prototype.mouseIsAtMusic = function () {
 	        var position = new Vector_1["default"](this.game.dimensions.x() - 50, 50);
-	        return position.distanceTo(this.mouse.position) <= 50;
+	        return position.distanceTo(Mouse_1["default"].position) <= 50;
 	    };
 	    Menu.prototype.mouseIsAtSfx = function () {
 	        var position = new Vector_1["default"](this.game.dimensions.x() - 50, 120);
-	        return position.distanceTo(this.mouse.position) <= 50;
+	        return position.distanceTo(Mouse_1["default"].position) <= 50;
 	    };
 	    return Menu;
 	})();
@@ -284,22 +277,28 @@
 /* 5 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
 	var Context_1 = __webpack_require__(3);
-	var Text = (function () {
-	    function Text(position, content, strokeStyle, fillStyle, font, textAlign) {
-	        if (strokeStyle === void 0) { strokeStyle = 'transparent'; }
-	        if (fillStyle === void 0) { fillStyle = 'transparent'; }
+	var Shape_1 = __webpack_require__(6);
+	var Text = (function (_super) {
+	    __extends(Text, _super);
+	    function Text(position, content, font, textAlign) {
 	        if (font === void 0) { font = '12px Oswald'; }
 	        if (textAlign === void 0) { textAlign = 'center'; }
-	        this.lineWidth = 1;
+	        _super.call(this, position);
 	        this.lineHeight = 38;
-	        this.position = position;
 	        this.content = content;
-	        this.strokeStyle = strokeStyle;
-	        this.fillStyle = fillStyle;
 	        this.font = font;
 	        this.textAlign = textAlign;
 	    }
+	    Text.prototype.setMaxWidth = function (maxWidth) {
+	        this.maxWidth = maxWidth;
+	        return this;
+	    };
 	    Text.prototype.draw = function () {
 	        Context_1["default"].font = this.font;
 	        Context_1["default"].fillStyle = this.fillStyle;
@@ -327,26 +326,56 @@
 	        Context_1["default"].fillText(line.trim(), this.position.x(), y);
 	    };
 	    return Text;
-	})();
+	})(Shape_1["default"]);
 	exports.__esModule = true;
 	exports["default"] = Text;
 
 
 /***/ },
 /* 6 */
+/***/ function(module, exports) {
+
+	var Shape = (function () {
+	    function Shape(position) {
+	        this.strokeStyle = 'transparent';
+	        this.fillStyle = 'transparent';
+	        this.lineWidth = 1;
+	        this.position = position;
+	    }
+	    Shape.prototype.setStrokeStyle = function (strokeStyle) {
+	        this.strokeStyle = strokeStyle;
+	        return this;
+	    };
+	    Shape.prototype.setFillStyle = function (fillStyle) {
+	        this.fillStyle = fillStyle;
+	        return this;
+	    };
+	    Shape.prototype.setLineWidth = function (lineWidth) {
+	        this.lineWidth = lineWidth;
+	        return this;
+	    };
+	    return Shape;
+	})();
+	exports.__esModule = true;
+	exports["default"] = Shape;
+
+
+/***/ },
+/* 7 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
 	var Context_1 = __webpack_require__(3);
-	var Circle = (function () {
-	    function Circle(position, radius, strokeStyle, fillStyle, lineWidth) {
-	        if (strokeStyle === void 0) { strokeStyle = 'transparent'; }
-	        if (fillStyle === void 0) { fillStyle = 'transparent'; }
-	        if (lineWidth === void 0) { lineWidth = 1; }
-	        this.position = position;
+	var Shape_1 = __webpack_require__(6);
+	var Circle = (function (_super) {
+	    __extends(Circle, _super);
+	    function Circle(position, radius) {
+	        _super.call(this, position);
 	        this.radius = radius;
-	        this.fillStyle = fillStyle;
-	        this.strokeStyle = strokeStyle;
-	        this.lineWidth = lineWidth;
 	    }
 	    Circle.prototype.draw = function () {
 	        Context_1["default"].fillStyle = this.fillStyle;
@@ -359,13 +388,13 @@
 	        Context_1["default"].closePath();
 	    };
 	    return Circle;
-	})();
+	})(Shape_1["default"]);
 	exports.__esModule = true;
 	exports["default"] = Circle;
 
 
 /***/ },
-/* 7 */
+/* 8 */
 /***/ function(module, exports) {
 
 	var Vector = (function () {
@@ -424,52 +453,88 @@
 
 
 /***/ },
-/* 8 */
-/***/ function(module, exports, __webpack_require__) {
+/* 9 */
+/***/ function(module, exports) {
 
-	var Timer_1 = __webpack_require__(9);
-	var Vector_1 = __webpack_require__(7);
-	var Canvas_1 = __webpack_require__(4);
-	var Mouse = (function () {
-	    function Mouse() {
-	        this.position = new Vector_1["default"](0, 0);
-	        this.click = false;
-	        this.timer = new Timer_1["default"](30);
-	    }
-	    Mouse.prototype.updatePosition = function (event) {
-	        var canvasRect = Canvas_1["default"].getBoundingClientRect();
-	        var x, y;
-	        if (event.clientX) {
-	            x = event.clientX;
-	        }
-	        if (event.clientY) {
-	            y = event.clientY;
-	        }
-	        if (event.changedTouches) {
-	            x = event.changedTouches[0].pageX;
-	            y = event.changedTouches[0].pageY;
-	        }
-	        this.position = new Vector_1["default"](x - canvasRect.left, y - canvasRect.top);
-	    };
-	    Mouse.prototype.buttonDown = function () {
-	        this.click = true;
-	    };
-	    Mouse.prototype.buttonUp = function () {
-	        this.click = false;
-	    };
-	    Mouse.prototype.clicked = function () {
-	        return this.click && this.timer.isReady();
-	    };
-	    return Mouse;
-	})();
-	var mouse = new Mouse();
-	setInterval(function () { mouse.timer.update(); }, 1 / 30);
+	var Settings = {
+	    white: 'rgb(255, 255, 255)',
+	    grey: 'rgb(55, 73, 89)',
+	    blue: 'rgb(4, 97, 182)',
+	    green: 'rgb(99, 170, 51)',
+	    red: 'rgb(207, 39, 39)',
+	    yellow: 'rgb(234, 197, 27)',
+	    purple: 'rgb(222, 00, 255)',
+	    CELL_TYPE_PLAYER: 1,
+	    CELL_TYPE_SIMPLE: 2,
+	    CELL_TYPE_ABSORB: 3,
+	    CELL_TYPE_DIRECTION: 4,
+	    CELL_TYPE_ESCAPER: 5
+	};
 	exports.__esModule = true;
-	exports["default"] = mouse;
+	exports["default"] = Settings;
 
 
 /***/ },
-/* 9 */
+/* 10 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Vector_1 = __webpack_require__(8);
+	var Canvas_1 = __webpack_require__(4);
+	var Timer_1 = __webpack_require__(11);
+	var Mouse = (function () {
+	    function Mouse() {
+	    }
+	    Mouse.init = function () {
+	        document.addEventListener('mousemove', Mouse.mouseMove.bind(this), true);
+	        document.addEventListener('mousedown', Mouse.mouseDown.bind(this), true);
+	        document.addEventListener('mouseup', Mouse.mouseUp.bind(this), true);
+	        document.addEventListener('touchstart', Mouse.touchStart.bind(this), true);
+	        document.addEventListener('touchend', Mouse.touchEnd.bind(this), true);
+	        setInterval(function () {
+	            Mouse.timer.update();
+	        }, 1 / 30);
+	    };
+	    Mouse.mouseMove = function (event) {
+	        Mouse.updatePosition(new Vector_1["default"](event.clientX, event.clientY));
+	    };
+	    Mouse.updatePosition = function (position) {
+	        var canvasRect = Canvas_1["default"].getBoundingClientRect();
+	        Mouse.position = position.subtract(new Vector_1["default"](canvasRect.left, canvasRect.top));
+	        Mouse.onMoveCallbacks.forEach(function (callback) {
+	            callback();
+	        });
+	    };
+	    Mouse.mouseDown = function () {
+	        Mouse.click = true;
+	    };
+	    Mouse.mouseUp = function () {
+	        Mouse.click = false;
+	    };
+	    Mouse.touchStart = function (event) {
+	        Mouse.updatePosition(new Vector_1["default"](event.changedTouches[0].pageX, event.changedTouches[0].pageY));
+	        Mouse.mouseDown();
+	    };
+	    Mouse.touchEnd = function () {
+	        Mouse.mouseUp();
+	    };
+	    Mouse.onMove = function (callback) {
+	        Mouse.onMoveCallbacks.push(callback);
+	    };
+	    Mouse.clicked = function () {
+	        return Mouse.click && Mouse.timer.isReady();
+	    };
+	    Mouse.position = new Vector_1["default"](0, 0);
+	    Mouse.click = false;
+	    Mouse.timer = new Timer_1["default"](30);
+	    Mouse.onMoveCallbacks = [];
+	    return Mouse;
+	})();
+	exports.__esModule = true;
+	exports["default"] = Mouse;
+
+
+/***/ },
+/* 11 */
 /***/ function(module, exports) {
 
 	var Timer = (function () {
@@ -493,37 +558,15 @@
 
 
 /***/ },
-/* 10 */
-/***/ function(module, exports) {
-
-	var Settings = {
-	    white: 'rgb(255, 255, 255)',
-	    grey: 'rgb(55, 73, 89)',
-	    blue: 'rgb(4, 97, 182)',
-	    green: 'rgb(99, 170, 51)',
-	    red: 'rgb(207, 39, 39)',
-	    yellow: 'rgb(234, 197, 27)',
-	    purple: 'rgb(222, 00, 255)',
-	    CELL_TYPE_PLAYER: 1,
-	    CELL_TYPE_SIMPLE: 2,
-	    CELL_TYPE_ABSORB: 3,
-	    CELL_TYPE_DIRECTION: 4,
-	    CELL_TYPE_ESCAPER: 5
-	};
-	exports.__esModule = true;
-	exports["default"] = Settings;
-
-
-/***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Context_1 = __webpack_require__(3);
-	var Player_1 = __webpack_require__(12);
-	var Vector_1 = __webpack_require__(7);
-	var Cell_1 = __webpack_require__(13);
-	var Ui_1 = __webpack_require__(16);
-	var Settings_1 = __webpack_require__(10);
+	var Player_1 = __webpack_require__(13);
+	var Vector_1 = __webpack_require__(8);
+	var Cell_1 = __webpack_require__(14);
+	var Ui_1 = __webpack_require__(17);
+	var Settings_1 = __webpack_require__(9);
 	var Level = (function () {
 	    function Level(game, levelSettings) {
 	        this.cells = [];
@@ -640,23 +683,22 @@
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Vector_1 = __webpack_require__(7);
-	var Circle_1 = __webpack_require__(6);
-	var Cell_1 = __webpack_require__(13);
-	var PositionCheck_1 = __webpack_require__(14);
-	var Mouse_1 = __webpack_require__(8);
-	var Keyboard_1 = __webpack_require__(15);
-	var Settings_1 = __webpack_require__(10);
+	var Vector_1 = __webpack_require__(8);
+	var Circle_1 = __webpack_require__(7);
+	var Cell_1 = __webpack_require__(14);
+	var PositionCheck_1 = __webpack_require__(15);
+	var Settings_1 = __webpack_require__(9);
+	var Mouse_1 = __webpack_require__(10);
+	var Keyboard_1 = __webpack_require__(16);
 	var Player = (function () {
 	    function Player(level) {
 	        this.position = new Vector_1["default"](400, 300);
 	        this.velocity = new Vector_1["default"](0, 0);
 	        this.minimumMass = 10;
 	        this.mass = this.minimumMass + 10;
-	        this.mouse = Mouse_1["default"];
 	        this.transparency = 0.5;
 	        this.transparencyFlag = true;
 	        this.level = level;
@@ -670,7 +712,9 @@
 	    Player.prototype.render = function () {
 	        this.draw(this.mass);
 	        this.draw(this.minimumMass);
-	        new Circle_1["default"](this.position, this.mass + 1, Settings_1["default"].white.replace(')', ', ' + this.transparency + ')').replace('rgb', 'rgba')).draw();
+	        new Circle_1["default"](this.position, this.mass + 1)
+	            .setStrokeStyle(Settings_1["default"].white.replace(')', ', ' + this.transparency + ')').replace('rgb', 'rgba'))
+	            .draw();
 	    };
 	    Player.prototype.draw = function (radius) {
 	        var dimensions = this.level.game.dimensions;
@@ -702,7 +746,11 @@
 	        }
 	    };
 	    Player.prototype.drawElement = function (position, radius) {
-	        new Circle_1["default"](position, radius, Settings_1["default"].blue, Settings_1["default"].blue.replace(')', ', 0.2)').replace('rgb', 'rgba'), 2).draw();
+	        new Circle_1["default"](position, radius)
+	            .setStrokeStyle(Settings_1["default"].blue)
+	            .setFillStyle(Settings_1["default"].blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+	            .setLineWidth(2)
+	            .draw();
 	    };
 	    Player.prototype.checkCollision = function () {
 	        var dimensions = this.level.game.dimensions;
@@ -806,9 +854,9 @@
 	            this.velocity = Keyboard_1["default"].direction.normalize();
 	            return false;
 	        }
-	        var clicked = this.mouse.clicked();
+	        var clicked = Mouse_1["default"].clicked();
 	        if (clicked) {
-	            this.mouse.timer.reset();
+	            Mouse_1["default"].timer.reset();
 	        }
 	        return clicked;
 	    };
@@ -816,7 +864,7 @@
 	        if (this.level.levelSettings.level == 5) {
 	            return Keyboard_1["default"].direction.normalize();
 	        }
-	        return this.mouse.position.subtract(this.position).normalize();
+	        return Mouse_1["default"].position.subtract(this.position).normalize();
 	    };
 	    return Player;
 	})();
@@ -825,13 +873,13 @@
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Vector_1 = __webpack_require__(7);
-	var Circle_1 = __webpack_require__(6);
-	var PositionCheck_1 = __webpack_require__(14);
-	var Settings_1 = __webpack_require__(10);
+	var Vector_1 = __webpack_require__(8);
+	var Circle_1 = __webpack_require__(7);
+	var PositionCheck_1 = __webpack_require__(15);
+	var Settings_1 = __webpack_require__(9);
 	var Cell = (function () {
 	    function Cell(level, position, velocity, mass, type) {
 	        this.transparency = 0.5;
@@ -897,8 +945,14 @@
 	        }
 	    };
 	    Cell.prototype.drawElement = function (position) {
-	        new Circle_1["default"](position, this.mass, this.color(), this.color().replace(')', ', 0.3)').replace('rgb', 'rgba'), 3).draw();
-	        new Circle_1["default"](position, this.mass + 1, Settings_1["default"].white.replace(')', ', ' + this.transparency + ')').replace('rgb', 'rgba')).draw();
+	        new Circle_1["default"](position, this.mass)
+	            .setStrokeStyle(this.color())
+	            .setFillStyle(this.color().replace(')', ', 0.3)').replace('rgb', 'rgba'))
+	            .setLineWidth(3)
+	            .draw();
+	        new Circle_1["default"](position, this.mass + 1)
+	            .setStrokeStyle(Settings_1["default"].white.replace(')', ', ' + this.transparency + ')').replace('rgb', 'rgba'))
+	            .draw();
 	    };
 	    Cell.prototype.updateTransparency = function () {
 	        if (this.transparencyFlag) {
@@ -945,7 +999,7 @@
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports) {
 
 	var PositionCheck = (function () {
@@ -985,50 +1039,55 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Timer_1 = __webpack_require__(9);
-	var Vector_1 = __webpack_require__(7);
+	var Timer_1 = __webpack_require__(11);
+	var Vector_1 = __webpack_require__(8);
 	var Keyboard = (function () {
 	    function Keyboard() {
-	        this.direction = new Vector_1["default"](1, 0);
-	        this.timer = new Timer_1["default"](30);
 	    }
-	    Keyboard.prototype.steer = function (keyCode) {
-	        if (!this.timer.isReady()) {
+	    Keyboard.init = function () {
+	        document.addEventListener('keydown', Keyboard.keyDown.bind(this), true);
+	        setInterval(function () {
+	            Keyboard.timer.update();
+	        }, 1 / 30);
+	    };
+	    Keyboard.keyDown = function (event) {
+	        Keyboard.steer(event.keyCode);
+	    };
+	    Keyboard.steer = function (keyCode) {
+	        if (!Keyboard.timer.isReady()) {
 	            return;
 	        }
 	        if (keyCode == Keyboard.KEY_A) {
-	            this.direction = this.direction.rotateByDegress(-45);
-	            this.timer.reset();
+	            Keyboard.direction = Keyboard.direction.rotateByDegress(-45);
+	            Keyboard.timer.reset();
 	        }
 	        if (keyCode == Keyboard.KEY_D) {
-	            this.direction = this.direction.rotateByDegress(45);
-	            this.timer.reset();
+	            Keyboard.direction = Keyboard.direction.rotateByDegress(45);
+	            Keyboard.timer.reset();
 	        }
 	    };
 	    Keyboard.KEY_A = 65;
 	    Keyboard.KEY_D = 68;
+	    Keyboard.direction = new Vector_1["default"](1, 0);
+	    Keyboard.timer = new Timer_1["default"](30);
 	    return Keyboard;
 	})();
-	var keyboard = new Keyboard();
-	setInterval(function () {
-	    keyboard.timer.update();
-	}, 1 / 30);
 	exports.__esModule = true;
-	exports["default"] = keyboard;
+	exports["default"] = Keyboard;
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Vector_1 = __webpack_require__(7);
+	var Vector_1 = __webpack_require__(8);
 	var Text_1 = __webpack_require__(5);
-	var Rectangle_1 = __webpack_require__(17);
-	var Settings_1 = __webpack_require__(10);
-	var Mouse_1 = __webpack_require__(8);
+	var Rectangle_1 = __webpack_require__(18);
+	var Settings_1 = __webpack_require__(9);
+	var Mouse_1 = __webpack_require__(10);
 	var Ui = (function () {
 	    function Ui(level) {
 	        this.level = level;
@@ -1039,49 +1098,58 @@
 	        this.showScore();
 	    };
 	    Ui.prototype.update = function () {
-	        if (Mouse_1["default"].clicked()) {
-	            if (Mouse_1["default"].position.x() >= 210 &&
-	                Mouse_1["default"].position.x() <= 290 &&
-	                Mouse_1["default"].position.y() >= this.level.game.dimensions.y() - 35 &&
-	                Mouse_1["default"].position.y() <= this.level.game.dimensions.y() - 15) {
-	                Mouse_1["default"].timer.reset();
-	                this.level.cleanup();
-	                this.level.game.showMenu();
-	            }
+	        if (!Mouse_1["default"].clicked()) {
+	            return;
+	        }
+	        if (Mouse_1["default"].position.x() >= 210 &&
+	            Mouse_1["default"].position.x() <= 290 &&
+	            Mouse_1["default"].position.y() >= this.level.game.dimensions.y() - 35 &&
+	            Mouse_1["default"].position.y() <= this.level.game.dimensions.y() - 15) {
+	            Mouse_1["default"].timer.reset();
+	            this.level.cleanup();
+	            this.level.game.showMenu();
 	        }
 	    };
 	    Ui.prototype.drawHud = function () {
 	        var winningConditions = this.level.levelSettings.winningConditions;
-	        var container = new Rectangle_1["default"](new Vector_1["default"](150, this.level.game.dimensions.y() - 25), 300, 50);
-	        container.strokeStyle = Settings_1["default"].white;
-	        container.lineWidth = 2;
-	        container.fillStyle = Settings_1["default"].white.replace(')', ', 0.6)').replace('rgb', 'rgba');
-	        container.draw();
+	        new Rectangle_1["default"](new Vector_1["default"](150, this.level.game.dimensions.y() - 25), 300, 50)
+	            .setStrokeStyle(Settings_1["default"].white)
+	            .setFillStyle(Settings_1["default"].white.replace(')', ', 0.6)').replace('rgb', 'rgba'))
+	            .setLineWidth(2)
+	            .draw();
 	        var cellsText = 'Cells collected: ' + this.level.collectedCells;
 	        if (winningConditions.cells) {
 	            cellsText += ' (' + winningConditions.cells + ' needed)';
 	        }
-	        new Text_1["default"](new Vector_1["default"](10, this.level.game.dimensions.y() - 10), cellsText, 'transparent', Settings_1["default"].blue, '14px Oswald', 'left').draw();
+	        new Text_1["default"](new Vector_1["default"](10, this.level.game.dimensions.y() - 10), cellsText, '14px Oswald', 'left')
+	            .setFillStyle(Settings_1["default"].blue)
+	            .draw();
 	        var massText = 'Mass: ' + Math.floor(this.level.player.mass);
 	        if (winningConditions.mass) {
 	            massText += ' (' + winningConditions.mass + ' needed)';
 	        }
-	        new Text_1["default"](new Vector_1["default"](10, this.level.game.dimensions.y() - 30), massText, 'transparent', Settings_1["default"].blue, '14px Oswald', 'left').draw();
-	        var abortButton = new Rectangle_1["default"](new Vector_1["default"](250, this.level.game.dimensions.y() - 25), 80, 20);
-	        abortButton.strokeStyle = Settings_1["default"].red;
-	        abortButton.fillStyle = Settings_1["default"].red.replace(')', ', 0.2)').replace('rgb', 'rgba');
-	        abortButton.draw();
-	        new Text_1["default"](new Vector_1["default"](250, this.level.game.dimensions.y() - 19), 'back to menu', 'transparent', Settings_1["default"].red, '14px Oswald').draw();
+	        new Text_1["default"](new Vector_1["default"](10, this.level.game.dimensions.y() - 30), massText, '14px Oswald', 'left')
+	            .setFillStyle(Settings_1["default"].blue)
+	            .draw();
+	        new Rectangle_1["default"](new Vector_1["default"](250, this.level.game.dimensions.y() - 25), 80, 20)
+	            .setStrokeStyle(Settings_1["default"].red)
+	            .setFillStyle(Settings_1["default"].red.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+	            .draw();
+	        new Text_1["default"](new Vector_1["default"](250, this.level.game.dimensions.y() - 19), 'back to menu', '14px Oswald')
+	            .setFillStyle(Settings_1["default"].red)
+	            .draw();
 	    };
 	    Ui.prototype.showObjectives = function () {
 	        if (!this.level.showObjectives) {
 	            return;
 	        }
 	        this.drawWindow();
-	        var objectives = new Text_1["default"](new Vector_1["default"](this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2 - 100), this.level.levelSettings.intro, Settings_1["default"].grey, Settings_1["default"].white, '18px "Gloria Hallelujah');
-	        objectives.maxWidth = 350;
-	        objectives.lineWidth = 5;
-	        objectives.draw();
+	        new Text_1["default"](new Vector_1["default"](this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2 - 100), this.level.levelSettings.intro, '18px "Gloria Hallelujah')
+	            .setStrokeStyle(Settings_1["default"].grey)
+	            .setFillStyle(Settings_1["default"].white)
+	            .setMaxWidth(350)
+	            .setLineWidth(5)
+	            .draw();
 	        this.drawContinueText('Click to start!');
 	        if (Mouse_1["default"].clicked()) {
 	            Mouse_1["default"].timer.reset();
@@ -1093,10 +1161,12 @@
 	            return;
 	        }
 	        this.drawWindow();
-	        var score = new Text_1["default"](new Vector_1["default"](this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2 - 50), 'You made it!', Settings_1["default"].grey, Settings_1["default"].white, '28px "Gloria Hallelujah"');
-	        score.lineWidth = 5;
-	        score.maxWidth = 350;
-	        score.draw();
+	        new Text_1["default"](new Vector_1["default"](this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2 - 50), 'You made it!', '28px "Gloria Hallelujah"')
+	            .setStrokeStyle(Settings_1["default"].grey)
+	            .setFillStyle(Settings_1["default"].white)
+	            .setLineWidth(5)
+	            .setMaxWidth(350)
+	            .draw();
 	        this.drawContinueText('Click to return to main menu!');
 	        if (Mouse_1["default"].clicked()) {
 	            Mouse_1["default"].timer.reset();
@@ -1105,16 +1175,18 @@
 	        }
 	    };
 	    Ui.prototype.drawWindow = function () {
-	        var window = new Rectangle_1["default"](new Vector_1["default"](this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2), 400, 300);
-	        window.strokeStyle = Settings_1["default"].white;
-	        window.lineWidth = 2;
-	        window.fillStyle = Settings_1["default"].white.replace(')', ', 0.6)').replace('rgb', 'rgba');
-	        window.draw();
+	        new Rectangle_1["default"](new Vector_1["default"](this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2), 400, 300)
+	            .setStrokeStyle(Settings_1["default"].white)
+	            .setLineWidth(2)
+	            .setFillStyle(Settings_1["default"].white.replace(')', ', 0.6)').replace('rgb', 'rgba'))
+	            .draw();
 	    };
 	    Ui.prototype.drawContinueText = function (text) {
-	        var clickToStart = new Text_1["default"](new Vector_1["default"](this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2 + 120), text, Settings_1["default"].grey, Settings_1["default"].white, '18px "Gloria Hallelujah"');
-	        clickToStart.lineWidth = 4;
-	        clickToStart.draw();
+	        new Text_1["default"](new Vector_1["default"](this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2 + 120), text, '18px "Gloria Hallelujah"')
+	            .setStrokeStyle(Settings_1["default"].grey)
+	            .setFillStyle(Settings_1["default"].white)
+	            .setLineWidth(4)
+	            .draw();
 	    };
 	    return Ui;
 	})();
@@ -1123,18 +1195,22 @@
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
 	var Context_1 = __webpack_require__(3);
-	var Rectangle = (function () {
+	var Shape_1 = __webpack_require__(6);
+	var Rectangle = (function (_super) {
+	    __extends(Rectangle, _super);
 	    function Rectangle(position, width, height) {
-	        this.position = position;
+	        _super.call(this, position);
 	        this.width = width;
 	        this.height = height;
-	        this.lineWidth = 1;
-	        this.fillStyle = 'transparent';
-	        this.strokeStyle = 'transparent';
 	    }
 	    Rectangle.prototype.draw = function () {
 	        Context_1["default"].fillStyle = this.fillStyle;
@@ -1147,16 +1223,16 @@
 	        Context_1["default"].closePath();
 	    };
 	    return Rectangle;
-	})();
+	})(Shape_1["default"]);
 	exports.__esModule = true;
 	exports["default"] = Rectangle;
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Container_1 = __webpack_require__(19);
+	var Container_1 = __webpack_require__(20);
 	var Sfx = (function () {
 	    function Sfx() {
 	        this.audioAccelerate = new Container_1["default"]('sfx/accelerate.mp3');
@@ -1186,7 +1262,7 @@
 
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports) {
 
 	var Container = (function () {
@@ -1219,7 +1295,7 @@
 
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports) {
 
 	var Music = (function () {
@@ -1274,11 +1350,11 @@
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Vector_1 = __webpack_require__(7);
-	var Settings_1 = __webpack_require__(10);
+	var Vector_1 = __webpack_require__(8);
+	var Settings_1 = __webpack_require__(9);
 	var LevelDefinitions = [
 	    {
 	        level: 1,
@@ -1737,16 +1813,16 @@
 
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(23);
+	var content = __webpack_require__(24);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(25)(content, {});
+	var update = __webpack_require__(26)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -1763,10 +1839,10 @@
 	}
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(24)();
+	exports = module.exports = __webpack_require__(25)();
 	// imports
 	
 	
@@ -1777,7 +1853,7 @@
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports) {
 
 	/*
@@ -1833,7 +1909,7 @@
 
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*

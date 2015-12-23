@@ -5,6 +5,8 @@ import Sfx from "./Audio/Sfx";
 import Music from "./Audio/Music";
 import levelDefinitions from "./LevelDefinitions";
 import canvas from "./System/Canvas";
+import Mouse from "./Input/Mouse";
+import Keyboard from "./Input/Keyboard";
 
 class Game
 {
@@ -17,6 +19,9 @@ class Game
 
     public run():void
     {
+        Mouse.init();
+        Keyboard.init();
+
         for (var key in levelDefinitions) {
             if (levelDefinitions.hasOwnProperty(key)) {
                 var level = new Level(this, levelDefinitions[key]);

@@ -1,48 +1,71 @@
-import Timer from "./../Util/Timer";
-import Vector from "./../Math/Vector";
-import canvas from "./../System/Canvas";
+import Vector from './../Math/Vector';
+import canvas from './../System/Canvas';
+import Timer from "../Util/Timer";
 
 class Mouse
 {
-    public position = new Vector(0, 0);
-    private click = false;
-    public timer = new Timer(30);
+    public static position:Vector = new Vector(0, 0);
+    private static click = false;
+    public static timer = new Timer(30);
+    private static onMoveCallbacks:Array<Function> = [];
 
-    public updatePosition(event):void
+    public static init():void
+    {
+        document.addEventListener('mousemove', Mouse.mouseMove.bind(this), true);
+        document.addEventListener('mousedown', Mouse.mouseDown.bind(this), true);
+        document.addEventListener('mouseup', Mouse.mouseUp.bind(this), true);
+        document.addEventListener('touchstart', Mouse.touchStart.bind(this), true);
+        document.addEventListener('touchend', Mouse.touchEnd.bind(this), true);
+
+        setInterval(function() {
+            Mouse.timer.update();
+        }, 1 / 30);
+    }
+
+    public static mouseMove(event:MouseEvent):void
+    {
+        Mouse.updatePosition(new Vector(event.clientX, event.clientY));
+    }
+
+    public static updatePosition(position:Vector):void
     {
         var canvasRect = canvas.getBoundingClientRect();
-        var x, y;
-        if (event.clientX) {
-            x = event.clientX;
-        }
-        if (event.clientY) {
-            y = event.clientY;
-        }
-        if (event.changedTouches) {
-            x = event.changedTouches[0].pageX;
-            y = event.changedTouches[0].pageY;
-        }
-
-        this.position = new Vector(x - canvasRect.left, y - canvasRect.top);
+        Mouse.position = position.subtract(new Vector(canvasRect.left, canvasRect.top));
+        Mouse.onMoveCallbacks.forEach(function(callback) {
+            callback();
+        });
     }
 
-    public buttonDown():void
+    public static mouseDown():void
     {
-        this.click = true;
+        Mouse.click = true;
     }
 
-    public buttonUp():void
+    public static mouseUp():void
     {
-        this.click = false;
+        Mouse.click = false;
     }
 
-    public clicked():boolean
+    public static touchStart(event:TouchEvent):void
     {
-        return this.click && this.timer.isReady();
+        Mouse.updatePosition(new Vector(event.changedTouches[0].pageX, event.changedTouches[0].pageY));
+        Mouse.mouseDown();
+    }
+
+    public static touchEnd():void
+    {
+        Mouse.mouseUp();
+    }
+
+    public static onMove(callback: Function):void
+    {
+        Mouse.onMoveCallbacks.push(callback);
+    }
+
+    public static clicked():boolean
+    {
+        return Mouse.click && Mouse.timer.isReady();
     }
 }
 
-var mouse = new Mouse();
-setInterval(function() { mouse.timer.update(); }, 1 / 30);
-
-export default mouse;
+export default Mouse;

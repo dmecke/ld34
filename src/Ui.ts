@@ -2,8 +2,8 @@ import Vector from "./Math/Vector";
 import Text from "./Graphics/Text";
 import Rectangle from "./Graphics/Rectangle";
 import settings from "./Settings";
-import mouse from "./Input/Mouse";
 import Level from "./Level";
+import Mouse from "./Input/Mouse";
 
 class Ui
 {
@@ -23,16 +23,18 @@ class Ui
 
     public update():void
     {
-        if (mouse.clicked()) {
-            if (mouse.position.x() >= 210 &&
-                mouse.position.x() <= 290 &&
-                mouse.position.y() >= this.level.game.dimensions.y() - 35 &&
-                mouse.position.y() <= this.level.game.dimensions.y() - 15)
-            {
-                mouse.timer.reset();
-                this.level.cleanup();
-                this.level.game.showMenu();
-            }
+        if (!Mouse.clicked()) {
+            return;
+        }
+
+        if (Mouse.position.x() >= 210 &&
+            Mouse.position.x() <= 290 &&
+            Mouse.position.y() >= this.level.game.dimensions.y() - 35 &&
+            Mouse.position.y() <= this.level.game.dimensions.y() - 15)
+        {
+            Mouse.timer.reset();
+            this.level.cleanup();
+            this.level.game.showMenu();
         }
     }
 
@@ -40,30 +42,50 @@ class Ui
     {
         var winningConditions = this.level.levelSettings.winningConditions;
 
-        var container = new Rectangle(new Vector(150, this.level.game.dimensions.y() - 25), 300, 50);
-        container.strokeStyle = settings.white;
-        container.lineWidth = 2;
-        container.fillStyle = settings.white.replace(')', ', 0.6)').replace('rgb', 'rgba');
-        container.draw();
+        new Rectangle()
+            .at(new Vector(150, this.level.game.dimensions.y() - 25))
+            .withWidth(300)
+            .withHeight(50)
+            .withStrokeStyle(settings.white)
+            .withFillStyle(settings.white.replace(')', ', 0.6)').replace('rgb', 'rgba'))
+            .withLineWidth(2)
+            .draw();
 
         var cellsText = 'Cells collected: ' + this.level.collectedCells;
         if (winningConditions.cells) {
             cellsText += ' (' + winningConditions.cells + ' needed)';
         }
-        new Text(new Vector(10, this.level.game.dimensions.y() - 10), cellsText, 'transparent', settings.blue, '14px Oswald', 'left').draw();
+        new Text(cellsText)
+            .at(new Vector(10, this.level.game.dimensions.y() - 10))
+            .withFontSize(14)
+            .leftAligned()
+            .withFillStyle(settings.blue)
+            .draw();
 
         var massText = 'Mass: ' + Math.floor(this.level.player.mass);
         if (winningConditions.mass) {
             massText += ' (' + winningConditions.mass + ' needed)';
         }
-        new Text(new Vector(10, this.level.game.dimensions.y() - 30), massText, 'transparent', settings.blue, '14px Oswald', 'left').draw();
+        new Text(massText)
+            .at(new Vector(10, this.level.game.dimensions.y() - 30))
+            .withFontSize(14)
+            .leftAligned()
+            .withFillStyle(settings.blue)
+            .draw();
 
-        var abortButton = new Rectangle(new Vector(250, this.level.game.dimensions.y() - 25), 80, 20);
-        abortButton.strokeStyle = settings.red;
-        abortButton.fillStyle = settings.red.replace(')', ', 0.2)').replace('rgb', 'rgba');
-        abortButton.draw();
+        new Rectangle()
+            .at(new Vector(250, this.level.game.dimensions.y() - 25))
+            .withWidth(80)
+            .withHeight(20)
+            .withStrokeStyle(settings.red)
+            .withFillStyle(settings.red.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+            .draw();
 
-        new Text(new Vector(250, this.level.game.dimensions.y() - 19), 'back to menu', 'transparent', settings.red, '14px Oswald').draw();
+        new Text('back to menu')
+            .at(new Vector(250, this.level.game.dimensions.y() - 19))
+            .withFontSize(14)
+            .withFillStyle(settings.red)
+            .draw();
     }
 
     private showObjectives():void
@@ -74,15 +96,20 @@ class Ui
 
         this.drawWindow();
 
-        var objectives = new Text(new Vector(this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2 - 100), this.level.levelSettings.intro, settings.grey, settings.white, '18px "Gloria Hallelujah');
-        objectives.maxWidth = 350;
-        objectives.lineWidth = 5;
-        objectives.draw();
+        new Text(this.level.levelSettings.intro)
+            .at(this.level.game.dimensions.divide(2).subtract(new Vector(0, 100)))
+            .withFontSize(18)
+            .withFont('Gloria Hallelujah')
+            .withStrokeStyle(settings.grey)
+            .withFillStyle(settings.white)
+            .withMaxWidth(350)
+            .withLineWidth(5)
+            .draw();
 
         this.drawContinueText('Click to start!');
 
-        if (mouse.clicked()) {
-            mouse.timer.reset();
+        if (Mouse.clicked()) {
+            Mouse.timer.reset();
             this.level.showObjectives = false;
         }
     }
@@ -95,15 +122,20 @@ class Ui
 
         this.drawWindow();
 
-        var score = new Text(new Vector(this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2 - 50), 'You made it!', settings.grey, settings.white, '28px "Gloria Hallelujah"');
-        score.lineWidth = 5;
-        score.maxWidth = 350;
-        score.draw();
+        new Text('You made it!')
+            .at(this.level.game.dimensions.divide(2).subtract(new Vector(0, 50)))
+            .withFontSize(28)
+            .withFont('Gloria Hallelujah')
+            .withStrokeStyle(settings.grey)
+            .withFillStyle(settings.white)
+            .withLineWidth(5)
+            .withMaxWidth(350)
+            .draw();
 
         this.drawContinueText('Click to return to main menu!');
 
-        if (mouse.clicked()) {
-            mouse.timer.reset();
+        if (Mouse.clicked()) {
+            Mouse.timer.reset();
             this.level.game.finishLevel();
             this.level.game.showMenu();
         }
@@ -111,18 +143,26 @@ class Ui
 
     private drawWindow():void
     {
-        var window = new Rectangle(new Vector(this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2), 400, 300);
-        window.strokeStyle = settings.white;
-        window.lineWidth = 2;
-        window.fillStyle = settings.white.replace(')', ', 0.6)').replace('rgb', 'rgba');
-        window.draw();
+        new Rectangle()
+            .at(this.level.game.dimensions.divide(2))
+            .withWidth(400)
+            .withHeight(300)
+            .withStrokeStyle(settings.white)
+            .withLineWidth(2)
+            .withFillStyle(settings.white.replace(')', ', 0.6)').replace('rgb', 'rgba'))
+            .draw();
     }
 
     private drawContinueText(text:string):void
     {
-        var clickToStart = new Text(new Vector(this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2 + 120), text, settings.grey, settings.white, '18px "Gloria Hallelujah"');
-        clickToStart.lineWidth = 4;
-        clickToStart.draw();
+        new Text(text)
+            .at(this.level.game.dimensions.divide(2).add(new Vector(0, 120)))
+            .withFontSize(18)
+            .withFont('Gloria Hallelujah')
+            .withStrokeStyle(settings.grey)
+            .withFillStyle(settings.white)
+            .withLineWidth(4)
+            .draw();
     }
 }
 

@@ -1,21 +1,16 @@
 import Context from "./../System/Context";
 import Vector from "../Math/Vector";
+import Shape from "./Shape";
 
-class Circle
+class Circle extends Shape
 {
-    private position:Vector;
-    private radius:number;
-    private fillStyle:string;
-    private strokeStyle:string;
-    private lineWidth:number;
+    private radius:number = 10;
 
-    constructor(position:Vector, radius:number, strokeStyle:string = 'transparent', fillStyle:string = 'transparent', lineWidth:number = 1)
+    public withRadius(radius:number):this
     {
-        this.position = position;
         this.radius = radius;
-        this.fillStyle = fillStyle;
-        this.strokeStyle = strokeStyle;
-        this.lineWidth = lineWidth;
+
+        return this;
     }
 
     public draw():void

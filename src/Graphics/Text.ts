@@ -1,31 +1,53 @@
 import Context from "./../System/Context";
 import Vector from "../Math/Vector";
+import Shape from "./Shape";
 
-class Text
+class Text extends Shape
 {
-    private position:Vector;
     private content:string;
-    private font:string;
-    private strokeStyle:string;
-    private fillStyle:string;
-    public lineWidth:number = 1;
-    private textAlign:string;
-    public maxWidth:number;
+    private fontSize:number = 12;
+    private font:string = 'Oswald';
+    private textAlign:string = 'center';
+    private maxWidth:number;
     private lineHeight:number = 38;
 
-    constructor(position:Vector, content:string, strokeStyle:string = 'transparent', fillStyle:string = 'transparent', font:string = '12px Oswald', textAlign:string = 'center')
+    public constructor(content)
     {
-        this.position = position;
+        super();
         this.content = content;
-        this.strokeStyle = strokeStyle;
-        this.fillStyle = fillStyle;
+    }
+
+    public withFont(font:string):this
+    {
         this.font = font;
-        this.textAlign = textAlign;
+
+        return this;
+    }
+
+    public withFontSize(fontSize:number):this
+    {
+        this.fontSize = fontSize;
+
+        return this;
+    }
+
+    public leftAligned():this
+    {
+        this.textAlign = 'left';
+
+        return this;
+    }
+
+    public withMaxWidth(maxWidth:number):this
+    {
+        this.maxWidth = maxWidth;
+
+        return this;
     }
 
     public draw():void
     {
-        Context.font = this.font;
+        Context.font = this.fontSize.toString() + 'px "' + this.font + '"';
         Context.fillStyle = this.fillStyle;
         Context.strokeStyle = this.strokeStyle;
         Context.lineWidth = this.lineWidth;

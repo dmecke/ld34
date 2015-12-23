@@ -2,10 +2,11 @@ import Vector from "./../Math/Vector";
 import Circle from "./../Graphics/Circle";
 import Cell from "./Cell";
 import PositionCheck from "./../Util/PositionCheck";
-import mouse from "./../Input/Mouse";
 import keyboard from "./../Input/Keyboard";
 import settings from "./../Settings";
 import Level from "../Level";
+import Mouse from "../Input/Mouse";
+import Keyboard from "../Input/Keyboard";
 
 class Player
 {
@@ -14,7 +15,6 @@ class Player
     private velocity:Vector = new Vector(0, 0);
     private minimumMass:number = 10;
     public mass:number = this.minimumMass + 10;
-    private mouse = mouse;
     private transparency:number = 0.5;
     private transparencyFlag:boolean = true;
     
@@ -36,7 +36,11 @@ class Player
         this.draw(this.mass);
         this.draw(this.minimumMass);
 
-        new Circle(this.position, this.mass + 1, settings.white.replace(')', ', ' + this.transparency + ')').replace('rgb', 'rgba')).draw();
+        new Circle()
+            .at(this.position)
+            .withRadius(this.mass + 1)
+            .withStrokeStyle(settings.white.replace(')', ', ' + this.transparency + ')').replace('rgb', 'rgba'))
+            .draw();
     }
 
     private draw(radius:number):void
@@ -74,7 +78,13 @@ class Player
 
     private drawElement(position:Vector, radius:number):void
     {
-        new Circle(position, radius, settings.blue, settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba'), 2).draw();
+        new Circle()
+            .at(position)
+            .withRadius(radius)
+            .withStrokeStyle(settings.blue)
+            .withFillStyle(settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+            .withLineWidth(2)
+            .draw();
     }
 
     private checkCollision():void
@@ -198,13 +208,13 @@ class Player
     private accelerationActive():boolean
     {
         if (this.level.levelSettings.level == 5) {
-            this.velocity = keyboard.direction.normalize();
+            this.velocity = Keyboard.direction.normalize();
             return false;
         }
 
-        var clicked = this.mouse.clicked();
+        var clicked = Mouse.clicked();
         if (clicked) {
-            this.mouse.timer.reset();
+            Mouse.timer.reset();
         }
 
         return clicked;
@@ -213,10 +223,10 @@ class Player
     private movementDirection():Vector
     {
         if (this.level.levelSettings.level == 5) {
-            return keyboard.direction.normalize();
+            return Keyboard.direction.normalize();
         }
 
-        return this.mouse.position.subtract(this.position).normalize()
+        return Mouse.position.subtract(this.position).normalize()
     }
 }
 

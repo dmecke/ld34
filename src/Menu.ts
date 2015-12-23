@@ -4,15 +4,14 @@ import Circle from "./Graphics/Circle";
 import Vector from "./Math/Vector";
 import Music from "./Audio/Music";
 import levelDefinitions from "./LevelDefinitions";
-import mouse from "./Input/Mouse";
 import settings from "./Settings";
 import Game from "./Game";
 import Level from "./Level";
+import Mouse from "./Input/Mouse";
 
 class Menu
 {
     private game:Game;
-    private mouse;
     private interval;
     private background:HTMLImageElement = new Image();
     private lock:HTMLImageElement = new Image();
@@ -22,7 +21,6 @@ class Menu
     constructor(game)
     {
         this.game = game;
-        this.mouse = mouse;
     }
 
     public show():void
@@ -49,18 +47,20 @@ class Menu
 
     public update():void
     {
-        if (this.mouse.clicked()) {
-            this.mouse.timer.reset();
-            var level = this.levelAtPosition(this.mouse.position);
-            if (level && !level.isLocked()) {
-                this.game.startLevel(level);
-            }
-            if (this.mouseIsAtMusic()) {
-                this.game.music.toggle();
-            }
-            if (this.mouseIsAtSfx()) {
-                this.game.sfx.toggle();
-            }
+        if (!Mouse.clicked()) {
+            return;
+        }
+
+        Mouse.timer.reset();
+        var level = this.levelAtPosition(Mouse.position);
+        if (level && !level.isLocked()) {
+            this.game.startLevel(level);
+        }
+        if (this.mouseIsAtMusic()) {
+            this.game.music.toggle();
+        }
+        if (this.mouseIsAtSfx()) {
+            this.game.sfx.toggle();
         }
     }
 
@@ -82,14 +82,25 @@ class Menu
     {
         var position = new Vector(this.game.dimensions.x() - 50, 50);
 
-        new Circle(position, 25, settings.white, settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba'), 2).draw();
+        new Circle()
+            .at(position)
+            .withRadius(25)
+            .withStrokeStyle(settings.white)
+            .withFillStyle(settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+            .withLineWidth(2)
+            .draw();
 
         context.drawImage(this.symbolMusic, position.x() - 15, position.y() - 18);
 
         if (!this.game.music.enabled) {
-            var x = new Text(position.add(new Vector(1, 18)), 'X', settings.white, settings.red, '44px "Gloria Hallelujah"');
-            x.lineWidth = 5;
-            x.draw();
+            new Text('X')
+                .at(position.add(new Vector(1, 18)))
+                .withFontSize(44)
+                .withFont('Gloria Hallelujah')
+                .withStrokeStyle(settings.white)
+                .withFillStyle(settings.red)
+                .withLineWidth(5)
+                .draw();
         }
     }
 
@@ -97,14 +108,25 @@ class Menu
     {
         var position = new Vector(this.game.dimensions.x() - 50, 120);
 
-        new Circle(position, 25, settings.white, settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba'), 2).draw();
+        new Circle()
+            .at(position)
+            .withRadius(25)
+            .withStrokeStyle(settings.blue)
+            .withFillStyle(settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+            .withLineWidth(2)
+            .draw();
 
         context.drawImage(this.symbolSfx, position.x() - 19, position.y() - 18);
 
         if (!this.game.sfx.enabled) {
-            var x = new Text(position.add(new Vector(1, 18)), 'X', settings.white, settings.red, '44px "Gloria Hallelujah"');
-            x.lineWidth = 5;
-            x.draw();
+            new Text('X')
+                .at(position.add(new Vector(1, 18)))
+                .withFontSize(44)
+                .withFont('Gloria Hallelujah')
+                .withStrokeStyle(settings.white)
+                .withFillStyle(settings.red)
+                .withLineWidth(5)
+                .draw();
         }
     }
 
@@ -119,14 +141,25 @@ class Menu
     {
         var position = this.positionByLevel(level.levelSettings.level);
 
-        new Circle(position, 50, settings.white, settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba'), 2).draw();
+        new Circle()
+            .at(position)
+            .withRadius(50)
+            .withStrokeStyle(settings.white)
+            .withFillStyle(settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+            .withLineWidth(2)
+            .draw();
 
         if (level.isLocked()) {
             context.drawImage(this.lock, position.x() - 29, position.y() - 44);
         } else {
-            var label = new Text(position.add(new Vector(0, 20)), level.levelSettings.level.toString(), settings.grey, settings.white, '52px "Gloria Hallelujah"');
-            label.lineWidth = 8;
-            label.draw();
+            new Text(level.levelSettings.level.toString())
+                .at(position.add(new Vector(0, 20)))
+                .withFontSize(52)
+                .withFont('Gloria Hallelujah')
+                .withStrokeStyle(settings.grey)
+                .withFillStyle(settings.white)
+                .withLineWidth(8)
+                .draw();
         }
     }
 
@@ -145,14 +178,14 @@ class Menu
     {
         var position = new Vector(this.game.dimensions.x() - 50, 50);
 
-        return position.distanceTo(this.mouse.position) <= 50;
+        return position.distanceTo(Mouse.position) <= 50;
     }
 
     private mouseIsAtSfx():boolean
     {
         var position = new Vector(this.game.dimensions.x() - 50, 120);
 
-        return position.distanceTo(this.mouse.position) <= 50;
+        return position.distanceTo(Mouse.position) <= 50;
     }
 }
 

@@ -1,32 +1,35 @@
 import Context from "./../System/Context";
 import Vector from "../Math/Vector";
+import Shape from "./Shape";
 
-class Rectangle
+class Rectangle extends Shape
 {
-    private position:Vector;
-    private width:number;
-    private height:number;
-    public lineWidth:number;
-    public fillStyle:string;
-    public strokeStyle:string;
+    private width:number = 10;
+    private height:number = 10;
 
-    constructor(position:Vector, width:number, height:number)
+    public withWidth(width:number):this
     {
-        this.position = position;
         this.width = width;
+
+        return this;
+    }
+
+    public withHeight(height:number):this
+    {
         this.height = height;
-        this.lineWidth = 1;
-        this.fillStyle = 'transparent';
-        this.strokeStyle = 'transparent';
+
+        return this;
     }
 
     public draw():void
     {
+        var position = this.position.subtract(new Vector(this.width / 2, this.height / 2));
+
         Context.fillStyle = this.fillStyle;
         Context.strokeStyle = this.strokeStyle;
         Context.lineWidth = this.lineWidth;
         Context.beginPath();
-        Context.rect(this.position.x() - this.width / 2, this.position.y() - this.height / 2, this.width, this.height);
+        Context.rect(position.x(), position.y(), this.width, this.height);
         Context.stroke();
         Context.fill();
         Context.closePath();

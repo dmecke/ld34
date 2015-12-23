@@ -1,7 +1,7 @@
 class Timer
 {
     private maximum:number;
-    private current:number;
+    public current:number;
 
     constructor(maximum:number)
     {
