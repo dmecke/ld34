@@ -86,7 +86,7 @@ class Menu
             .at(position)
             .withRadius(25)
             .withStrokeStyle(settings.white)
-            .withFillStyle(settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+            .withFillStyle(settings.blue.alpha(0.2))
             .withLineWidth(2)
             .draw();
 
@@ -111,8 +111,8 @@ class Menu
         new Circle()
             .at(position)
             .withRadius(25)
-            .withStrokeStyle(settings.blue)
-            .withFillStyle(settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+            .withStrokeStyle(settings.white)
+            .withFillStyle(settings.blue.alpha(0.2))
             .withLineWidth(2)
             .draw();
 
@@ -145,7 +145,7 @@ class Menu
             .at(position)
             .withRadius(50)
             .withStrokeStyle(settings.white)
-            .withFillStyle(settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+            .withFillStyle(settings.blue.alpha(0.2))
             .withLineWidth(2)
             .draw();
 

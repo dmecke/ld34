@@ -15,8 +15,8 @@ class Circle extends Shape
 
     public draw():void
     {
-        Context.fillStyle = this.fillStyle;
-        Context.strokeStyle = this.strokeStyle;
+        Context.fillStyle = this.fillStyle.toString();
+        Context.strokeStyle = this.strokeStyle.toString();
         Context.lineWidth = this.lineWidth;
         Context.beginPath();
         Context.arc(this.position.x(), this.position.y(), this.radius, 0, 2 * Math.PI);

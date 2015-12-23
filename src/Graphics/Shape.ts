@@ -1,4 +1,5 @@
 import Vector from "../Math/Vector";
+import Color from "../Graphics/Color";
 
 abstract class Shape
 {
@@ -14,16 +15,16 @@ abstract class Shape
         return this;
     }
 
-    public withStrokeStyle(strokeStyle:string):this
+    public withStrokeStyle(color:Color):this
     {
-        this.strokeStyle = strokeStyle;
+        this.strokeStyle = color.toString();
 
         return this;
     }
 
-    public withFillStyle(fillStyle:string):this
+    public withFillStyle(color:Color):this
     {
-        this.fillStyle = fillStyle;
+        this.fillStyle = color.toString();
 
         return this;
     }

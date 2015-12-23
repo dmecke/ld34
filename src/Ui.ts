@@ -4,12 +4,13 @@ import Rectangle from "./Graphics/Rectangle";
 import settings from "./Settings";
 import Level from "./Level";
 import Mouse from "./Input/Mouse";
+import Color from "./Graphics/Color";
 
 class Ui
 {
-    private level: Level;
+    private level:Level;
 
-    constructor(level: Level)
+    constructor(level:Level)
     {
         this.level = level;
     }
@@ -47,7 +48,7 @@ class Ui
             .withWidth(300)
             .withHeight(50)
             .withStrokeStyle(settings.white)
-            .withFillStyle(settings.white.replace(')', ', 0.6)').replace('rgb', 'rgba'))
+            .withFillStyle(settings.white.alpha(0.6))
             .withLineWidth(2)
             .draw();
 
@@ -78,7 +79,7 @@ class Ui
             .withWidth(80)
             .withHeight(20)
             .withStrokeStyle(settings.red)
-            .withFillStyle(settings.red.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+            .withFillStyle(settings.red.alpha(0.2))
             .draw();
 
         new Text('back to menu')
@@ -149,7 +150,7 @@ class Ui
             .withHeight(300)
             .withStrokeStyle(settings.white)
             .withLineWidth(2)
-            .withFillStyle(settings.white.replace(')', ', 0.6)').replace('rgb', 'rgba'))
+            .withFillStyle(settings.white.alpha(0.6))
             .draw();
     }
 

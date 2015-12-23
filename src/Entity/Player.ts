@@ -7,6 +7,7 @@ import settings from "./../Settings";
 import Level from "../Level";
 import Mouse from "../Input/Mouse";
 import Keyboard from "../Input/Keyboard";
+import PlayerGraphic from "../Graphics/PlayerGraphic";
 
 class Player
 {
@@ -15,8 +16,7 @@ class Player
     private velocity:Vector = new Vector(0, 0);
     private minimumMass:number = 10;
     public mass:number = this.minimumMass + 10;
-    private transparency:number = 0.5;
-    private transparencyFlag:boolean = true;
+    private graphic:PlayerGraphic = new PlayerGraphic();
     
     constructor(level)
     {
@@ -28,63 +28,11 @@ class Player
         this.checkCollision();
         this.processUserInput();
         this.updatePosition();
-        this.updateTransparency();
     }
 
     public render():void
     {
-        this.draw(this.mass);
-        this.draw(this.minimumMass);
-
-        new Circle()
-            .at(this.position)
-            .withRadius(this.mass + 1)
-            .withStrokeStyle(settings.white.replace(')', ', ' + this.transparency + ')').replace('rgb', 'rgba'))
-            .draw();
-    }
-
-    private draw(radius:number):void
-    {
-        var dimensions = this.level.game.dimensions;
-        var check = new PositionCheck(this.position, radius, dimensions);
-
-        this.drawElement(this.position, radius);
-        if (check.isOutOfLeftBorder()) {
-            this.drawElement(new Vector(dimensions.x() + this.position.x(), this.position.y()), radius);
-        }
-        if (check.isOutOfTopBorder()) {
-            this.drawElement(new Vector(this.position.x(), dimensions.y() + this.position.y()), radius);
-        }
-        if (check.isOutOfRightBorder()) {
-            this.drawElement(new Vector(this.position.x() - dimensions.x(), this.position.y()), radius);
-        }
-        if (check.isOutOfBottomBorder()) {
-            this.drawElement(new Vector(this.position.x(), this.position.y() - dimensions.y()), radius);
-        }
-
-        if (check.isOutOfTopLeftCorner()) {
-            this.drawElement(new Vector(dimensions.x() + this.position.x(), dimensions.y() + this.position.y()), radius);
-        }
-        if (check.isOutOfBottomLeftCorner()) {
-            this.drawElement(new Vector(dimensions.x() + this.position.x(), this.position.y() - dimensions.y()), radius);
-        }
-        if (check.isOutOfTopRightCorner()) {
-            this.drawElement(new Vector(this.position.x() - dimensions.x(), dimensions.y() + this.position.y()), radius);
-        }
-        if (check.isOutOfBottomRightCorner()) {
-            this.drawElement(new Vector(this.position.x() - dimensions.x(), this.position.y() - dimensions.y()), radius);
-        }
-    }
-
-    private drawElement(position:Vector, radius:number):void
-    {
-        new Circle()
-            .at(position)
-            .withRadius(radius)
-            .withStrokeStyle(settings.blue)
-            .withFillStyle(settings.blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
-            .withLineWidth(2)
-            .draw();
+        this.graphic.draw(this.position, this.minimumMass, this.mass, this.level.game.dimensions);
     }
 
     private checkCollision():void
@@ -142,8 +90,8 @@ class Player
     private incorporateCell(cell, index):void
     {
         // @todo find out correct formula
-        //var velChange = this.velocity.subtract(cell.velocity).multiply(-1).normalize().multiply(1 / cell.mass);
-        //this.velocity = this.velocity.add(velChange);
+        var velChange = this.velocity.subtract(cell.velocity).multiply(-1).normalize().multiply(1 / cell.mass);
+        this.velocity = this.velocity.add(velChange);
         this.addMass(cell.massWhenAbsorbed());
         this.level.cells.splice(index, 1);
         this.level.game.sfx.absorb();
@@ -185,19 +133,6 @@ class Player
         this.velocity = this.velocity.add(force);
         this.level.cells.push(cell);
         this.level.game.sfx.accelerate();
-    }
-
-    private updateTransparency():void
-    {
-        if (this.transparencyFlag) {
-            this.transparency += 0.005;
-        } else {
-            this.transparency -= 0.005;
-        }
-
-        if (this.transparency >= 0.8 || this.transparency <= 0.2) {
-            this.transparencyFlag = !this.transparencyFlag;
-        }
     }
 
     private addMass(amount:number):void

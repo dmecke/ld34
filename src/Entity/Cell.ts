@@ -3,6 +3,7 @@ import Circle from "./../Graphics/Circle";
 import PositionCheck from "./../Util/PositionCheck";
 import settings from "./../Settings";
 import Level from "../Level";
+import Color from "../Graphics/Color";
 
 class Cell
 {
@@ -90,13 +91,13 @@ class Cell
             .at(position)
             .withRadius(this.mass)
             .withStrokeStyle(this.color())
-            .withFillStyle(this.color().replace(')', ', 0.3)').replace('rgb', 'rgba'))
+            .withFillStyle(this.color().alpha(0.3))
             .withLineWidth(3)
             .draw();
         new Circle()
             .at(position)
             .withRadius(this.mass + 1)
-            .withStrokeStyle(settings.white.replace(')', ', ' + this.transparency + ')').replace('rgb', 'rgba'))
+            .withStrokeStyle(settings.white.alpha(this.transparency))
             .draw();
     }
 
@@ -113,7 +114,7 @@ class Cell
         }
     }
 
-    private color():string
+    private color():Color
     {
         if (this.type == settings.CELL_TYPE_PLAYER) {
             return settings.blue;
