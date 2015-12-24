@@ -55,6 +55,11 @@ class Vector
         return this.divide(this.length());
     }
 
+    public dot(vector:Vector):number
+    {
+        return this.x() * vector.x() + this.y() * vector.y();
+    }
+
     public limit(limit:number):Vector
     {
         if (this.length() <= limit) {
@@ -78,6 +83,14 @@ class Vector
         var vector = new Vector(Math.round(ca * this.components[0] - sa * this.components[1]), Math.round(sa * this.components[0] + ca * this.components[1]));
 
         return vector.normalize().multiply(length);
+    }
+
+    public mirror(vector:Vector):Vector
+    {
+        var normal = vector.normalize();
+        var dotProduct = normal.dot(this);
+
+        return this.subtract(normal.multiply(2).multiply(dotProduct));
     }
 }
 

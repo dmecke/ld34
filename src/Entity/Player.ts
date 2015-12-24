@@ -1,6 +1,5 @@
 import Vector from "./../Math/Vector";
 import Circle from "./../Graphics/Circle";
-import PositionCheck from "./../Util/PositionCheck";
 import keyboard from "./../Input/Keyboard";
 import settings from "./../Settings";
 import Level from "../Level";
@@ -13,7 +12,6 @@ import Cell from "./Cell/Cell";
 
 class Player extends MovingObject
 {
-    private level:Level;
     private minimumMass:number = 10;
     private graphic:PlayerGraphic = new PlayerGraphic();
     
@@ -27,48 +25,19 @@ class Player extends MovingObject
     {
         this.checkCollision();
         this.processUserInput();
-        this.updatePosition();
+        super.update();
     }
 
     public render():void
     {
-        this.graphic.draw(this.position, this.minimumMass, this.radius(), this.level.game.dimensions);
+        this.graphic.draw(this.position, this.minimumMass, this.radius());
     }
 
     private checkCollision():void
     {
-        var dimensions = this.level.game.dimensions;
-        var check = new PositionCheck(this.position, this.radius(), dimensions);
-
         for (var i = 0; i < this.level.cells.length; i++) {
             var cell = this.level.cells[i];
             this.checkCollisionAt(this.position, cell, i);
-
-            if (check.isOutOfLeftBorder()) {
-                this.checkCollisionAt(new Vector(dimensions.x() + this.position.x(), this.position.y()), cell, i);
-            }
-            if (check.isOutOfTopBorder()) {
-                this.checkCollisionAt(new Vector(this.position.x(), dimensions.y() + this.position.y()), cell, i);
-            }
-            if (check.isOutOfRightBorder()) {
-                this.checkCollisionAt(new Vector(this.position.x() - dimensions.x(), this.position.y()), cell, i);
-            }
-            if (check.isOutOfBottomBorder()) {
-                this.checkCollisionAt(new Vector(this.position.x(), this.position.y() - dimensions.y()), cell, i);
-            }
-
-            if (check.isOutOfTopLeftCorner()) {
-                this.checkCollisionAt(new Vector(dimensions.x() + this.position.x(), dimensions.y() + this.position.y()), cell, i);
-            }
-            if (check.isOutOfBottomLeftCorner()) {
-                this.checkCollisionAt(new Vector(dimensions.x() + this.position.x(), this.position.y() - dimensions.y()), cell, i);
-            }
-            if (check.isOutOfTopRightCorner()) {
-                this.checkCollisionAt(new Vector(this.position.x() - dimensions.x(), dimensions.y() + this.position.y()), cell, i);
-            }
-            if (check.isOutOfBottomRightCorner()) {
-                this.checkCollisionAt(new Vector(this.position.x() - dimensions.x(), this.position.y() - dimensions.y()), cell, i);
-            }
         }
     }
 
@@ -84,7 +53,6 @@ class Player extends MovingObject
         return cell.position.distanceTo(position) < this.radius() + cell.radius();
     }
 
-    
     private incorporateCell(position, cell, index):void
     {
         //var overallMomentum = this.momentum().add(cell.momentum());
@@ -97,8 +65,6 @@ class Player extends MovingObject
             this.level.collectedCells++;
         }
 
-
-
         //var diff = 0.1;
         //this.addMass(diff * cell.massSign());
         //cell.mass -= diff;
@@ -109,23 +75,6 @@ class Player extends MovingObject
         //        this.level.collectedCells++;
         //    }
         //}
-    }
-
-    private updatePosition():void
-    {
-        this.position = this.position.add(this.velocity);
-        if (this.position.x() > this.level.game.dimensions.x()) {
-            this.position = this.position.subtract(new Vector(this.level.game.dimensions.x(), 0));
-        }
-        if (this.position.y() > this.level.game.dimensions.y()) {
-            this.position = this.position.subtract(new Vector(0, this.level.game.dimensions.y()));
-        }
-        if (this.position.x() < 0) {
-            this.position = new Vector(this.level.game.dimensions.x() - this.position.x(), this.position.y());
-        }
-        if (this.position.y() < 0) {
-            this.position = new Vector(this.position.x(), this.level.game.dimensions.y() - this.position.y());
-        }
     }
 
     private processUserInput():void
