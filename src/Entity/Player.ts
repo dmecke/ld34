@@ -1,6 +1,5 @@
 import Vector from "./../Math/Vector";
 import Circle from "./../Graphics/Circle";
-import Cell from "./Cell";
 import PositionCheck from "./../Util/PositionCheck";
 import keyboard from "./../Input/Keyboard";
 import settings from "./../Settings";
@@ -8,18 +7,19 @@ import Level from "../Level";
 import Mouse from "../Input/Mouse";
 import Keyboard from "../Input/Keyboard";
 import PlayerGraphic from "../Graphics/PlayerGraphic";
+import MovingObject from "./MovingObject";
+import PlayerCell from "./Cell/PlayerCell";
+import Cell from "./Cell/Cell";
 
-class Player
+class Player extends MovingObject
 {
     private level:Level;
-    public position:Vector = new Vector(400, 300);
-    private velocity:Vector = new Vector(0, 0);
     private minimumMass:number = 10;
-    public mass:number = this.minimumMass + 10;
     private graphic:PlayerGraphic = new PlayerGraphic();
     
     constructor(level)
     {
+        super(new Vector(400, 300), 20, new Vector(0, 0));
         this.level = level;
     }
 
@@ -32,13 +32,13 @@ class Player
 
     public render():void
     {
-        this.graphic.draw(this.position, this.minimumMass, this.mass, this.level.game.dimensions);
+        this.graphic.draw(this.position, this.minimumMass, this.radius(), this.level.game.dimensions);
     }
 
     private checkCollision():void
     {
         var dimensions = this.level.game.dimensions;
-        var check = new PositionCheck(this.position, this.mass, dimensions);
+        var check = new PositionCheck(this.position, this.radius(), dimensions);
 
         for (var i = 0; i < this.level.cells.length; i++) {
             var cell = this.level.cells[i];
@@ -75,26 +75,40 @@ class Player
     private checkCollisionAt(position:Vector, cell:Cell, index:number):void
     {
         if (this.collidesWithCell(position, cell)) {
-            this.incorporateCell(cell, index);
-            if (cell.isForeign()) {
-                this.level.collectedCells++;
-            }
+            this.incorporateCell(position, cell, index);
         }
     }
 
     private collidesWithCell(position:Vector, cell:Cell):boolean
     {
-        return cell.position.distanceTo(position) < this.mass + cell.mass;
+        return cell.position.distanceTo(position) < this.radius() + cell.radius();
     }
 
-    private incorporateCell(cell, index):void
+    
+    private incorporateCell(position, cell, index):void
     {
-        // @todo find out correct formula
-        var velChange = this.velocity.subtract(cell.velocity).multiply(-1).normalize().multiply(1 / cell.mass);
-        this.velocity = this.velocity.add(velChange);
-        this.addMass(cell.massWhenAbsorbed());
+        //var overallMomentum = this.momentum().add(cell.momentum());
+        //this.velocity = overallMomentum.divide(this.mass);
+
+        this.addMass(cell.mass * cell.massSign());
         this.level.cells.splice(index, 1);
         this.level.game.sfx.absorb();
+        if (cell.isForeign()) {
+            this.level.collectedCells++;
+        }
+
+
+
+        //var diff = 0.1;
+        //this.addMass(diff * cell.massSign());
+        //cell.mass -= diff;
+        //if (cell.mass <= 0) {
+        //    this.level.cells.splice(index, 1);
+        //    this.level.game.sfx.absorb();
+        //    if (cell.isForeign()) {
+        //        this.level.collectedCells++;
+        //    }
+        //}
     }
 
     private updatePosition():void
@@ -124,12 +138,12 @@ class Player
             return;
         }
 
-        var emittedMass = Math.max(0.2, this.mass * 0.2);
+        var emittedMass = Math.max(0.1, this.mass * 0.1);
         var direction = this.movementDirection();
         var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
         this.addMass(-emittedMass);
-        var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-        var cell = new Cell(this.level, cellPosition, this.velocity, emittedMass, settings.CELL_TYPE_PLAYER);
+        var cell = new PlayerCell(this.level, new Vector(0, 0), this.velocity, emittedMass);
+        cell.position = this.position.add(direction.multiply(this.radius() + cell.radius()));
         this.velocity = this.velocity.add(force);
         this.level.cells.push(cell);
         this.level.game.sfx.accelerate();

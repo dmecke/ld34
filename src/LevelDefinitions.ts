@@ -17,7 +17,7 @@ var LevelDefinitions = [
                 {
                     position: new Vector(500, 300),
                     velocity: new Vector(0, 0),
-                    mass: 10,
+                    mass: 20,
                     type: settings.CELL_TYPE_SIMPLE
                 }
             ]

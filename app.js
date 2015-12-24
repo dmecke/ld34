@@ -52,7 +52,7 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	__webpack_require__(23);
+	__webpack_require__(32);
 	
 	new _Game2.default().run();
 
@@ -61,13 +61,13 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Menu_1 = __webpack_require__(2);
-	var Level_1 = __webpack_require__(12);
-	var Vector_1 = __webpack_require__(8);
-	var Sfx_1 = __webpack_require__(19);
-	var Music_1 = __webpack_require__(21);
-	var LevelDefinitions_1 = __webpack_require__(22);
+	var Level_1 = __webpack_require__(13);
+	var Vector_1 = __webpack_require__(7);
+	var Sfx_1 = __webpack_require__(28);
+	var Music_1 = __webpack_require__(30);
+	var LevelDefinitions_1 = __webpack_require__(31);
 	var Canvas_1 = __webpack_require__(4);
-	var Mouse_1 = __webpack_require__(10);
+	var Mouse_1 = __webpack_require__(11);
 	var Keyboard_1 = __webpack_require__(16);
 	var Game = (function () {
 	    function Game() {
@@ -123,10 +123,10 @@
 
 	var Context_1 = __webpack_require__(3);
 	var Text_1 = __webpack_require__(5);
-	var Circle_1 = __webpack_require__(7);
-	var Vector_1 = __webpack_require__(8);
+	var Circle_1 = __webpack_require__(8);
+	var Vector_1 = __webpack_require__(7);
 	var Settings_1 = __webpack_require__(9);
-	var Mouse_1 = __webpack_require__(10);
+	var Mouse_1 = __webpack_require__(11);
 	var Menu = (function () {
 	    function Menu(game) {
 	        this.background = new Image();
@@ -178,33 +178,43 @@
 	    };
 	    Menu.prototype.drawMusic = function () {
 	        var position = new Vector_1["default"](this.game.dimensions.x() - 50, 50);
-	        new Circle_1["default"](position, 25)
-	            .setStrokeStyle(Settings_1["default"].white)
-	            .setFillStyle(Settings_1["default"].blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
-	            .setLineWidth(2)
+	        new Circle_1["default"]()
+	            .at(position)
+	            .withRadius(25)
+	            .withStrokeStyle(Settings_1["default"].white)
+	            .withFillStyle(Settings_1["default"].blue.alpha(0.2))
+	            .withLineWidth(2)
 	            .draw();
 	        Context_1["default"].drawImage(this.symbolMusic, position.x() - 15, position.y() - 18);
 	        if (!this.game.music.enabled) {
-	            new Text_1["default"](position.add(new Vector_1["default"](1, 18)), 'X', '44px "Gloria Hallelujah"')
-	                .setStrokeStyle(Settings_1["default"].white)
-	                .setFillStyle(Settings_1["default"].red)
-	                .setLineWidth(5)
+	            new Text_1["default"]('X')
+	                .at(position.add(new Vector_1["default"](1, 18)))
+	                .withFontSize(44)
+	                .withFont('Gloria Hallelujah')
+	                .withStrokeStyle(Settings_1["default"].white)
+	                .withFillStyle(Settings_1["default"].red)
+	                .withLineWidth(5)
 	                .draw();
 	        }
 	    };
 	    Menu.prototype.drawSfx = function () {
 	        var position = new Vector_1["default"](this.game.dimensions.x() - 50, 120);
-	        new Circle_1["default"](position, 25)
-	            .setStrokeStyle(Settings_1["default"].blue)
-	            .setFillStyle(Settings_1["default"].blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
-	            .setLineWidth(2)
+	        new Circle_1["default"]()
+	            .at(position)
+	            .withRadius(25)
+	            .withStrokeStyle(Settings_1["default"].white)
+	            .withFillStyle(Settings_1["default"].blue.alpha(0.2))
+	            .withLineWidth(2)
 	            .draw();
 	        Context_1["default"].drawImage(this.symbolSfx, position.x() - 19, position.y() - 18);
 	        if (!this.game.sfx.enabled) {
-	            new Text_1["default"](position.add(new Vector_1["default"](1, 18)), 'X', '44px "Gloria Hallelujah"')
-	                .setStrokeStyle(Settings_1["default"].white)
-	                .setFillStyle(Settings_1["default"].red)
-	                .setLineWidth(5)
+	            new Text_1["default"]('X')
+	                .at(position.add(new Vector_1["default"](1, 18)))
+	                .withFontSize(44)
+	                .withFont('Gloria Hallelujah')
+	                .withStrokeStyle(Settings_1["default"].white)
+	                .withFillStyle(Settings_1["default"].red)
+	                .withLineWidth(5)
 	                .draw();
 	        }
 	    };
@@ -214,19 +224,24 @@
 	    };
 	    Menu.prototype.drawLevel = function (level) {
 	        var position = this.positionByLevel(level.levelSettings.level);
-	        new Circle_1["default"](position, 50)
-	            .setStrokeStyle(Settings_1["default"].white)
-	            .setFillStyle(Settings_1["default"].blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
-	            .setLineWidth(2)
+	        new Circle_1["default"]()
+	            .at(position)
+	            .withRadius(50)
+	            .withStrokeStyle(Settings_1["default"].white)
+	            .withFillStyle(Settings_1["default"].blue.alpha(0.2))
+	            .withLineWidth(2)
 	            .draw();
 	        if (level.isLocked()) {
 	            Context_1["default"].drawImage(this.lock, position.x() - 29, position.y() - 44);
 	        }
 	        else {
-	            new Text_1["default"](position.add(new Vector_1["default"](0, 20)), level.levelSettings.level.toString(), '52px "Gloria Hallelujah"')
-	                .setStrokeStyle(Settings_1["default"].grey)
-	                .setFillStyle(Settings_1["default"].white)
-	                .setLineWidth(8)
+	            new Text_1["default"](level.levelSettings.level.toString())
+	                .at(position.add(new Vector_1["default"](0, 20)))
+	                .withFontSize(52)
+	                .withFont('Gloria Hallelujah')
+	                .withStrokeStyle(Settings_1["default"].grey)
+	                .withFillStyle(Settings_1["default"].white)
+	                .withLineWidth(8)
 	                .draw();
 	        }
 	    };
@@ -286,21 +301,32 @@
 	var Shape_1 = __webpack_require__(6);
 	var Text = (function (_super) {
 	    __extends(Text, _super);
-	    function Text(position, content, font, textAlign) {
-	        if (font === void 0) { font = '12px Oswald'; }
-	        if (textAlign === void 0) { textAlign = 'center'; }
-	        _super.call(this, position);
+	    function Text(content) {
+	        _super.call(this);
+	        this.fontSize = 12;
+	        this.font = 'Oswald';
+	        this.textAlign = 'center';
 	        this.lineHeight = 38;
 	        this.content = content;
-	        this.font = font;
-	        this.textAlign = textAlign;
 	    }
-	    Text.prototype.setMaxWidth = function (maxWidth) {
+	    Text.prototype.withFont = function (font) {
+	        this.font = font;
+	        return this;
+	    };
+	    Text.prototype.withFontSize = function (fontSize) {
+	        this.fontSize = fontSize;
+	        return this;
+	    };
+	    Text.prototype.leftAligned = function () {
+	        this.textAlign = 'left';
+	        return this;
+	    };
+	    Text.prototype.withMaxWidth = function (maxWidth) {
 	        this.maxWidth = maxWidth;
 	        return this;
 	    };
 	    Text.prototype.draw = function () {
-	        Context_1["default"].font = this.font;
+	        Context_1["default"].font = this.fontSize.toString() + 'px "' + this.font + '"';
 	        Context_1["default"].fillStyle = this.fillStyle;
 	        Context_1["default"].strokeStyle = this.strokeStyle;
 	        Context_1["default"].lineWidth = this.lineWidth;
@@ -333,24 +359,29 @@
 
 /***/ },
 /* 6 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
+	var Vector_1 = __webpack_require__(7);
 	var Shape = (function () {
-	    function Shape(position) {
+	    function Shape() {
+	        this.position = new Vector_1["default"](0, 0);
 	        this.strokeStyle = 'transparent';
 	        this.fillStyle = 'transparent';
 	        this.lineWidth = 1;
-	        this.position = position;
 	    }
-	    Shape.prototype.setStrokeStyle = function (strokeStyle) {
-	        this.strokeStyle = strokeStyle;
+	    Shape.prototype.at = function (position) {
+	        this.position = position;
 	        return this;
 	    };
-	    Shape.prototype.setFillStyle = function (fillStyle) {
-	        this.fillStyle = fillStyle;
+	    Shape.prototype.withStrokeStyle = function (color) {
+	        this.strokeStyle = color.toString();
 	        return this;
 	    };
-	    Shape.prototype.setLineWidth = function (lineWidth) {
+	    Shape.prototype.withFillStyle = function (color) {
+	        this.fillStyle = color.toString();
+	        return this;
+	    };
+	    Shape.prototype.withLineWidth = function (lineWidth) {
 	        this.lineWidth = lineWidth;
 	        return this;
 	    };
@@ -362,39 +393,6 @@
 
 /***/ },
 /* 7 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var Context_1 = __webpack_require__(3);
-	var Shape_1 = __webpack_require__(6);
-	var Circle = (function (_super) {
-	    __extends(Circle, _super);
-	    function Circle(position, radius) {
-	        _super.call(this, position);
-	        this.radius = radius;
-	    }
-	    Circle.prototype.draw = function () {
-	        Context_1["default"].fillStyle = this.fillStyle;
-	        Context_1["default"].strokeStyle = this.strokeStyle;
-	        Context_1["default"].lineWidth = this.lineWidth;
-	        Context_1["default"].beginPath();
-	        Context_1["default"].arc(this.position.x(), this.position.y(), this.radius, 0, 2 * Math.PI);
-	        Context_1["default"].stroke();
-	        Context_1["default"].fill();
-	        Context_1["default"].closePath();
-	    };
-	    return Circle;
-	})(Shape_1["default"]);
-	exports.__esModule = true;
-	exports["default"] = Circle;
-
-
-/***/ },
-/* 8 */
 /***/ function(module, exports) {
 
 	var Vector = (function () {
@@ -453,17 +451,55 @@
 
 
 /***/ },
-/* 9 */
-/***/ function(module, exports) {
+/* 8 */
+/***/ function(module, exports, __webpack_require__) {
 
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Context_1 = __webpack_require__(3);
+	var Shape_1 = __webpack_require__(6);
+	var Circle = (function (_super) {
+	    __extends(Circle, _super);
+	    function Circle() {
+	        _super.apply(this, arguments);
+	        this.radius = 10;
+	    }
+	    Circle.prototype.withRadius = function (radius) {
+	        this.radius = radius;
+	        return this;
+	    };
+	    Circle.prototype.draw = function () {
+	        Context_1["default"].fillStyle = this.fillStyle.toString();
+	        Context_1["default"].strokeStyle = this.strokeStyle.toString();
+	        Context_1["default"].lineWidth = this.lineWidth;
+	        Context_1["default"].beginPath();
+	        Context_1["default"].arc(this.position.x(), this.position.y(), this.radius, 0, 2 * Math.PI);
+	        Context_1["default"].stroke();
+	        Context_1["default"].fill();
+	        Context_1["default"].closePath();
+	    };
+	    return Circle;
+	})(Shape_1["default"]);
+	exports.__esModule = true;
+	exports["default"] = Circle;
+
+
+/***/ },
+/* 9 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Color_1 = __webpack_require__(10);
 	var Settings = {
-	    white: 'rgb(255, 255, 255)',
-	    grey: 'rgb(55, 73, 89)',
-	    blue: 'rgb(4, 97, 182)',
-	    green: 'rgb(99, 170, 51)',
-	    red: 'rgb(207, 39, 39)',
-	    yellow: 'rgb(234, 197, 27)',
-	    purple: 'rgb(222, 00, 255)',
+	    white: Color_1["default"].rgb(255, 255, 255),
+	    grey: Color_1["default"].rgb(55, 73, 89),
+	    blue: Color_1["default"].rgb(4, 97, 182),
+	    green: Color_1["default"].rgb(99, 170, 51),
+	    red: Color_1["default"].rgb(207, 39, 39),
+	    yellow: Color_1["default"].rgb(234, 197, 27),
+	    purple: Color_1["default"].rgb(222, 0, 255),
 	    CELL_TYPE_PLAYER: 1,
 	    CELL_TYPE_SIMPLE: 2,
 	    CELL_TYPE_ABSORB: 3,
@@ -476,11 +512,47 @@
 
 /***/ },
 /* 10 */
+/***/ function(module, exports) {
+
+	var Color = (function () {
+	    function Color(red, green, blue, alpha) {
+	        this.red = red;
+	        this.green = green;
+	        this.blue = blue;
+	        this.alphaChannel = alpha;
+	    }
+	    Color.rgb = function (red, green, blue) {
+	        return new Color(red, green, blue, 1);
+	    };
+	    Color.rgba = function (red, green, blue, alpha) {
+	        return new Color(red, green, blue, alpha);
+	    };
+	    Color.hex = function (code) {
+	        var chars = code.split('');
+	        var red = parseInt(chars[0], 16);
+	        var green = parseInt(chars[1], 16);
+	        var blue = parseInt(chars[2], 16);
+	        return Color.rgb(red, green, blue);
+	    };
+	    Color.prototype.alpha = function (alpha) {
+	        return Color.rgba(this.red, this.green, this.blue, alpha);
+	    };
+	    Color.prototype.toString = function () {
+	        return 'rgba(' + this.red + ', ' + this.green + ', ' + this.blue + ', ' + this.alphaChannel + ')';
+	    };
+	    return Color;
+	})();
+	exports.__esModule = true;
+	exports["default"] = Color;
+
+
+/***/ },
+/* 11 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Vector_1 = __webpack_require__(8);
+	var Vector_1 = __webpack_require__(7);
 	var Canvas_1 = __webpack_require__(4);
-	var Timer_1 = __webpack_require__(11);
+	var Timer_1 = __webpack_require__(12);
 	var Mouse = (function () {
 	    function Mouse() {
 	    }
@@ -534,7 +606,7 @@
 
 
 /***/ },
-/* 11 */
+/* 12 */
 /***/ function(module, exports) {
 
 	var Timer = (function () {
@@ -558,14 +630,14 @@
 
 
 /***/ },
-/* 12 */
+/* 13 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Context_1 = __webpack_require__(3);
-	var Player_1 = __webpack_require__(13);
-	var Vector_1 = __webpack_require__(8);
-	var Cell_1 = __webpack_require__(14);
-	var Ui_1 = __webpack_require__(17);
+	var Player_1 = __webpack_require__(14);
+	var Vector_1 = __webpack_require__(7);
+	var Cell_1 = __webpack_require__(20);
+	var Ui_1 = __webpack_require__(26);
 	var Settings_1 = __webpack_require__(9);
 	var Level = (function () {
 	    function Level(game, levelSettings) {
@@ -634,7 +706,7 @@
 	                    type = setup.cells[i].type;
 	                }
 	            }
-	            this.cells.push(new Cell_1["default"](this, position, velocity, mass, type));
+	            this.cells.push(Cell_1["default"].create(type, this, position, velocity, mass));
 	        }
 	        var background = this.levelSettings.level % 10;
 	        this.background.src = 'img/background/' + background + '.jpg';
@@ -683,78 +755,41 @@
 
 
 /***/ },
-/* 13 */
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Vector_1 = __webpack_require__(8);
-	var Circle_1 = __webpack_require__(7);
-	var Cell_1 = __webpack_require__(14);
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Vector_1 = __webpack_require__(7);
 	var PositionCheck_1 = __webpack_require__(15);
 	var Settings_1 = __webpack_require__(9);
-	var Mouse_1 = __webpack_require__(10);
+	var Mouse_1 = __webpack_require__(11);
 	var Keyboard_1 = __webpack_require__(16);
-	var Player = (function () {
+	var PlayerGraphic_1 = __webpack_require__(17);
+	var MovingObject_1 = __webpack_require__(18);
+	var PlayerCell_1 = __webpack_require__(19);
+	var Player = (function (_super) {
+	    __extends(Player, _super);
 	    function Player(level) {
-	        this.position = new Vector_1["default"](400, 300);
-	        this.velocity = new Vector_1["default"](0, 0);
+	        _super.call(this, new Vector_1["default"](400, 300), 20, new Vector_1["default"](0, 0));
 	        this.minimumMass = 10;
-	        this.mass = this.minimumMass + 10;
-	        this.transparency = 0.5;
-	        this.transparencyFlag = true;
+	        this.graphic = new PlayerGraphic_1["default"]();
 	        this.level = level;
 	    }
 	    Player.prototype.update = function () {
 	        this.checkCollision();
 	        this.processUserInput();
 	        this.updatePosition();
-	        this.updateTransparency();
 	    };
 	    Player.prototype.render = function () {
-	        this.draw(this.mass);
-	        this.draw(this.minimumMass);
-	        new Circle_1["default"](this.position, this.mass + 1)
-	            .setStrokeStyle(Settings_1["default"].white.replace(')', ', ' + this.transparency + ')').replace('rgb', 'rgba'))
-	            .draw();
-	    };
-	    Player.prototype.draw = function (radius) {
-	        var dimensions = this.level.game.dimensions;
-	        var check = new PositionCheck_1["default"](this.position, radius, dimensions);
-	        this.drawElement(this.position, radius);
-	        if (check.isOutOfLeftBorder()) {
-	            this.drawElement(new Vector_1["default"](dimensions.x() + this.position.x(), this.position.y()), radius);
-	        }
-	        if (check.isOutOfTopBorder()) {
-	            this.drawElement(new Vector_1["default"](this.position.x(), dimensions.y() + this.position.y()), radius);
-	        }
-	        if (check.isOutOfRightBorder()) {
-	            this.drawElement(new Vector_1["default"](this.position.x() - dimensions.x(), this.position.y()), radius);
-	        }
-	        if (check.isOutOfBottomBorder()) {
-	            this.drawElement(new Vector_1["default"](this.position.x(), this.position.y() - dimensions.y()), radius);
-	        }
-	        if (check.isOutOfTopLeftCorner()) {
-	            this.drawElement(new Vector_1["default"](dimensions.x() + this.position.x(), dimensions.y() + this.position.y()), radius);
-	        }
-	        if (check.isOutOfBottomLeftCorner()) {
-	            this.drawElement(new Vector_1["default"](dimensions.x() + this.position.x(), this.position.y() - dimensions.y()), radius);
-	        }
-	        if (check.isOutOfTopRightCorner()) {
-	            this.drawElement(new Vector_1["default"](this.position.x() - dimensions.x(), dimensions.y() + this.position.y()), radius);
-	        }
-	        if (check.isOutOfBottomRightCorner()) {
-	            this.drawElement(new Vector_1["default"](this.position.x() - dimensions.x(), this.position.y() - dimensions.y()), radius);
-	        }
-	    };
-	    Player.prototype.drawElement = function (position, radius) {
-	        new Circle_1["default"](position, radius)
-	            .setStrokeStyle(Settings_1["default"].blue)
-	            .setFillStyle(Settings_1["default"].blue.replace(')', ', 0.2)').replace('rgb', 'rgba'))
-	            .setLineWidth(2)
-	            .draw();
+	        this.graphic.draw(this.position, this.minimumMass, this.radius(), this.level.game.dimensions);
 	    };
 	    Player.prototype.checkCollision = function () {
 	        var dimensions = this.level.game.dimensions;
-	        var check = new PositionCheck_1["default"](this.position, this.mass, dimensions);
+	        var check = new PositionCheck_1["default"](this.position, this.radius(), dimensions);
 	        for (var i = 0; i < this.level.cells.length; i++) {
 	            var cell = this.level.cells[i];
 	            this.checkCollisionAt(this.position, cell, i);
@@ -786,22 +821,33 @@
 	    };
 	    Player.prototype.checkCollisionAt = function (position, cell, index) {
 	        if (this.collidesWithCell(position, cell)) {
-	            this.incorporateCell(cell, index);
-	            if (cell.isForeign()) {
-	                this.level.collectedCells++;
-	            }
+	            this.incorporateCell(position, cell, index);
 	        }
 	    };
 	    Player.prototype.collidesWithCell = function (position, cell) {
-	        return cell.position.distanceTo(position) < this.mass + cell.mass;
+	        return cell.position.distanceTo(position) < this.radius() + cell.radius();
 	    };
-	    Player.prototype.incorporateCell = function (cell, index) {
-	        // @todo find out correct formula
-	        //var velChange = this.velocity.subtract(cell.velocity).multiply(-1).normalize().multiply(1 / cell.mass);
-	        //this.velocity = this.velocity.add(velChange);
-	        this.addMass(cell.massWhenAbsorbed());
+	    Player.prototype.incorporateCell = function (position, cell, index) {
+	        //var overallMomentum = this.momentum().add(cell.momentum());
+	        //this.velocity = overallMomentum.divide(this.mass);
+	        var factor = cell.type == Settings_1["default"].CELL_TYPE_ABSORB ? -1 : 1;
+	        this.addMass(cell.mass * factor);
 	        this.level.cells.splice(index, 1);
 	        this.level.game.sfx.absorb();
+	        if (cell.isForeign()) {
+	            this.level.collectedCells++;
+	        }
+	        //var diff = 0.1;
+	        //var factor = cell.type == settings.CELL_TYPE_ABSORB ? -1 : 1;
+	        //this.addMass(diff * factor);
+	        //cell.mass -= diff;
+	        //if (cell.mass <= 0) {
+	        //    this.level.cells.splice(index, 1);
+	        //    this.level.game.sfx.absorb();
+	        //    if (cell.isForeign()) {
+	        //        this.level.collectedCells++;
+	        //    }
+	        //}
 	    };
 	    Player.prototype.updatePosition = function () {
 	        this.position = this.position.add(this.velocity);
@@ -825,26 +871,15 @@
 	        if (this.mass == this.minimumMass) {
 	            return;
 	        }
-	        var emittedMass = Math.max(0.2, this.mass * 0.2);
+	        var emittedMass = Math.max(0.1, this.mass * 0.1);
 	        var direction = this.movementDirection();
 	        var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
 	        this.addMass(-emittedMass);
-	        var cellPosition = this.position.add(direction.multiply(this.mass + emittedMass));
-	        var cell = new Cell_1["default"](this.level, cellPosition, this.velocity, emittedMass, Settings_1["default"].CELL_TYPE_PLAYER);
+	        var cell = new PlayerCell_1["default"](this.level, new Vector_1["default"](0, 0), this.velocity, emittedMass, Settings_1["default"].CELL_TYPE_PLAYER);
+	        cell.position = this.position.add(direction.multiply(this.radius() + cell.radius()));
 	        this.velocity = this.velocity.add(force);
 	        this.level.cells.push(cell);
 	        this.level.game.sfx.accelerate();
-	    };
-	    Player.prototype.updateTransparency = function () {
-	        if (this.transparencyFlag) {
-	            this.transparency += 0.005;
-	        }
-	        else {
-	            this.transparency -= 0.005;
-	        }
-	        if (this.transparency >= 0.8 || this.transparency <= 0.2) {
-	            this.transparencyFlag = !this.transparencyFlag;
-	        }
 	    };
 	    Player.prototype.addMass = function (amount) {
 	        this.mass = Math.max(this.minimumMass, this.mass + amount);
@@ -867,135 +902,9 @@
 	        return Mouse_1["default"].position.subtract(this.position).normalize();
 	    };
 	    return Player;
-	})();
+	})(MovingObject_1["default"]);
 	exports.__esModule = true;
 	exports["default"] = Player;
-
-
-/***/ },
-/* 14 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Vector_1 = __webpack_require__(8);
-	var Circle_1 = __webpack_require__(7);
-	var PositionCheck_1 = __webpack_require__(15);
-	var Settings_1 = __webpack_require__(9);
-	var Cell = (function () {
-	    function Cell(level, position, velocity, mass, type) {
-	        this.transparency = 0.5;
-	        this.transparencyFlag = true;
-	        this.level = level;
-	        this.position = position;
-	        this.velocity = velocity;
-	        this.mass = mass;
-	        this.type = type;
-	    }
-	    Cell.prototype.update = function () {
-	        if (this.type == Settings_1["default"].CELL_TYPE_DIRECTION && Math.random() < 0.005) {
-	            this.velocity = new Vector_1["default"](Math.random() * 0.6 - 0.3, Math.random() * 0.6 - 0.3);
-	        }
-	        if (this.type == Settings_1["default"].CELL_TYPE_ESCAPER) {
-	            var toPlayer = this.position.subtract(this.level.player.position);
-	            if (toPlayer.length() < 100) {
-	                this.velocity = toPlayer.normalize().multiply(this.velocity.length());
-	            }
-	        }
-	        this.position = this.position.add(this.velocity);
-	        if (this.position.x() > this.level.game.dimensions.x()) {
-	            this.position = this.position.subtract(new Vector_1["default"](this.level.game.dimensions.x(), 0));
-	        }
-	        if (this.position.y() > this.level.game.dimensions.y()) {
-	            this.position = this.position.subtract(new Vector_1["default"](0, this.level.game.dimensions.y()));
-	        }
-	        if (this.position.x() < 0) {
-	            this.position = new Vector_1["default"](this.level.game.dimensions.x() - this.position.x(), this.position.y());
-	        }
-	        if (this.position.y() < 0) {
-	            this.position = new Vector_1["default"](this.position.x(), this.level.game.dimensions.y() - this.position.y());
-	        }
-	        this.updateTransparency();
-	    };
-	    Cell.prototype.render = function () {
-	        var dimensions = this.level.game.dimensions;
-	        var check = new PositionCheck_1["default"](this.position, this.mass, dimensions);
-	        this.drawElement(this.position);
-	        if (check.isOutOfLeftBorder()) {
-	            this.drawElement(new Vector_1["default"](dimensions.x() + this.position.x(), this.position.y()));
-	        }
-	        if (check.isOutOfTopBorder()) {
-	            this.drawElement(new Vector_1["default"](this.position.x(), dimensions.y() + this.position.y()));
-	        }
-	        if (check.isOutOfRightBorder()) {
-	            this.drawElement(new Vector_1["default"](this.position.x() - dimensions.x(), this.position.y()));
-	        }
-	        if (check.isOutOfBottomBorder()) {
-	            this.drawElement(new Vector_1["default"](this.position.x(), this.position.y() - dimensions.y()));
-	        }
-	        if (check.isOutOfTopLeftCorner()) {
-	            this.drawElement(new Vector_1["default"](dimensions.x() + this.position.x(), dimensions.y() + this.position.y()));
-	        }
-	        if (check.isOutOfBottomLeftCorner()) {
-	            this.drawElement(new Vector_1["default"](dimensions.x() + this.position.x(), this.position.y() - dimensions.y()));
-	        }
-	        if (check.isOutOfTopRightCorner()) {
-	            this.drawElement(new Vector_1["default"](this.position.x() - dimensions.x(), dimensions.y() + this.position.y()));
-	        }
-	        if (check.isOutOfBottomRightCorner()) {
-	            this.drawElement(new Vector_1["default"](this.position.x() - dimensions.x(), this.position.y() - dimensions.y()));
-	        }
-	    };
-	    Cell.prototype.drawElement = function (position) {
-	        new Circle_1["default"](position, this.mass)
-	            .setStrokeStyle(this.color())
-	            .setFillStyle(this.color().replace(')', ', 0.3)').replace('rgb', 'rgba'))
-	            .setLineWidth(3)
-	            .draw();
-	        new Circle_1["default"](position, this.mass + 1)
-	            .setStrokeStyle(Settings_1["default"].white.replace(')', ', ' + this.transparency + ')').replace('rgb', 'rgba'))
-	            .draw();
-	    };
-	    Cell.prototype.updateTransparency = function () {
-	        if (this.transparencyFlag) {
-	            this.transparency += 0.005;
-	        }
-	        else {
-	            this.transparency -= 0.005;
-	        }
-	        if (this.transparency >= 0.8 || this.transparency <= 0.2) {
-	            this.transparencyFlag = !this.transparencyFlag;
-	        }
-	    };
-	    Cell.prototype.color = function () {
-	        if (this.type == Settings_1["default"].CELL_TYPE_PLAYER) {
-	            return Settings_1["default"].blue;
-	        }
-	        else if (this.type == Settings_1["default"].CELL_TYPE_SIMPLE) {
-	            return Settings_1["default"].green;
-	        }
-	        else if (this.type == Settings_1["default"].CELL_TYPE_ABSORB) {
-	            return Settings_1["default"].red;
-	        }
-	        else if (this.type == Settings_1["default"].CELL_TYPE_DIRECTION) {
-	            return Settings_1["default"].yellow;
-	        }
-	        else if (this.type == Settings_1["default"].CELL_TYPE_ESCAPER) {
-	            return Settings_1["default"].purple;
-	        }
-	    };
-	    Cell.prototype.isForeign = function () {
-	        return this.type !== Settings_1["default"].CELL_TYPE_PLAYER;
-	    };
-	    Cell.prototype.massWhenAbsorbed = function () {
-	        var mass = this.mass;
-	        if (this.type == Settings_1["default"].CELL_TYPE_ABSORB) {
-	            mass *= -1;
-	        }
-	        return mass;
-	    };
-	    return Cell;
-	})();
-	exports.__esModule = true;
-	exports["default"] = Cell;
 
 
 /***/ },
@@ -1042,8 +951,8 @@
 /* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Timer_1 = __webpack_require__(11);
-	var Vector_1 = __webpack_require__(8);
+	var Timer_1 = __webpack_require__(12);
+	var Vector_1 = __webpack_require__(7);
 	var Keyboard = (function () {
 	    function Keyboard() {
 	    }
@@ -1083,11 +992,385 @@
 /* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Vector_1 = __webpack_require__(8);
-	var Text_1 = __webpack_require__(5);
-	var Rectangle_1 = __webpack_require__(18);
+	var Circle_1 = __webpack_require__(8);
+	var Vector_1 = __webpack_require__(7);
 	var Settings_1 = __webpack_require__(9);
-	var Mouse_1 = __webpack_require__(10);
+	var PositionCheck_1 = __webpack_require__(15);
+	var PlayerGraphic = (function () {
+	    function PlayerGraphic() {
+	        this.alpha = 0.5;
+	        this.alphaFlag = true;
+	    }
+	    PlayerGraphic.prototype.draw = function (position, innerRadius, outerRadius, dimensions) {
+	        this.updateTransparency();
+	        this.drawPlayer(position, innerRadius, dimensions);
+	        this.drawPlayer(position, outerRadius, dimensions);
+	        new Circle_1["default"]()
+	            .at(position)
+	            .withRadius(outerRadius + 1)
+	            .withStrokeStyle(Settings_1["default"].white.alpha(this.alpha))
+	            .draw();
+	    };
+	    PlayerGraphic.prototype.updateTransparency = function () {
+	        if (this.alphaFlag) {
+	            this.alpha += 0.005;
+	        }
+	        else {
+	            this.alpha -= 0.005;
+	        }
+	        if (this.alpha >= 0.8 || this.alpha <= 0.2) {
+	            this.alphaFlag = !this.alphaFlag;
+	        }
+	    };
+	    PlayerGraphic.prototype.drawPlayer = function (position, radius, dimensions) {
+	        var check = new PositionCheck_1["default"](position, radius, dimensions);
+	        this.drawElement(position, radius);
+	        if (check.isOutOfLeftBorder()) {
+	            this.drawElement(new Vector_1["default"](dimensions.x() + position.x(), position.y()), radius);
+	        }
+	        if (check.isOutOfTopBorder()) {
+	            this.drawElement(new Vector_1["default"](position.x(), dimensions.y() + position.y()), radius);
+	        }
+	        if (check.isOutOfRightBorder()) {
+	            this.drawElement(new Vector_1["default"](position.x() - dimensions.x(), position.y()), radius);
+	        }
+	        if (check.isOutOfBottomBorder()) {
+	            this.drawElement(new Vector_1["default"](position.x(), position.y() - dimensions.y()), radius);
+	        }
+	        if (check.isOutOfTopLeftCorner()) {
+	            this.drawElement(new Vector_1["default"](dimensions.x() + position.x(), dimensions.y() + position.y()), radius);
+	        }
+	        if (check.isOutOfBottomLeftCorner()) {
+	            this.drawElement(new Vector_1["default"](dimensions.x() + position.x(), position.y() - dimensions.y()), radius);
+	        }
+	        if (check.isOutOfTopRightCorner()) {
+	            this.drawElement(new Vector_1["default"](position.x() - dimensions.x(), dimensions.y() + position.y()), radius);
+	        }
+	        if (check.isOutOfBottomRightCorner()) {
+	            this.drawElement(new Vector_1["default"](position.x() - dimensions.x(), position.y() - dimensions.y()), radius);
+	        }
+	    };
+	    PlayerGraphic.prototype.drawElement = function (position, radius) {
+	        new Circle_1["default"]()
+	            .at(position)
+	            .withRadius(radius)
+	            .withStrokeStyle(Settings_1["default"].blue)
+	            .withFillStyle(Settings_1["default"].blue.alpha(0.2))
+	            .withLineWidth(2)
+	            .draw();
+	    };
+	    return PlayerGraphic;
+	})();
+	exports.__esModule = true;
+	exports["default"] = PlayerGraphic;
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports) {
+
+	var MovingObject = (function () {
+	    function MovingObject(position, mass, velocity) {
+	        this.position = position;
+	        this.mass = mass;
+	        this.velocity = velocity;
+	    }
+	    MovingObject.prototype.momentum = function () {
+	        return this.velocity.multiply(this.mass);
+	    };
+	    MovingObject.prototype.radius = function () {
+	        return this.mass;
+	    };
+	    return MovingObject;
+	})();
+	exports.__esModule = true;
+	exports["default"] = MovingObject;
+
+
+/***/ },
+/* 19 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Cell_1 = __webpack_require__(20);
+	var PlayerCell = (function (_super) {
+	    __extends(PlayerCell, _super);
+	    function PlayerCell() {
+	        _super.apply(this, arguments);
+	    }
+	    return PlayerCell;
+	})(Cell_1["default"]);
+	exports.__esModule = true;
+	exports["default"] = PlayerCell;
+
+
+/***/ },
+/* 20 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Vector_1 = __webpack_require__(7);
+	var Settings_1 = __webpack_require__(9);
+	var MovingObject_1 = __webpack_require__(18);
+	var CellGraphics_1 = __webpack_require__(21);
+	var PlayerCell_1 = __webpack_require__(19);
+	var SimpleCell_1 = __webpack_require__(22);
+	var AbsorberCell_1 = __webpack_require__(23);
+	var DirectionCell_1 = __webpack_require__(24);
+	var EscaperCell_1 = __webpack_require__(25);
+	var Cell = (function (_super) {
+	    __extends(Cell, _super);
+	    function Cell(level, position, velocity, mass, type) {
+	        _super.call(this, position, mass, velocity);
+	        this.graphic = new CellGraphics_1["default"]();
+	        this.level = level;
+	        this.type = type;
+	    }
+	    Cell.create = function (type, level, position, velocity, mass) {
+	        switch (type) {
+	            case Settings_1["default"].CELL_TYPE_PLAYER:
+	                return new PlayerCell_1["default"](level, position, velocity, mass, type);
+	            case Settings_1["default"].CELL_TYPE_SIMPLE:
+	                return new SimpleCell_1["default"](level, position, velocity, mass, type);
+	            case Settings_1["default"].CELL_TYPE_ABSORB:
+	                return new AbsorberCell_1["default"](level, position, velocity, mass, type);
+	            case Settings_1["default"].CELL_TYPE_DIRECTION:
+	                return new DirectionCell_1["default"](level, position, velocity, mass, type);
+	            case Settings_1["default"].CELL_TYPE_ESCAPER:
+	                return new EscaperCell_1["default"](level, position, velocity, mass, type);
+	        }
+	    };
+	    Cell.prototype.update = function () {
+	        if (this.type == Settings_1["default"].CELL_TYPE_DIRECTION && Math.random() < 0.005) {
+	            this.velocity = new Vector_1["default"](Math.random() * 0.6 - 0.3, Math.random() * 0.6 - 0.3);
+	        }
+	        if (this.type == Settings_1["default"].CELL_TYPE_ESCAPER) {
+	            var toPlayer = this.position.subtract(this.level.player.position);
+	            if (toPlayer.length() < 100) {
+	                this.velocity = toPlayer.normalize().multiply(this.velocity.length());
+	            }
+	        }
+	        this.position = this.position.add(this.velocity);
+	        if (this.position.x() > this.level.game.dimensions.x()) {
+	            this.position = this.position.subtract(new Vector_1["default"](this.level.game.dimensions.x(), 0));
+	        }
+	        if (this.position.y() > this.level.game.dimensions.y()) {
+	            this.position = this.position.subtract(new Vector_1["default"](0, this.level.game.dimensions.y()));
+	        }
+	        if (this.position.x() < 0) {
+	            this.position = new Vector_1["default"](this.level.game.dimensions.x() - this.position.x(), this.position.y());
+	        }
+	        if (this.position.y() < 0) {
+	            this.position = new Vector_1["default"](this.position.x(), this.level.game.dimensions.y() - this.position.y());
+	        }
+	    };
+	    Cell.prototype.render = function () {
+	        this.graphic.draw(this.position, this.radius(), this.color(), this.level.game.dimensions);
+	    };
+	    Cell.prototype.color = function () {
+	        if (this.type == Settings_1["default"].CELL_TYPE_PLAYER) {
+	            return Settings_1["default"].blue;
+	        }
+	        else if (this.type == Settings_1["default"].CELL_TYPE_SIMPLE) {
+	            return Settings_1["default"].green;
+	        }
+	        else if (this.type == Settings_1["default"].CELL_TYPE_ABSORB) {
+	            return Settings_1["default"].red;
+	        }
+	        else if (this.type == Settings_1["default"].CELL_TYPE_DIRECTION) {
+	            return Settings_1["default"].yellow;
+	        }
+	        else if (this.type == Settings_1["default"].CELL_TYPE_ESCAPER) {
+	            return Settings_1["default"].purple;
+	        }
+	    };
+	    Cell.prototype.isForeign = function () {
+	        return this.type !== Settings_1["default"].CELL_TYPE_PLAYER;
+	    };
+	    return Cell;
+	})(MovingObject_1["default"]);
+	exports.__esModule = true;
+	exports["default"] = Cell;
+
+
+/***/ },
+/* 21 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Settings_1 = __webpack_require__(9);
+	var Vector_1 = __webpack_require__(7);
+	var Circle_1 = __webpack_require__(8);
+	var PositionCheck_1 = __webpack_require__(15);
+	var CellGraphics = (function () {
+	    function CellGraphics() {
+	        this.transparency = 0.5;
+	        this.transparencyFlag = true;
+	    }
+	    CellGraphics.prototype.draw = function (position, radius, color, dimensions) {
+	        this.updateTransparency();
+	        var check = new PositionCheck_1["default"](position, radius, dimensions);
+	        this.drawElement(position, radius, color);
+	        if (check.isOutOfLeftBorder()) {
+	            this.drawElement(new Vector_1["default"](dimensions.x() + position.x(), position.y()), radius, color);
+	        }
+	        if (check.isOutOfTopBorder()) {
+	            this.drawElement(new Vector_1["default"](position.x(), dimensions.y() + position.y()), radius, color);
+	        }
+	        if (check.isOutOfRightBorder()) {
+	            this.drawElement(new Vector_1["default"](position.x() - dimensions.x(), position.y()), radius, color);
+	        }
+	        if (check.isOutOfBottomBorder()) {
+	            this.drawElement(new Vector_1["default"](position.x(), position.y() - dimensions.y()), radius, color);
+	        }
+	        if (check.isOutOfTopLeftCorner()) {
+	            this.drawElement(new Vector_1["default"](dimensions.x() + position.x(), dimensions.y() + position.y()), radius, color);
+	        }
+	        if (check.isOutOfBottomLeftCorner()) {
+	            this.drawElement(new Vector_1["default"](dimensions.x() + position.x(), position.y() - dimensions.y()), radius, color);
+	        }
+	        if (check.isOutOfTopRightCorner()) {
+	            this.drawElement(new Vector_1["default"](position.x() - dimensions.x(), dimensions.y() + position.y()), radius, color);
+	        }
+	        if (check.isOutOfBottomRightCorner()) {
+	            this.drawElement(new Vector_1["default"](position.x() - dimensions.x(), position.y() - dimensions.y()), radius, color);
+	        }
+	    };
+	    CellGraphics.prototype.drawElement = function (position, radius, color) {
+	        new Circle_1["default"]()
+	            .at(position)
+	            .withRadius(radius)
+	            .withStrokeStyle(color)
+	            .withFillStyle(color.alpha(0.3))
+	            .withLineWidth(3)
+	            .draw();
+	        new Circle_1["default"]()
+	            .at(position)
+	            .withRadius(radius + 1)
+	            .withStrokeStyle(Settings_1["default"].white.alpha(this.transparency))
+	            .draw();
+	    };
+	    CellGraphics.prototype.updateTransparency = function () {
+	        if (this.transparencyFlag) {
+	            this.transparency += 0.005;
+	        }
+	        else {
+	            this.transparency -= 0.005;
+	        }
+	        if (this.transparency >= 0.8 || this.transparency <= 0.2) {
+	            this.transparencyFlag = !this.transparencyFlag;
+	        }
+	    };
+	    return CellGraphics;
+	})();
+	exports.__esModule = true;
+	exports["default"] = CellGraphics;
+
+
+/***/ },
+/* 22 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Settings_1 = __webpack_require__(9);
+	var Cell_1 = __webpack_require__(20);
+	var SimpleCell = (function (_super) {
+	    __extends(SimpleCell, _super);
+	    function SimpleCell() {
+	        _super.apply(this, arguments);
+	    }
+	    SimpleCell.prototype.color = function () {
+	        return Settings_1["default"].green;
+	    };
+	    return SimpleCell;
+	})(Cell_1["default"]);
+	exports.__esModule = true;
+	exports["default"] = SimpleCell;
+
+
+/***/ },
+/* 23 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Cell_1 = __webpack_require__(20);
+	var AbsorberCell = (function (_super) {
+	    __extends(AbsorberCell, _super);
+	    function AbsorberCell() {
+	        _super.apply(this, arguments);
+	    }
+	    return AbsorberCell;
+	})(Cell_1["default"]);
+	exports.__esModule = true;
+	exports["default"] = AbsorberCell;
+
+
+/***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Cell_1 = __webpack_require__(20);
+	var DirectionCell = (function (_super) {
+	    __extends(DirectionCell, _super);
+	    function DirectionCell() {
+	        _super.apply(this, arguments);
+	    }
+	    return DirectionCell;
+	})(Cell_1["default"]);
+	exports.__esModule = true;
+	exports["default"] = DirectionCell;
+
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Cell_1 = __webpack_require__(20);
+	var EscaperCell = (function (_super) {
+	    __extends(EscaperCell, _super);
+	    function EscaperCell() {
+	        _super.apply(this, arguments);
+	    }
+	    return EscaperCell;
+	})(Cell_1["default"]);
+	exports.__esModule = true;
+	exports["default"] = EscaperCell;
+
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Vector_1 = __webpack_require__(7);
+	var Text_1 = __webpack_require__(5);
+	var Rectangle_1 = __webpack_require__(27);
+	var Settings_1 = __webpack_require__(9);
+	var Mouse_1 = __webpack_require__(11);
 	var Ui = (function () {
 	    function Ui(level) {
 	        this.level = level;
@@ -1112,31 +1395,45 @@
 	    };
 	    Ui.prototype.drawHud = function () {
 	        var winningConditions = this.level.levelSettings.winningConditions;
-	        new Rectangle_1["default"](new Vector_1["default"](150, this.level.game.dimensions.y() - 25), 300, 50)
-	            .setStrokeStyle(Settings_1["default"].white)
-	            .setFillStyle(Settings_1["default"].white.replace(')', ', 0.6)').replace('rgb', 'rgba'))
-	            .setLineWidth(2)
+	        new Rectangle_1["default"]()
+	            .at(new Vector_1["default"](150, this.level.game.dimensions.y() - 25))
+	            .withWidth(300)
+	            .withHeight(50)
+	            .withStrokeStyle(Settings_1["default"].white)
+	            .withFillStyle(Settings_1["default"].white.alpha(0.6))
+	            .withLineWidth(2)
 	            .draw();
 	        var cellsText = 'Cells collected: ' + this.level.collectedCells;
 	        if (winningConditions.cells) {
 	            cellsText += ' (' + winningConditions.cells + ' needed)';
 	        }
-	        new Text_1["default"](new Vector_1["default"](10, this.level.game.dimensions.y() - 10), cellsText, '14px Oswald', 'left')
-	            .setFillStyle(Settings_1["default"].blue)
+	        new Text_1["default"](cellsText)
+	            .at(new Vector_1["default"](10, this.level.game.dimensions.y() - 10))
+	            .withFontSize(14)
+	            .leftAligned()
+	            .withFillStyle(Settings_1["default"].blue)
 	            .draw();
 	        var massText = 'Mass: ' + Math.floor(this.level.player.mass);
 	        if (winningConditions.mass) {
 	            massText += ' (' + winningConditions.mass + ' needed)';
 	        }
-	        new Text_1["default"](new Vector_1["default"](10, this.level.game.dimensions.y() - 30), massText, '14px Oswald', 'left')
-	            .setFillStyle(Settings_1["default"].blue)
+	        new Text_1["default"](massText)
+	            .at(new Vector_1["default"](10, this.level.game.dimensions.y() - 30))
+	            .withFontSize(14)
+	            .leftAligned()
+	            .withFillStyle(Settings_1["default"].blue)
 	            .draw();
-	        new Rectangle_1["default"](new Vector_1["default"](250, this.level.game.dimensions.y() - 25), 80, 20)
-	            .setStrokeStyle(Settings_1["default"].red)
-	            .setFillStyle(Settings_1["default"].red.replace(')', ', 0.2)').replace('rgb', 'rgba'))
+	        new Rectangle_1["default"]()
+	            .at(new Vector_1["default"](250, this.level.game.dimensions.y() - 25))
+	            .withWidth(80)
+	            .withHeight(20)
+	            .withStrokeStyle(Settings_1["default"].red)
+	            .withFillStyle(Settings_1["default"].red.alpha(0.2))
 	            .draw();
-	        new Text_1["default"](new Vector_1["default"](250, this.level.game.dimensions.y() - 19), 'back to menu', '14px Oswald')
-	            .setFillStyle(Settings_1["default"].red)
+	        new Text_1["default"]('back to menu')
+	            .at(new Vector_1["default"](250, this.level.game.dimensions.y() - 19))
+	            .withFontSize(14)
+	            .withFillStyle(Settings_1["default"].red)
 	            .draw();
 	    };
 	    Ui.prototype.showObjectives = function () {
@@ -1144,11 +1441,14 @@
 	            return;
 	        }
 	        this.drawWindow();
-	        new Text_1["default"](new Vector_1["default"](this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2 - 100), this.level.levelSettings.intro, '18px "Gloria Hallelujah')
-	            .setStrokeStyle(Settings_1["default"].grey)
-	            .setFillStyle(Settings_1["default"].white)
-	            .setMaxWidth(350)
-	            .setLineWidth(5)
+	        new Text_1["default"](this.level.levelSettings.intro)
+	            .at(this.level.game.dimensions.divide(2).subtract(new Vector_1["default"](0, 100)))
+	            .withFontSize(18)
+	            .withFont('Gloria Hallelujah')
+	            .withStrokeStyle(Settings_1["default"].grey)
+	            .withFillStyle(Settings_1["default"].white)
+	            .withMaxWidth(350)
+	            .withLineWidth(5)
 	            .draw();
 	        this.drawContinueText('Click to start!');
 	        if (Mouse_1["default"].clicked()) {
@@ -1161,11 +1461,14 @@
 	            return;
 	        }
 	        this.drawWindow();
-	        new Text_1["default"](new Vector_1["default"](this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2 - 50), 'You made it!', '28px "Gloria Hallelujah"')
-	            .setStrokeStyle(Settings_1["default"].grey)
-	            .setFillStyle(Settings_1["default"].white)
-	            .setLineWidth(5)
-	            .setMaxWidth(350)
+	        new Text_1["default"]('You made it!')
+	            .at(this.level.game.dimensions.divide(2).subtract(new Vector_1["default"](0, 50)))
+	            .withFontSize(28)
+	            .withFont('Gloria Hallelujah')
+	            .withStrokeStyle(Settings_1["default"].grey)
+	            .withFillStyle(Settings_1["default"].white)
+	            .withLineWidth(5)
+	            .withMaxWidth(350)
 	            .draw();
 	        this.drawContinueText('Click to return to main menu!');
 	        if (Mouse_1["default"].clicked()) {
@@ -1175,17 +1478,23 @@
 	        }
 	    };
 	    Ui.prototype.drawWindow = function () {
-	        new Rectangle_1["default"](new Vector_1["default"](this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2), 400, 300)
-	            .setStrokeStyle(Settings_1["default"].white)
-	            .setLineWidth(2)
-	            .setFillStyle(Settings_1["default"].white.replace(')', ', 0.6)').replace('rgb', 'rgba'))
+	        new Rectangle_1["default"]()
+	            .at(this.level.game.dimensions.divide(2))
+	            .withWidth(400)
+	            .withHeight(300)
+	            .withStrokeStyle(Settings_1["default"].white)
+	            .withLineWidth(2)
+	            .withFillStyle(Settings_1["default"].white.alpha(0.6))
 	            .draw();
 	    };
 	    Ui.prototype.drawContinueText = function (text) {
-	        new Text_1["default"](new Vector_1["default"](this.level.game.dimensions.x() / 2, this.level.game.dimensions.y() / 2 + 120), text, '18px "Gloria Hallelujah"')
-	            .setStrokeStyle(Settings_1["default"].grey)
-	            .setFillStyle(Settings_1["default"].white)
-	            .setLineWidth(4)
+	        new Text_1["default"](text)
+	            .at(this.level.game.dimensions.divide(2).add(new Vector_1["default"](0, 120)))
+	            .withFontSize(18)
+	            .withFont('Gloria Hallelujah')
+	            .withStrokeStyle(Settings_1["default"].grey)
+	            .withFillStyle(Settings_1["default"].white)
+	            .withLineWidth(4)
 	            .draw();
 	    };
 	    return Ui;
@@ -1195,7 +1504,7 @@
 
 
 /***/ },
-/* 18 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -1204,20 +1513,30 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Context_1 = __webpack_require__(3);
+	var Vector_1 = __webpack_require__(7);
 	var Shape_1 = __webpack_require__(6);
 	var Rectangle = (function (_super) {
 	    __extends(Rectangle, _super);
-	    function Rectangle(position, width, height) {
-	        _super.call(this, position);
-	        this.width = width;
-	        this.height = height;
+	    function Rectangle() {
+	        _super.apply(this, arguments);
+	        this.width = 10;
+	        this.height = 10;
 	    }
+	    Rectangle.prototype.withWidth = function (width) {
+	        this.width = width;
+	        return this;
+	    };
+	    Rectangle.prototype.withHeight = function (height) {
+	        this.height = height;
+	        return this;
+	    };
 	    Rectangle.prototype.draw = function () {
+	        var position = this.position.subtract(new Vector_1["default"](this.width / 2, this.height / 2));
 	        Context_1["default"].fillStyle = this.fillStyle;
 	        Context_1["default"].strokeStyle = this.strokeStyle;
 	        Context_1["default"].lineWidth = this.lineWidth;
 	        Context_1["default"].beginPath();
-	        Context_1["default"].rect(this.position.x() - this.width / 2, this.position.y() - this.height / 2, this.width, this.height);
+	        Context_1["default"].rect(position.x(), position.y(), this.width, this.height);
 	        Context_1["default"].stroke();
 	        Context_1["default"].fill();
 	        Context_1["default"].closePath();
@@ -1229,10 +1548,10 @@
 
 
 /***/ },
-/* 19 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Container_1 = __webpack_require__(20);
+	var Container_1 = __webpack_require__(29);
 	var Sfx = (function () {
 	    function Sfx() {
 	        this.audioAccelerate = new Container_1["default"]('sfx/accelerate.mp3');
@@ -1262,7 +1581,7 @@
 
 
 /***/ },
-/* 20 */
+/* 29 */
 /***/ function(module, exports) {
 
 	var Container = (function () {
@@ -1295,7 +1614,7 @@
 
 
 /***/ },
-/* 21 */
+/* 30 */
 /***/ function(module, exports) {
 
 	var Music = (function () {
@@ -1350,10 +1669,10 @@
 
 
 /***/ },
-/* 22 */
+/* 31 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Vector_1 = __webpack_require__(8);
+	var Vector_1 = __webpack_require__(7);
 	var Settings_1 = __webpack_require__(9);
 	var LevelDefinitions = [
 	    {
@@ -1369,7 +1688,7 @@
 	                {
 	                    position: new Vector_1["default"](500, 300),
 	                    velocity: new Vector_1["default"](0, 0),
-	                    mass: 10,
+	                    mass: 20,
 	                    type: Settings_1["default"].CELL_TYPE_SIMPLE
 	                }
 	            ]
@@ -1813,16 +2132,16 @@
 
 
 /***/ },
-/* 23 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(24);
+	var content = __webpack_require__(33);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(26)(content, {});
+	var update = __webpack_require__(35)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -1839,10 +2158,10 @@
 	}
 
 /***/ },
-/* 24 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(25)();
+	exports = module.exports = __webpack_require__(34)();
 	// imports
 	
 	
@@ -1853,7 +2172,7 @@
 
 
 /***/ },
-/* 25 */
+/* 34 */
 /***/ function(module, exports) {
 
 	/*
@@ -1909,7 +2228,7 @@
 
 
 /***/ },
-/* 26 */
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*

@@ -1,11 +1,17 @@
 import context from "./System/Context";
 import Player from "./Entity/Player";
 import Vector from "./Math/Vector";
-import Cell from "./Entity/Cell";
+import Cell from "./Entity/Cell/Cell";
 import Ui from "./Ui";
 import Music from "./Audio/Music";
 import settings from "./Settings";
 import Game from "./Game";
+import PlayerCell from "./Entity/Cell/PlayerCell";
+import SimpleCell from "./Entity/Cell/SimpleCell";
+import AbsorberCell from "./Entity/Cell/AbsorberCell";
+import DirectionCell from "./Entity/Cell/DirectionCell";
+import EscaperCell from "./Entity/Cell/EscaperCell";
+import Factory from "./Entity/Cell/Factory";
 
 class Level
 {
@@ -93,7 +99,7 @@ class Level
                     type = setup.cells[i].type;
                 }
             }
-            this.cells.push(new Cell(this, position, velocity, mass, type));
+            this.cells.push(Factory.create(type, this, position, velocity, mass));
         }
         var background = this.levelSettings.level % 10;
         this.background.src = 'img/background/' + background + '.jpg';
