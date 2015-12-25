@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<widget xmlns   = "http://www.w3.org/ns/widgets"
+    xmlns:gap   = "http://phonegap.com/ns/1.0"
+    id          = "com.cunningsoft.floid"
+    version     = "0.0.5" >
+
+    <name>F-L-O-I-D</name>
+
+    <description />
+
+    <author href="http://dmecke.github.io/ld34/" email="daniel.mecke@cunningsoft.de">
+        Daniel Mecke
+    </author>
+
+    <platform name="android" />
+    <preference name="permissions" value="none" />
+</widget>

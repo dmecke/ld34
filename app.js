@@ -52,7 +52,7 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	__webpack_require__(32);
+	__webpack_require__(33);
 	
 	new _Game2.default().run();
 
@@ -63,12 +63,12 @@
 	var Menu_1 = __webpack_require__(2);
 	var Level_1 = __webpack_require__(13);
 	var Vector_1 = __webpack_require__(7);
-	var Sfx_1 = __webpack_require__(28);
-	var Music_1 = __webpack_require__(30);
-	var LevelDefinitions_1 = __webpack_require__(31);
+	var Sfx_1 = __webpack_require__(29);
+	var Music_1 = __webpack_require__(31);
+	var LevelDefinitions_1 = __webpack_require__(32);
 	var Canvas_1 = __webpack_require__(4);
 	var Mouse_1 = __webpack_require__(11);
-	var Keyboard_1 = __webpack_require__(16);
+	var Keyboard_1 = __webpack_require__(15);
 	var Game = (function () {
 	    function Game() {
 	        this.menu = new Menu_1["default"](this);
@@ -428,6 +428,9 @@
 	    Vector.prototype.normalize = function () {
 	        return this.divide(this.length());
 	    };
+	    Vector.prototype.dot = function (vector) {
+	        return this.x() * vector.x() + this.y() * vector.y();
+	    };
 	    Vector.prototype.limit = function (limit) {
 	        if (this.length() <= limit) {
 	            return new Vector(this.components[0], this.components[1]);
@@ -443,6 +446,11 @@
 	        var length = this.length();
 	        var vector = new Vector(Math.round(ca * this.components[0] - sa * this.components[1]), Math.round(sa * this.components[0] + ca * this.components[1]));
 	        return vector.normalize().multiply(length);
+	    };
+	    Vector.prototype.mirror = function (vector) {
+	        var normal = vector.normalize();
+	        var dotProduct = normal.dot(this);
+	        return this.subtract(normal.multiply(2).multiply(dotProduct));
 	    };
 	    return Vector;
 	})();
@@ -636,9 +644,9 @@
 	var Context_1 = __webpack_require__(3);
 	var Player_1 = __webpack_require__(14);
 	var Vector_1 = __webpack_require__(7);
-	var Cell_1 = __webpack_require__(20);
-	var Ui_1 = __webpack_require__(26);
+	var Ui_1 = __webpack_require__(22);
 	var Settings_1 = __webpack_require__(9);
+	var Factory_1 = __webpack_require__(24);
 	var Level = (function () {
 	    function Level(game, levelSettings) {
 	        this.cells = [];
@@ -706,7 +714,7 @@
 	                    type = setup.cells[i].type;
 	                }
 	            }
-	            this.cells.push(Cell_1["default"].create(type, this, position, velocity, mass));
+	            this.cells.push(Factory_1["default"].create(type, this, position, velocity, mass));
 	        }
 	        var background = this.levelSettings.level % 10;
 	        this.background.src = 'img/background/' + background + '.jpg';
@@ -764,11 +772,9 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Vector_1 = __webpack_require__(7);
-	var PositionCheck_1 = __webpack_require__(15);
-	var Settings_1 = __webpack_require__(9);
 	var Mouse_1 = __webpack_require__(11);
-	var Keyboard_1 = __webpack_require__(16);
-	var PlayerGraphic_1 = __webpack_require__(17);
+	var Keyboard_1 = __webpack_require__(15);
+	var PlayerGraphic_1 = __webpack_require__(16);
 	var MovingObject_1 = __webpack_require__(18);
 	var PlayerCell_1 = __webpack_require__(19);
 	var Player = (function (_super) {
@@ -782,41 +788,15 @@
 	    Player.prototype.update = function () {
 	        this.checkCollision();
 	        this.processUserInput();
-	        this.updatePosition();
+	        _super.prototype.update.call(this);
 	    };
 	    Player.prototype.render = function () {
-	        this.graphic.draw(this.position, this.minimumMass, this.radius(), this.level.game.dimensions);
+	        this.graphic.draw(this.position, this.minimumMass, this.radius());
 	    };
 	    Player.prototype.checkCollision = function () {
-	        var dimensions = this.level.game.dimensions;
-	        var check = new PositionCheck_1["default"](this.position, this.radius(), dimensions);
 	        for (var i = 0; i < this.level.cells.length; i++) {
 	            var cell = this.level.cells[i];
 	            this.checkCollisionAt(this.position, cell, i);
-	            if (check.isOutOfLeftBorder()) {
-	                this.checkCollisionAt(new Vector_1["default"](dimensions.x() + this.position.x(), this.position.y()), cell, i);
-	            }
-	            if (check.isOutOfTopBorder()) {
-	                this.checkCollisionAt(new Vector_1["default"](this.position.x(), dimensions.y() + this.position.y()), cell, i);
-	            }
-	            if (check.isOutOfRightBorder()) {
-	                this.checkCollisionAt(new Vector_1["default"](this.position.x() - dimensions.x(), this.position.y()), cell, i);
-	            }
-	            if (check.isOutOfBottomBorder()) {
-	                this.checkCollisionAt(new Vector_1["default"](this.position.x(), this.position.y() - dimensions.y()), cell, i);
-	            }
-	            if (check.isOutOfTopLeftCorner()) {
-	                this.checkCollisionAt(new Vector_1["default"](dimensions.x() + this.position.x(), dimensions.y() + this.position.y()), cell, i);
-	            }
-	            if (check.isOutOfBottomLeftCorner()) {
-	                this.checkCollisionAt(new Vector_1["default"](dimensions.x() + this.position.x(), this.position.y() - dimensions.y()), cell, i);
-	            }
-	            if (check.isOutOfTopRightCorner()) {
-	                this.checkCollisionAt(new Vector_1["default"](this.position.x() - dimensions.x(), dimensions.y() + this.position.y()), cell, i);
-	            }
-	            if (check.isOutOfBottomRightCorner()) {
-	                this.checkCollisionAt(new Vector_1["default"](this.position.x() - dimensions.x(), this.position.y() - dimensions.y()), cell, i);
-	            }
 	        }
 	    };
 	    Player.prototype.checkCollisionAt = function (position, cell, index) {
@@ -830,16 +810,14 @@
 	    Player.prototype.incorporateCell = function (position, cell, index) {
 	        //var overallMomentum = this.momentum().add(cell.momentum());
 	        //this.velocity = overallMomentum.divide(this.mass);
-	        var factor = cell.type == Settings_1["default"].CELL_TYPE_ABSORB ? -1 : 1;
-	        this.addMass(cell.mass * factor);
+	        this.addMass(cell.mass * cell.massSign());
 	        this.level.cells.splice(index, 1);
 	        this.level.game.sfx.absorb();
 	        if (cell.isForeign()) {
 	            this.level.collectedCells++;
 	        }
 	        //var diff = 0.1;
-	        //var factor = cell.type == settings.CELL_TYPE_ABSORB ? -1 : 1;
-	        //this.addMass(diff * factor);
+	        //this.addMass(diff * cell.massSign());
 	        //cell.mass -= diff;
 	        //if (cell.mass <= 0) {
 	        //    this.level.cells.splice(index, 1);
@@ -848,21 +826,6 @@
 	        //        this.level.collectedCells++;
 	        //    }
 	        //}
-	    };
-	    Player.prototype.updatePosition = function () {
-	        this.position = this.position.add(this.velocity);
-	        if (this.position.x() > this.level.game.dimensions.x()) {
-	            this.position = this.position.subtract(new Vector_1["default"](this.level.game.dimensions.x(), 0));
-	        }
-	        if (this.position.y() > this.level.game.dimensions.y()) {
-	            this.position = this.position.subtract(new Vector_1["default"](0, this.level.game.dimensions.y()));
-	        }
-	        if (this.position.x() < 0) {
-	            this.position = new Vector_1["default"](this.level.game.dimensions.x() - this.position.x(), this.position.y());
-	        }
-	        if (this.position.y() < 0) {
-	            this.position = new Vector_1["default"](this.position.x(), this.level.game.dimensions.y() - this.position.y());
-	        }
 	    };
 	    Player.prototype.processUserInput = function () {
 	        if (!this.accelerationActive()) {
@@ -875,7 +838,7 @@
 	        var direction = this.movementDirection();
 	        var force = direction.multiply(-1).multiply(emittedMass).divide(this.mass);
 	        this.addMass(-emittedMass);
-	        var cell = new PlayerCell_1["default"](this.level, new Vector_1["default"](0, 0), this.velocity, emittedMass, Settings_1["default"].CELL_TYPE_PLAYER);
+	        var cell = new PlayerCell_1["default"](this.level, new Vector_1["default"](0, 0), this.velocity, emittedMass);
 	        cell.position = this.position.add(direction.multiply(this.radius() + cell.radius()));
 	        this.velocity = this.velocity.add(force);
 	        this.level.cells.push(cell);
@@ -909,46 +872,6 @@
 
 /***/ },
 /* 15 */
-/***/ function(module, exports) {
-
-	var PositionCheck = (function () {
-	    function PositionCheck(position, radius, dimensions) {
-	        this.position = position;
-	        this.radius = radius;
-	        this.dimensions = dimensions;
-	    }
-	    PositionCheck.prototype.isOutOfLeftBorder = function () {
-	        return this.position.x() - this.radius < 0;
-	    };
-	    PositionCheck.prototype.isOutOfTopBorder = function () {
-	        return this.position.y() - this.radius < 0;
-	    };
-	    PositionCheck.prototype.isOutOfRightBorder = function () {
-	        return this.position.x() + this.radius > this.dimensions.x();
-	    };
-	    PositionCheck.prototype.isOutOfBottomBorder = function () {
-	        return this.position.y() + this.radius > this.dimensions.y();
-	    };
-	    PositionCheck.prototype.isOutOfTopLeftCorner = function () {
-	        return this.position.x() - this.radius < 0 && this.position.y() - this.radius < 0;
-	    };
-	    PositionCheck.prototype.isOutOfTopRightCorner = function () {
-	        return this.position.x() + this.radius > this.dimensions.x() && this.position.y() - this.radius < 0;
-	    };
-	    PositionCheck.prototype.isOutOfBottomLeftCorner = function () {
-	        return this.position.x() - this.radius < 0 && this.position.y() + this.radius > this.dimensions.y();
-	    };
-	    PositionCheck.prototype.isOutOfBottomRightCorner = function () {
-	        return this.position.x() + this.radius > this.dimensions.x() && this.position.y() + this.radius > this.dimensions.y();
-	    };
-	    return PositionCheck;
-	})();
-	exports.__esModule = true;
-	exports["default"] = PositionCheck;
-
-
-/***/ },
-/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Timer_1 = __webpack_require__(12);
@@ -989,68 +912,26 @@
 
 
 /***/ },
-/* 17 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Circle_1 = __webpack_require__(8);
-	var Vector_1 = __webpack_require__(7);
 	var Settings_1 = __webpack_require__(9);
-	var PositionCheck_1 = __webpack_require__(15);
+	var PulsatingCircle_1 = __webpack_require__(17);
 	var PlayerGraphic = (function () {
 	    function PlayerGraphic() {
-	        this.alpha = 0.5;
-	        this.alphaFlag = true;
+	        this.border = new PulsatingCircle_1["default"]();
 	    }
-	    PlayerGraphic.prototype.draw = function (position, innerRadius, outerRadius, dimensions) {
-	        this.updateTransparency();
-	        this.drawPlayer(position, innerRadius, dimensions);
-	        this.drawPlayer(position, outerRadius, dimensions);
-	        new Circle_1["default"]()
+	    PlayerGraphic.prototype.draw = function (position, innerRadius, outerRadius) {
+	        this.drawPlayer(position, innerRadius);
+	        this.drawPlayer(position, outerRadius);
+	        this.border
 	            .at(position)
 	            .withRadius(outerRadius + 1)
-	            .withStrokeStyle(Settings_1["default"].white.alpha(this.alpha))
+	            .withStrokeStyle(Settings_1["default"].white)
 	            .draw();
 	    };
-	    PlayerGraphic.prototype.updateTransparency = function () {
-	        if (this.alphaFlag) {
-	            this.alpha += 0.005;
-	        }
-	        else {
-	            this.alpha -= 0.005;
-	        }
-	        if (this.alpha >= 0.8 || this.alpha <= 0.2) {
-	            this.alphaFlag = !this.alphaFlag;
-	        }
-	    };
-	    PlayerGraphic.prototype.drawPlayer = function (position, radius, dimensions) {
-	        var check = new PositionCheck_1["default"](position, radius, dimensions);
-	        this.drawElement(position, radius);
-	        if (check.isOutOfLeftBorder()) {
-	            this.drawElement(new Vector_1["default"](dimensions.x() + position.x(), position.y()), radius);
-	        }
-	        if (check.isOutOfTopBorder()) {
-	            this.drawElement(new Vector_1["default"](position.x(), dimensions.y() + position.y()), radius);
-	        }
-	        if (check.isOutOfRightBorder()) {
-	            this.drawElement(new Vector_1["default"](position.x() - dimensions.x(), position.y()), radius);
-	        }
-	        if (check.isOutOfBottomBorder()) {
-	            this.drawElement(new Vector_1["default"](position.x(), position.y() - dimensions.y()), radius);
-	        }
-	        if (check.isOutOfTopLeftCorner()) {
-	            this.drawElement(new Vector_1["default"](dimensions.x() + position.x(), dimensions.y() + position.y()), radius);
-	        }
-	        if (check.isOutOfBottomLeftCorner()) {
-	            this.drawElement(new Vector_1["default"](dimensions.x() + position.x(), position.y() - dimensions.y()), radius);
-	        }
-	        if (check.isOutOfTopRightCorner()) {
-	            this.drawElement(new Vector_1["default"](position.x() - dimensions.x(), dimensions.y() + position.y()), radius);
-	        }
-	        if (check.isOutOfBottomRightCorner()) {
-	            this.drawElement(new Vector_1["default"](position.x() - dimensions.x(), position.y() - dimensions.y()), radius);
-	        }
-	    };
-	    PlayerGraphic.prototype.drawElement = function (position, radius) {
+	    PlayerGraphic.prototype.drawPlayer = function (position, radius) {
 	        new Circle_1["default"]()
 	            .at(position)
 	            .withRadius(radius)
@@ -1066,21 +947,91 @@
 
 
 /***/ },
-/* 18 */
-/***/ function(module, exports) {
+/* 17 */
+/***/ function(module, exports, __webpack_require__) {
 
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Circle_1 = __webpack_require__(8);
+	var PulsatingCircle = (function (_super) {
+	    __extends(PulsatingCircle, _super);
+	    function PulsatingCircle() {
+	        _super.apply(this, arguments);
+	        this.alpha = 0.5;
+	        this.alphaFlag = true;
+	    }
+	    PulsatingCircle.prototype.draw = function () {
+	        this.updateTransparency();
+	        this.withStrokeStyle(this.pulsatingColor.alpha(this.alpha));
+	        _super.prototype.draw.call(this);
+	    };
+	    PulsatingCircle.prototype.withStrokeStyle = function (color) {
+	        this.pulsatingColor = color;
+	        _super.prototype.withStrokeStyle.call(this, color);
+	        return this;
+	    };
+	    PulsatingCircle.prototype.updateTransparency = function () {
+	        if (this.alphaFlag) {
+	            this.alpha += 0.005;
+	        }
+	        else {
+	            this.alpha -= 0.005;
+	        }
+	        if (this.alpha >= 0.8 || this.alpha <= 0.2) {
+	            this.alphaFlag = !this.alphaFlag;
+	        }
+	    };
+	    return PulsatingCircle;
+	})(Circle_1["default"]);
+	exports.__esModule = true;
+	exports["default"] = PulsatingCircle;
+
+
+/***/ },
+/* 18 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Vector_1 = __webpack_require__(7);
 	var MovingObject = (function () {
 	    function MovingObject(position, mass, velocity) {
 	        this.position = position;
 	        this.mass = mass;
 	        this.velocity = velocity;
 	    }
+	    MovingObject.prototype.update = function () {
+	        this.position = this.position.add(this.velocity);
+	        this.reflectAtWalls();
+	    };
 	    MovingObject.prototype.momentum = function () {
 	        return this.velocity.multiply(this.mass);
 	    };
 	    MovingObject.prototype.radius = function () {
 	        return this.mass;
 	    };
+	    MovingObject.prototype.reflectAtWalls = function () {
+	        if (this.position.x() > this.level.game.dimensions.x() - this.radius()) {
+	            this.velocity = this.velocity.mirror(new Vector_1["default"](1, 0));
+	            var ueberlappung = this.position.x() + this.radius() - this.level.game.dimensions.x();
+	            this.position = this.position.subtract(new Vector_1["default"](2 * ueberlappung, 0));
+	        }
+	        if (this.position.y() > this.level.game.dimensions.y() - this.radius()) {
+	            this.velocity = this.velocity.mirror(new Vector_1["default"](0, 1));
+	            var ueberlappung = this.position.y() + this.radius() - this.level.game.dimensions.y();
+	            this.position = this.position.subtract(new Vector_1["default"](0, 2 * ueberlappung));
+	        }
+	        if (this.position.x() < this.radius()) {
+	            this.velocity = this.velocity.mirror(new Vector_1["default"](1, 0));
+	            this.position = this.position.add(new Vector_1["default"](2 * (this.radius() - this.position.x()), 0));
+	        }
+	        if (this.position.y() < this.radius()) {
+	            this.velocity = this.velocity.mirror(new Vector_1["default"](0, 1));
+	            this.position = this.position.add(new Vector_1["default"](0, 2 * (this.radius() - this.position.y())));
+	        }
+	    };
+	    ;
 	    return MovingObject;
 	})();
 	exports.__esModule = true;
@@ -1096,12 +1047,19 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
+	var Settings_1 = __webpack_require__(9);
 	var Cell_1 = __webpack_require__(20);
 	var PlayerCell = (function (_super) {
 	    __extends(PlayerCell, _super);
 	    function PlayerCell() {
 	        _super.apply(this, arguments);
 	    }
+	    PlayerCell.prototype.color = function () {
+	        return Settings_1["default"].blue;
+	    };
+	    PlayerCell.prototype.isForeign = function () {
+	        return false;
+	    };
 	    return PlayerCell;
 	})(Cell_1["default"]);
 	exports.__esModule = true;
@@ -1117,83 +1075,26 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var Vector_1 = __webpack_require__(7);
-	var Settings_1 = __webpack_require__(9);
 	var MovingObject_1 = __webpack_require__(18);
 	var CellGraphics_1 = __webpack_require__(21);
-	var PlayerCell_1 = __webpack_require__(19);
-	var SimpleCell_1 = __webpack_require__(22);
-	var AbsorberCell_1 = __webpack_require__(23);
-	var DirectionCell_1 = __webpack_require__(24);
-	var EscaperCell_1 = __webpack_require__(25);
 	var Cell = (function (_super) {
 	    __extends(Cell, _super);
-	    function Cell(level, position, velocity, mass, type) {
+	    function Cell(level, position, velocity, mass) {
 	        _super.call(this, position, mass, velocity);
 	        this.graphic = new CellGraphics_1["default"]();
 	        this.level = level;
-	        this.type = type;
 	    }
-	    Cell.create = function (type, level, position, velocity, mass) {
-	        switch (type) {
-	            case Settings_1["default"].CELL_TYPE_PLAYER:
-	                return new PlayerCell_1["default"](level, position, velocity, mass, type);
-	            case Settings_1["default"].CELL_TYPE_SIMPLE:
-	                return new SimpleCell_1["default"](level, position, velocity, mass, type);
-	            case Settings_1["default"].CELL_TYPE_ABSORB:
-	                return new AbsorberCell_1["default"](level, position, velocity, mass, type);
-	            case Settings_1["default"].CELL_TYPE_DIRECTION:
-	                return new DirectionCell_1["default"](level, position, velocity, mass, type);
-	            case Settings_1["default"].CELL_TYPE_ESCAPER:
-	                return new EscaperCell_1["default"](level, position, velocity, mass, type);
-	        }
-	    };
 	    Cell.prototype.update = function () {
-	        if (this.type == Settings_1["default"].CELL_TYPE_DIRECTION && Math.random() < 0.005) {
-	            this.velocity = new Vector_1["default"](Math.random() * 0.6 - 0.3, Math.random() * 0.6 - 0.3);
-	        }
-	        if (this.type == Settings_1["default"].CELL_TYPE_ESCAPER) {
-	            var toPlayer = this.position.subtract(this.level.player.position);
-	            if (toPlayer.length() < 100) {
-	                this.velocity = toPlayer.normalize().multiply(this.velocity.length());
-	            }
-	        }
-	        this.position = this.position.add(this.velocity);
-	        if (this.position.x() > this.level.game.dimensions.x()) {
-	            this.position = this.position.subtract(new Vector_1["default"](this.level.game.dimensions.x(), 0));
-	        }
-	        if (this.position.y() > this.level.game.dimensions.y()) {
-	            this.position = this.position.subtract(new Vector_1["default"](0, this.level.game.dimensions.y()));
-	        }
-	        if (this.position.x() < 0) {
-	            this.position = new Vector_1["default"](this.level.game.dimensions.x() - this.position.x(), this.position.y());
-	        }
-	        if (this.position.y() < 0) {
-	            this.position = new Vector_1["default"](this.position.x(), this.level.game.dimensions.y() - this.position.y());
-	        }
+	        _super.prototype.update.call(this);
 	    };
 	    Cell.prototype.render = function () {
-	        this.graphic.draw(this.position, this.radius(), this.color(), this.level.game.dimensions);
-	    };
-	    Cell.prototype.color = function () {
-	        if (this.type == Settings_1["default"].CELL_TYPE_PLAYER) {
-	            return Settings_1["default"].blue;
-	        }
-	        else if (this.type == Settings_1["default"].CELL_TYPE_SIMPLE) {
-	            return Settings_1["default"].green;
-	        }
-	        else if (this.type == Settings_1["default"].CELL_TYPE_ABSORB) {
-	            return Settings_1["default"].red;
-	        }
-	        else if (this.type == Settings_1["default"].CELL_TYPE_DIRECTION) {
-	            return Settings_1["default"].yellow;
-	        }
-	        else if (this.type == Settings_1["default"].CELL_TYPE_ESCAPER) {
-	            return Settings_1["default"].purple;
-	        }
+	        this.graphic.draw(this.position, this.radius(), this.color());
 	    };
 	    Cell.prototype.isForeign = function () {
-	        return this.type !== Settings_1["default"].CELL_TYPE_PLAYER;
+	        return true;
+	    };
+	    Cell.prototype.massSign = function () {
+	        return 1;
 	    };
 	    return Cell;
 	})(MovingObject_1["default"]);
@@ -1206,44 +1107,13 @@
 /***/ function(module, exports, __webpack_require__) {
 
 	var Settings_1 = __webpack_require__(9);
-	var Vector_1 = __webpack_require__(7);
 	var Circle_1 = __webpack_require__(8);
-	var PositionCheck_1 = __webpack_require__(15);
+	var PulsatingCircle_1 = __webpack_require__(17);
 	var CellGraphics = (function () {
 	    function CellGraphics() {
-	        this.transparency = 0.5;
-	        this.transparencyFlag = true;
+	        this.border = new PulsatingCircle_1["default"]();
 	    }
-	    CellGraphics.prototype.draw = function (position, radius, color, dimensions) {
-	        this.updateTransparency();
-	        var check = new PositionCheck_1["default"](position, radius, dimensions);
-	        this.drawElement(position, radius, color);
-	        if (check.isOutOfLeftBorder()) {
-	            this.drawElement(new Vector_1["default"](dimensions.x() + position.x(), position.y()), radius, color);
-	        }
-	        if (check.isOutOfTopBorder()) {
-	            this.drawElement(new Vector_1["default"](position.x(), dimensions.y() + position.y()), radius, color);
-	        }
-	        if (check.isOutOfRightBorder()) {
-	            this.drawElement(new Vector_1["default"](position.x() - dimensions.x(), position.y()), radius, color);
-	        }
-	        if (check.isOutOfBottomBorder()) {
-	            this.drawElement(new Vector_1["default"](position.x(), position.y() - dimensions.y()), radius, color);
-	        }
-	        if (check.isOutOfTopLeftCorner()) {
-	            this.drawElement(new Vector_1["default"](dimensions.x() + position.x(), dimensions.y() + position.y()), radius, color);
-	        }
-	        if (check.isOutOfBottomLeftCorner()) {
-	            this.drawElement(new Vector_1["default"](dimensions.x() + position.x(), position.y() - dimensions.y()), radius, color);
-	        }
-	        if (check.isOutOfTopRightCorner()) {
-	            this.drawElement(new Vector_1["default"](position.x() - dimensions.x(), dimensions.y() + position.y()), radius, color);
-	        }
-	        if (check.isOutOfBottomRightCorner()) {
-	            this.drawElement(new Vector_1["default"](position.x() - dimensions.x(), position.y() - dimensions.y()), radius, color);
-	        }
-	    };
-	    CellGraphics.prototype.drawElement = function (position, radius, color) {
+	    CellGraphics.prototype.draw = function (position, radius, color) {
 	        new Circle_1["default"]()
 	            .at(position)
 	            .withRadius(radius)
@@ -1251,22 +1121,11 @@
 	            .withFillStyle(color.alpha(0.3))
 	            .withLineWidth(3)
 	            .draw();
-	        new Circle_1["default"]()
+	        this.border
 	            .at(position)
 	            .withRadius(radius + 1)
-	            .withStrokeStyle(Settings_1["default"].white.alpha(this.transparency))
+	            .withStrokeStyle(Settings_1["default"].white)
 	            .draw();
-	    };
-	    CellGraphics.prototype.updateTransparency = function () {
-	        if (this.transparencyFlag) {
-	            this.transparency += 0.005;
-	        }
-	        else {
-	            this.transparency -= 0.005;
-	        }
-	        if (this.transparency >= 0.8 || this.transparency <= 0.2) {
-	            this.transparencyFlag = !this.transparencyFlag;
-	        }
 	    };
 	    return CellGraphics;
 	})();
@@ -1278,97 +1137,9 @@
 /* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var Settings_1 = __webpack_require__(9);
-	var Cell_1 = __webpack_require__(20);
-	var SimpleCell = (function (_super) {
-	    __extends(SimpleCell, _super);
-	    function SimpleCell() {
-	        _super.apply(this, arguments);
-	    }
-	    SimpleCell.prototype.color = function () {
-	        return Settings_1["default"].green;
-	    };
-	    return SimpleCell;
-	})(Cell_1["default"]);
-	exports.__esModule = true;
-	exports["default"] = SimpleCell;
-
-
-/***/ },
-/* 23 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var Cell_1 = __webpack_require__(20);
-	var AbsorberCell = (function (_super) {
-	    __extends(AbsorberCell, _super);
-	    function AbsorberCell() {
-	        _super.apply(this, arguments);
-	    }
-	    return AbsorberCell;
-	})(Cell_1["default"]);
-	exports.__esModule = true;
-	exports["default"] = AbsorberCell;
-
-
-/***/ },
-/* 24 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var Cell_1 = __webpack_require__(20);
-	var DirectionCell = (function (_super) {
-	    __extends(DirectionCell, _super);
-	    function DirectionCell() {
-	        _super.apply(this, arguments);
-	    }
-	    return DirectionCell;
-	})(Cell_1["default"]);
-	exports.__esModule = true;
-	exports["default"] = DirectionCell;
-
-
-/***/ },
-/* 25 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var __extends = (this && this.__extends) || function (d, b) {
-	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
-	    function __() { this.constructor = d; }
-	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
-	};
-	var Cell_1 = __webpack_require__(20);
-	var EscaperCell = (function (_super) {
-	    __extends(EscaperCell, _super);
-	    function EscaperCell() {
-	        _super.apply(this, arguments);
-	    }
-	    return EscaperCell;
-	})(Cell_1["default"]);
-	exports.__esModule = true;
-	exports["default"] = EscaperCell;
-
-
-/***/ },
-/* 26 */
-/***/ function(module, exports, __webpack_require__) {
-
 	var Vector_1 = __webpack_require__(7);
 	var Text_1 = __webpack_require__(5);
-	var Rectangle_1 = __webpack_require__(27);
+	var Rectangle_1 = __webpack_require__(23);
 	var Settings_1 = __webpack_require__(9);
 	var Mouse_1 = __webpack_require__(11);
 	var Ui = (function () {
@@ -1504,7 +1275,7 @@
 
 
 /***/ },
-/* 27 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -1548,10 +1319,160 @@
 
 
 /***/ },
+/* 24 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Settings_1 = __webpack_require__(9);
+	var PlayerCell_1 = __webpack_require__(19);
+	var SimpleCell_1 = __webpack_require__(25);
+	var AbsorberCell_1 = __webpack_require__(26);
+	var DirectionCell_1 = __webpack_require__(27);
+	var EscaperCell_1 = __webpack_require__(28);
+	var Factory = (function () {
+	    function Factory() {
+	    }
+	    Factory.create = function (type, level, position, velocity, mass) {
+	        switch (type) {
+	            case Settings_1["default"].CELL_TYPE_PLAYER:
+	                return new PlayerCell_1["default"](level, position, velocity, mass);
+	            case Settings_1["default"].CELL_TYPE_SIMPLE:
+	                return new SimpleCell_1["default"](level, position, velocity, mass);
+	            case Settings_1["default"].CELL_TYPE_ABSORB:
+	                return new AbsorberCell_1["default"](level, position, velocity, mass);
+	            case Settings_1["default"].CELL_TYPE_DIRECTION:
+	                return new DirectionCell_1["default"](level, position, velocity, mass);
+	            case Settings_1["default"].CELL_TYPE_ESCAPER:
+	                return new EscaperCell_1["default"](level, position, velocity, mass);
+	        }
+	    };
+	    return Factory;
+	})();
+	exports.__esModule = true;
+	exports["default"] = Factory;
+
+
+/***/ },
+/* 25 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Settings_1 = __webpack_require__(9);
+	var Cell_1 = __webpack_require__(20);
+	var SimpleCell = (function (_super) {
+	    __extends(SimpleCell, _super);
+	    function SimpleCell() {
+	        _super.apply(this, arguments);
+	    }
+	    SimpleCell.prototype.color = function () {
+	        return Settings_1["default"].green;
+	    };
+	    return SimpleCell;
+	})(Cell_1["default"]);
+	exports.__esModule = true;
+	exports["default"] = SimpleCell;
+
+
+/***/ },
+/* 26 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Settings_1 = __webpack_require__(9);
+	var Cell_1 = __webpack_require__(20);
+	var AbsorberCell = (function (_super) {
+	    __extends(AbsorberCell, _super);
+	    function AbsorberCell() {
+	        _super.apply(this, arguments);
+	    }
+	    AbsorberCell.prototype.color = function () {
+	        return Settings_1["default"].red;
+	    };
+	    AbsorberCell.prototype.massSign = function () {
+	        return -1;
+	    };
+	    return AbsorberCell;
+	})(Cell_1["default"]);
+	exports.__esModule = true;
+	exports["default"] = AbsorberCell;
+
+
+/***/ },
+/* 27 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Settings_1 = __webpack_require__(9);
+	var Cell_1 = __webpack_require__(20);
+	var Vector_1 = __webpack_require__(7);
+	var DirectionCell = (function (_super) {
+	    __extends(DirectionCell, _super);
+	    function DirectionCell() {
+	        _super.apply(this, arguments);
+	    }
+	    DirectionCell.prototype.color = function () {
+	        return Settings_1["default"].yellow;
+	    };
+	    DirectionCell.prototype.update = function () {
+	        if (Math.random() < 0.005) {
+	            this.velocity = new Vector_1["default"](Math.random() * 0.6 - 0.3, Math.random() * 0.6 - 0.3);
+	        }
+	        _super.prototype.update.call(this);
+	    };
+	    return DirectionCell;
+	})(Cell_1["default"]);
+	exports.__esModule = true;
+	exports["default"] = DirectionCell;
+
+
+/***/ },
 /* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Container_1 = __webpack_require__(29);
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
+	var Settings_1 = __webpack_require__(9);
+	var Cell_1 = __webpack_require__(20);
+	var EscaperCell = (function (_super) {
+	    __extends(EscaperCell, _super);
+	    function EscaperCell() {
+	        _super.apply(this, arguments);
+	    }
+	    EscaperCell.prototype.color = function () {
+	        return Settings_1["default"].purple;
+	    };
+	    EscaperCell.prototype.update = function () {
+	        var toPlayer = this.position.subtract(this.level.player.position);
+	        if (toPlayer.length() < 100) {
+	            this.velocity = toPlayer.normalize().multiply(this.velocity.length());
+	        }
+	        _super.prototype.update.call(this);
+	    };
+	    return EscaperCell;
+	})(Cell_1["default"]);
+	exports.__esModule = true;
+	exports["default"] = EscaperCell;
+
+
+/***/ },
+/* 29 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Container_1 = __webpack_require__(30);
 	var Sfx = (function () {
 	    function Sfx() {
 	        this.audioAccelerate = new Container_1["default"]('sfx/accelerate.mp3');
@@ -1581,7 +1502,7 @@
 
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports) {
 
 	var Container = (function () {
@@ -1614,7 +1535,7 @@
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports) {
 
 	var Music = (function () {
@@ -1669,7 +1590,7 @@
 
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Vector_1 = __webpack_require__(7);
@@ -2132,16 +2053,16 @@
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(33);
+	var content = __webpack_require__(34);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(35)(content, {});
+	var update = __webpack_require__(36)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -2158,10 +2079,10 @@
 	}
 
 /***/ },
-/* 33 */
+/* 34 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(34)();
+	exports = module.exports = __webpack_require__(35)();
 	// imports
 	
 	
@@ -2172,7 +2093,7 @@
 
 
 /***/ },
-/* 34 */
+/* 35 */
 /***/ function(module, exports) {
 
 	/*
@@ -2228,7 +2149,7 @@
 
 
 /***/ },
-/* 35 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*
