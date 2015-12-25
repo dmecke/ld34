@@ -52,23 +52,29 @@
 	
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 	
-	__webpack_require__(33);
+	__webpack_require__(35);
 	
-	new _Game2.default().run();
+	var game = new _Game2.default();
+	
+	game.run();
 
 /***/ },
 /* 1 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Menu_1 = __webpack_require__(2);
-	var Level_1 = __webpack_require__(13);
+	var Level_1 = __webpack_require__(14);
 	var Vector_1 = __webpack_require__(7);
-	var Sfx_1 = __webpack_require__(29);
-	var Music_1 = __webpack_require__(31);
-	var LevelDefinitions_1 = __webpack_require__(32);
+	var Text_1 = __webpack_require__(5);
+	var Sfx_1 = __webpack_require__(30);
+	var Music_1 = __webpack_require__(32);
+	var LevelDefinitions_1 = __webpack_require__(33);
 	var Canvas_1 = __webpack_require__(4);
+	var Context_1 = __webpack_require__(3);
 	var Mouse_1 = __webpack_require__(11);
-	var Keyboard_1 = __webpack_require__(15);
+	var Keyboard_1 = __webpack_require__(16);
+	var FPS_1 = __webpack_require__(34);
+	var Settings_1 = __webpack_require__(9);
 	var Game = (function () {
 	    function Game() {
 	        this.menu = new Menu_1["default"](this);
@@ -76,13 +82,22 @@
 	        this.dimensions = new Vector_1["default"](Canvas_1["default"].width, Canvas_1["default"].height);
 	        this.sfx = new Sfx_1["default"]();
 	        this.music = new Music_1["default"]();
+	        this.fps = new FPS_1["default"]();
+	        this.screens = [];
+	        this.screens.push(this.menu);
 	    }
 	    Game.prototype.run = function () {
 	        Mouse_1["default"].init();
 	        Keyboard_1["default"].init();
+	        window.addEventListener('resize', function () {
+	            Canvas_1["default"].width = window.innerWidth;
+	            Canvas_1["default"].height = window.innerHeight;
+	            this.dimensions = new Vector_1["default"](Canvas_1["default"].width, Canvas_1["default"].height);
+	        }.bind(this));
 	        for (var key in LevelDefinitions_1["default"]) {
 	            if (LevelDefinitions_1["default"].hasOwnProperty(key)) {
 	                var level = new Level_1["default"](this, LevelDefinitions_1["default"][key]);
+	                this.screens.push(level);
 	                if (window.localStorage.getItem('level_' + level.levelSettings.level)) {
 	                    level.isFinished = true;
 	                }
@@ -96,21 +111,52 @@
 	            this.sfx.enabled = false;
 	        }
 	        this.showMenu();
+	        setInterval(this.loop.bind(this), 1000 / Game.FPS);
+	    };
+	    Game.prototype.loop = function () {
+	        this.update();
+	        this.render();
+	        this.fps.tick();
+	    };
+	    Game.prototype.update = function () {
+	        this.screens.forEach(function (screen) {
+	            if (screen.isActive) {
+	                screen.update();
+	            }
+	        });
+	    };
+	    Game.prototype.render = function () {
+	        Context_1["default"].clearRect(0, 0, this.dimensions.x(), this.dimensions.y());
+	        this.screens.forEach(function (screen) {
+	            if (screen.isActive) {
+	                screen.render();
+	            }
+	        });
+	        new Text_1["default"](this.fps.toString())
+	            .at(new Vector_1["default"](5, 15))
+	            .leftAligned()
+	            .withFillStyle(Settings_1["default"].white)
+	            .draw();
 	    };
 	    Game.prototype.startLevel = function (level) {
+	        this.menu.deactivate();
 	        this.menu.hide();
 	        this.currentLevel = level;
+	        this.currentLevel.activate();
 	        this.currentLevel.start();
 	    };
 	    Game.prototype.finishLevel = function () {
+	        this.currentLevel.deactivate();
 	        this.currentLevel.isFinished = true;
 	        window.localStorage.setItem('level_' + this.currentLevel.levelSettings.level, true.toString());
 	        this.currentLevel.cleanup();
 	        this.currentLevel = undefined;
 	    };
 	    Game.prototype.showMenu = function () {
+	        this.menu.activate();
 	        this.menu.show();
 	    };
+	    Game.FPS = 60;
 	    return Game;
 	})();
 	exports.__esModule = true;
@@ -121,19 +167,26 @@
 /* 2 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
 	var Context_1 = __webpack_require__(3);
 	var Text_1 = __webpack_require__(5);
 	var Circle_1 = __webpack_require__(8);
 	var Vector_1 = __webpack_require__(7);
 	var Settings_1 = __webpack_require__(9);
 	var Mouse_1 = __webpack_require__(11);
-	var Menu = (function () {
-	    function Menu(game) {
+	var GameScreen_1 = __webpack_require__(13);
+	var Menu = (function (_super) {
+	    __extends(Menu, _super);
+	    function Menu() {
+	        _super.apply(this, arguments);
 	        this.background = new Image();
 	        this.lock = new Image();
 	        this.symbolSfx = new Image();
 	        this.symbolMusic = new Image();
-	        this.game = game;
 	    }
 	    Menu.prototype.show = function () {
 	        this.background.src = 'img/startscreen.jpg';
@@ -141,15 +194,9 @@
 	        this.symbolSfx.src = 'img/sfx.png';
 	        this.symbolMusic.src = 'img/music.png';
 	        this.game.music.playMenu();
-	        var menu = this;
-	        this.interval = setInterval(function () {
-	            menu.update();
-	            menu.render();
-	        }, 1 / 30);
 	    };
 	    Menu.prototype.hide = function () {
 	        this.game.music.pauseMenu();
-	        clearInterval(this.interval);
 	    };
 	    Menu.prototype.update = function () {
 	        if (!Mouse_1["default"].clicked()) {
@@ -262,7 +309,7 @@
 	        return position.distanceTo(Mouse_1["default"].position) <= 50;
 	    };
 	    return Menu;
-	})();
+	})(GameScreen_1["default"]);
 	exports.__esModule = true;
 	exports["default"] = Menu;
 
@@ -282,8 +329,6 @@
 /***/ function(module, exports) {
 
 	var canvas = document.getElementById('canvas');
-	canvas.width = window.innerWidth;
-	canvas.height = window.innerHeight;
 	exports.__esModule = true;
 	exports["default"] = canvas;
 
@@ -639,16 +684,45 @@
 
 /***/ },
 /* 13 */
+/***/ function(module, exports) {
+
+	var GameScreen = (function () {
+	    function GameScreen(game) {
+	        this.isActive = false;
+	        this.game = game;
+	    }
+	    GameScreen.prototype.activate = function () {
+	        this.isActive = true;
+	    };
+	    GameScreen.prototype.deactivate = function () {
+	        this.isActive = false;
+	    };
+	    return GameScreen;
+	})();
+	exports.__esModule = true;
+	exports["default"] = GameScreen;
+
+
+/***/ },
+/* 14 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var __extends = (this && this.__extends) || function (d, b) {
+	    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+	    function __() { this.constructor = d; }
+	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+	};
 	var Context_1 = __webpack_require__(3);
-	var Player_1 = __webpack_require__(14);
+	var Player_1 = __webpack_require__(15);
 	var Vector_1 = __webpack_require__(7);
-	var Ui_1 = __webpack_require__(22);
+	var Ui_1 = __webpack_require__(23);
 	var Settings_1 = __webpack_require__(9);
-	var Factory_1 = __webpack_require__(24);
-	var Level = (function () {
+	var Factory_1 = __webpack_require__(25);
+	var GameScreen_1 = __webpack_require__(13);
+	var Level = (function (_super) {
+	    __extends(Level, _super);
 	    function Level(game, levelSettings) {
+	        _super.call(this, game);
 	        this.cells = [];
 	        this.ui = new Ui_1["default"](this);
 	        this.background = new Image();
@@ -656,16 +730,10 @@
 	        this.showScore = false;
 	        this.isFinished = false;
 	        this.collectedCells = 0;
-	        this.game = game;
 	        this.levelSettings = levelSettings;
 	    }
 	    Level.prototype.start = function () {
-	        var level = this;
 	        this.setup();
-	        this.interval = setInterval(function () {
-	            level.update();
-	            level.render();
-	        }, 1 / 30);
 	    };
 	    Level.prototype.update = function () {
 	        this.ui.update();
@@ -740,7 +808,6 @@
 	        this.showScore = false;
 	        this.showObjectives = true;
 	        this.game.music.pauseLevel(this.levelSettings.level);
-	        clearInterval(this.interval);
 	    };
 	    Level.prototype.paused = function () {
 	        return this.showObjectives || this.showScore;
@@ -757,13 +824,13 @@
 	        return null;
 	    };
 	    return Level;
-	})();
+	})(GameScreen_1["default"]);
 	exports.__esModule = true;
 	exports["default"] = Level;
 
 
 /***/ },
-/* 14 */
+/* 15 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -773,10 +840,10 @@
 	};
 	var Vector_1 = __webpack_require__(7);
 	var Mouse_1 = __webpack_require__(11);
-	var Keyboard_1 = __webpack_require__(15);
-	var PlayerGraphic_1 = __webpack_require__(16);
-	var MovingObject_1 = __webpack_require__(18);
-	var PlayerCell_1 = __webpack_require__(19);
+	var Keyboard_1 = __webpack_require__(16);
+	var PlayerGraphic_1 = __webpack_require__(17);
+	var MovingObject_1 = __webpack_require__(19);
+	var PlayerCell_1 = __webpack_require__(20);
 	var Player = (function (_super) {
 	    __extends(Player, _super);
 	    function Player(level) {
@@ -871,7 +938,7 @@
 
 
 /***/ },
-/* 15 */
+/* 16 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Timer_1 = __webpack_require__(12);
@@ -912,12 +979,12 @@
 
 
 /***/ },
-/* 16 */
+/* 17 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Circle_1 = __webpack_require__(8);
 	var Settings_1 = __webpack_require__(9);
-	var PulsatingCircle_1 = __webpack_require__(17);
+	var PulsatingCircle_1 = __webpack_require__(18);
 	var PlayerGraphic = (function () {
 	    function PlayerGraphic() {
 	        this.border = new PulsatingCircle_1["default"]();
@@ -947,7 +1014,7 @@
 
 
 /***/ },
-/* 17 */
+/* 18 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -991,7 +1058,7 @@
 
 
 /***/ },
-/* 18 */
+/* 19 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Vector_1 = __webpack_require__(7);
@@ -1039,7 +1106,7 @@
 
 
 /***/ },
-/* 19 */
+/* 20 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -1048,7 +1115,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Settings_1 = __webpack_require__(9);
-	var Cell_1 = __webpack_require__(20);
+	var Cell_1 = __webpack_require__(21);
 	var PlayerCell = (function (_super) {
 	    __extends(PlayerCell, _super);
 	    function PlayerCell() {
@@ -1067,7 +1134,7 @@
 
 
 /***/ },
-/* 20 */
+/* 21 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -1075,8 +1142,8 @@
 	    function __() { this.constructor = d; }
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
-	var MovingObject_1 = __webpack_require__(18);
-	var CellGraphics_1 = __webpack_require__(21);
+	var MovingObject_1 = __webpack_require__(19);
+	var CellGraphics_1 = __webpack_require__(22);
 	var Cell = (function (_super) {
 	    __extends(Cell, _super);
 	    function Cell(level, position, velocity, mass) {
@@ -1103,12 +1170,12 @@
 
 
 /***/ },
-/* 21 */
+/* 22 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Settings_1 = __webpack_require__(9);
 	var Circle_1 = __webpack_require__(8);
-	var PulsatingCircle_1 = __webpack_require__(17);
+	var PulsatingCircle_1 = __webpack_require__(18);
 	var CellGraphics = (function () {
 	    function CellGraphics() {
 	        this.border = new PulsatingCircle_1["default"]();
@@ -1134,12 +1201,12 @@
 
 
 /***/ },
-/* 22 */
+/* 23 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Vector_1 = __webpack_require__(7);
 	var Text_1 = __webpack_require__(5);
-	var Rectangle_1 = __webpack_require__(23);
+	var Rectangle_1 = __webpack_require__(24);
 	var Settings_1 = __webpack_require__(9);
 	var Mouse_1 = __webpack_require__(11);
 	var Ui = (function () {
@@ -1275,7 +1342,7 @@
 
 
 /***/ },
-/* 23 */
+/* 24 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -1319,15 +1386,15 @@
 
 
 /***/ },
-/* 24 */
+/* 25 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Settings_1 = __webpack_require__(9);
-	var PlayerCell_1 = __webpack_require__(19);
-	var SimpleCell_1 = __webpack_require__(25);
-	var AbsorberCell_1 = __webpack_require__(26);
-	var DirectionCell_1 = __webpack_require__(27);
-	var EscaperCell_1 = __webpack_require__(28);
+	var PlayerCell_1 = __webpack_require__(20);
+	var SimpleCell_1 = __webpack_require__(26);
+	var AbsorberCell_1 = __webpack_require__(27);
+	var DirectionCell_1 = __webpack_require__(28);
+	var EscaperCell_1 = __webpack_require__(29);
 	var Factory = (function () {
 	    function Factory() {
 	    }
@@ -1352,7 +1419,7 @@
 
 
 /***/ },
-/* 25 */
+/* 26 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -1361,7 +1428,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Settings_1 = __webpack_require__(9);
-	var Cell_1 = __webpack_require__(20);
+	var Cell_1 = __webpack_require__(21);
 	var SimpleCell = (function (_super) {
 	    __extends(SimpleCell, _super);
 	    function SimpleCell() {
@@ -1377,7 +1444,7 @@
 
 
 /***/ },
-/* 26 */
+/* 27 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -1386,7 +1453,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Settings_1 = __webpack_require__(9);
-	var Cell_1 = __webpack_require__(20);
+	var Cell_1 = __webpack_require__(21);
 	var AbsorberCell = (function (_super) {
 	    __extends(AbsorberCell, _super);
 	    function AbsorberCell() {
@@ -1405,7 +1472,7 @@
 
 
 /***/ },
-/* 27 */
+/* 28 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -1414,7 +1481,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Settings_1 = __webpack_require__(9);
-	var Cell_1 = __webpack_require__(20);
+	var Cell_1 = __webpack_require__(21);
 	var Vector_1 = __webpack_require__(7);
 	var DirectionCell = (function (_super) {
 	    __extends(DirectionCell, _super);
@@ -1437,7 +1504,7 @@
 
 
 /***/ },
-/* 28 */
+/* 29 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var __extends = (this && this.__extends) || function (d, b) {
@@ -1446,7 +1513,7 @@
 	    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
 	};
 	var Settings_1 = __webpack_require__(9);
-	var Cell_1 = __webpack_require__(20);
+	var Cell_1 = __webpack_require__(21);
 	var EscaperCell = (function (_super) {
 	    __extends(EscaperCell, _super);
 	    function EscaperCell() {
@@ -1469,10 +1536,10 @@
 
 
 /***/ },
-/* 29 */
+/* 30 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Container_1 = __webpack_require__(30);
+	var Container_1 = __webpack_require__(31);
 	var Sfx = (function () {
 	    function Sfx() {
 	        this.audioAccelerate = new Container_1["default"]('sfx/accelerate.mp3');
@@ -1502,7 +1569,7 @@
 
 
 /***/ },
-/* 30 */
+/* 31 */
 /***/ function(module, exports) {
 
 	var Container = (function () {
@@ -1535,7 +1602,7 @@
 
 
 /***/ },
-/* 31 */
+/* 32 */
 /***/ function(module, exports) {
 
 	var Music = (function () {
@@ -1590,7 +1657,7 @@
 
 
 /***/ },
-/* 32 */
+/* 33 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Vector_1 = __webpack_require__(7);
@@ -2053,16 +2120,41 @@
 
 
 /***/ },
-/* 33 */
+/* 34 */
+/***/ function(module, exports) {
+
+	var FPS = (function () {
+	    function FPS() {
+	        this.frameTime = 0;
+	        this.lastLoop = new Date().valueOf();
+	    }
+	    FPS.prototype.tick = function () {
+	        this.thisLoop = new Date().valueOf();
+	        var thisFrameTime = this.thisLoop - this.lastLoop;
+	        this.frameTime += (thisFrameTime - this.frameTime) / FPS.filterStrength;
+	        this.lastLoop = this.thisLoop;
+	    };
+	    FPS.prototype.toString = function () {
+	        return (1000 / this.frameTime).toFixed(0) + ' FPS';
+	    };
+	    FPS.filterStrength = 20;
+	    return FPS;
+	})();
+	exports.__esModule = true;
+	exports["default"] = FPS;
+
+
+/***/ },
+/* 35 */
 /***/ function(module, exports, __webpack_require__) {
 
 	// style-loader: Adds some css to the DOM by adding a <style> tag
 	
 	// load the styles
-	var content = __webpack_require__(34);
+	var content = __webpack_require__(36);
 	if(typeof content === 'string') content = [[module.id, content, '']];
 	// add the styles to the DOM
-	var update = __webpack_require__(36)(content, {});
+	var update = __webpack_require__(38)(content, {});
 	if(content.locals) module.exports = content.locals;
 	// Hot Module Replacement
 	if(false) {
@@ -2079,10 +2171,10 @@
 	}
 
 /***/ },
-/* 34 */
+/* 36 */
 /***/ function(module, exports, __webpack_require__) {
 
-	exports = module.exports = __webpack_require__(35)();
+	exports = module.exports = __webpack_require__(37)();
 	// imports
 	
 	
@@ -2093,7 +2185,7 @@
 
 
 /***/ },
-/* 35 */
+/* 37 */
 /***/ function(module, exports) {
 
 	/*
@@ -2149,7 +2241,7 @@
 
 
 /***/ },
-/* 36 */
+/* 38 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/*

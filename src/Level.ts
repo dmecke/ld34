@@ -5,21 +5,20 @@ import Cell from "./Entity/Cell/Cell";
 import Ui from "./Ui";
 import Music from "./Audio/Music";
 import settings from "./Settings";
-import Game from "./Game";
+import Game from "./Game/Game";
 import PlayerCell from "./Entity/Cell/PlayerCell";
 import SimpleCell from "./Entity/Cell/SimpleCell";
 import AbsorberCell from "./Entity/Cell/AbsorberCell";
 import DirectionCell from "./Entity/Cell/DirectionCell";
 import EscaperCell from "./Entity/Cell/EscaperCell";
 import Factory from "./Entity/Cell/Factory";
+import GameScreen from "./Game/GameScreen";
 
-class Level
+class Level extends GameScreen
 {
-    public game:Game;
     public player:Player;
     public cells:Array<Cell> = [];
     private ui:Ui = new Ui(this);
-    private interval;
     public levelSettings;
     private background:HTMLImageElement = new Image();
     public showObjectives:boolean = true;
@@ -29,19 +28,13 @@ class Level
 
     constructor(game:Game, levelSettings)
     {
-        this.game = game;
+        super(game);
         this.levelSettings = levelSettings;
     }
 
     public start():void
     {
-        var level = this;
         this.setup();
-
-        this.interval = setInterval(function() {
-            level.update();
-            level.render();
-        }, 1 / 30);
     }
 
     public update():void
@@ -131,7 +124,6 @@ class Level
         this.showScore = false;
         this.showObjectives = true;
         this.game.music.pauseLevel(this.levelSettings.level);
-        clearInterval(this.interval);
     }
 
     public paused():boolean

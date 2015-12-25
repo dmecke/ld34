@@ -5,23 +5,18 @@ import Vector from "./Math/Vector";
 import Music from "./Audio/Music";
 import levelDefinitions from "./LevelDefinitions";
 import settings from "./Settings";
-import Game from "./Game";
+import Game from "./Game/Game";
 import Level from "./Level";
 import Mouse from "./Input/Mouse";
+import FPS from "./Util/FPS";
+import GameScreen from "./Game/GameScreen";
 
-class Menu
+class Menu extends GameScreen
 {
-    private game:Game;
-    private interval;
     private background:HTMLImageElement = new Image();
     private lock:HTMLImageElement = new Image();
     private symbolSfx:HTMLImageElement = new Image();
     private symbolMusic:HTMLImageElement = new Image();
-    
-    constructor(game)
-    {
-        this.game = game;
-    }
 
     public show():void
     {
@@ -31,18 +26,11 @@ class Menu
         this.symbolMusic.src = 'img/music.png';
 
         this.game.music.playMenu();
-
-        var menu = this;
-        this.interval = setInterval(function() {
-            menu.update();
-            menu.render();
-        }, 1 / 30);
     }
 
     public hide():void
     {
         this.game.music.pauseMenu();
-        clearInterval(this.interval);
     }
 
     public update():void

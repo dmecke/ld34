@@ -1,5 +1,7 @@
 require('./app.css');
 
-import Game from "./Game";
+import Game from "./Game/Game";
 
-new Game().run();
+var game = new Game();
+
+game.run();
