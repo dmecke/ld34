@@ -35,12 +35,9 @@ class Game
     {
         Mouse.init();
         Keyboard.init();
+        this.resize();
 
-        window.addEventListener('resize', function() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            this.dimensions = new Vector(canvas.width, canvas.height);
-        }.bind(this));
+        window.addEventListener('resize', this.resize.bind(this));
 
         for (var key in levelDefinitions) {
             if (levelDefinitions.hasOwnProperty(key)) {
@@ -117,6 +114,13 @@ class Game
     {
         this.menu.activate();
         this.menu.show();
+    }
+
+    private resize():void
+    {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+        this.dimensions = new Vector(canvas.width, canvas.height);
     }
 }
 

@@ -89,11 +89,8 @@
 	    Game.prototype.run = function () {
 	        Mouse_1["default"].init();
 	        Keyboard_1["default"].init();
-	        window.addEventListener('resize', function () {
-	            Canvas_1["default"].width = window.innerWidth;
-	            Canvas_1["default"].height = window.innerHeight;
-	            this.dimensions = new Vector_1["default"](Canvas_1["default"].width, Canvas_1["default"].height);
-	        }.bind(this));
+	        this.resize();
+	        window.addEventListener('resize', this.resize.bind(this));
 	        for (var key in LevelDefinitions_1["default"]) {
 	            if (LevelDefinitions_1["default"].hasOwnProperty(key)) {
 	                var level = new Level_1["default"](this, LevelDefinitions_1["default"][key]);
@@ -155,6 +152,11 @@
 	    Game.prototype.showMenu = function () {
 	        this.menu.activate();
 	        this.menu.show();
+	    };
+	    Game.prototype.resize = function () {
+	        Canvas_1["default"].width = window.innerWidth;
+	        Canvas_1["default"].height = window.innerHeight;
+	        this.dimensions = new Vector_1["default"](Canvas_1["default"].width, Canvas_1["default"].height);
 	    };
 	    Game.FPS = 60;
 	    return Game;
